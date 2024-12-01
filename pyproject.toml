@@ -43,13 +43,7 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-django",
-    "pytest-testdox",
-    "pytest-asyncio",
-    "pytest-cov",
-]
+test = ["pytest", "pytest-django", "pytest-testdox", "pytest-asyncio"]
 dev = ["django-debug-toolbar", "black", "isort", "ruff"]
 
 [build-system]

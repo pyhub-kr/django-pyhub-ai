@@ -42,14 +42,7 @@ jobs:
 
       - name: Run tests
         run: |
-          uv run python -m pytest tests/ --cov=pyhub_ai --cov-report=xml
-
-      - name: Upload coverage reports
-        uses: codecov/codecov-action@v3
-        if: success()
-        with:
-          file: ./coverage.xml
-          fail_ci_if_error: true
+          uv run python -m pytest tests/
 
       - name: Test build
         if: matrix.python-version == '3.12'
