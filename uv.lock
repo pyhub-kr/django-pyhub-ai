@@ -771,19 +771,17 @@ dependencies = [
     { name = "langchain-core" },
     { name = "langchain-experimental" },
     { name = "langchain-openai" },
-    { name = "pillow" },
-    { name = "pydantic" },
-    { name = "pyyaml" },
-]
-
-[package.optional-dependencies]
-data = [
     { name = "matplotlib" },
     { name = "numpy" },
     { name = "pandas" },
+    { name = "pillow" },
+    { name = "pydantic" },
+    { name = "pyyaml" },
     { name = "seaborn" },
     { name = "tabulate" },
 ]
+
+[package.optional-dependencies]
 dev = [
     { name = "black" },
     { name = "django-debug-toolbar" },
@@ -814,9 +812,9 @@ requires-dist = [
     { name = "langchain-core" },
     { name = "langchain-experimental" },
     { name = "langchain-openai" },
-    { name = "matplotlib", marker = "extra == 'data'" },
-    { name = "numpy", marker = "extra == 'data'" },
-    { name = "pandas", marker = "extra == 'data'" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
     { name = "pillow" },
     { name = "pydantic" },
     { name = "pytest", marker = "extra == 'test'" },
@@ -826,8 +824,8 @@ requires-dist = [
     { name = "pytest-testdox", marker = "extra == 'test'" },
     { name = "pyyaml" },
     { name = "ruff", marker = "extra == 'dev'" },
-    { name = "seaborn", marker = "extra == 'data'" },
-    { name = "tabulate", marker = "extra == 'data'" },
+    { name = "seaborn" },
+    { name = "tabulate" },
 ]
 
 [[package]]

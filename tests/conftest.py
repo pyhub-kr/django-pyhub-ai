@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 from uuid import uuid4
-from typing import AsyncGenerator
+from typing import AsyncGenerator, List, Optional, Tuple
 
 from asgiref.sync import sync_to_async
 from asgiref.typing import ASGIApplication
@@ -26,7 +26,7 @@ async def make_communicator(agent_application: ASGIApplication):
     async def _make_communicator(
         path: str,
         auto_connect: bool = True,
-        headers: list[tuple[bytes, bytes]] | None = None,
+        headers: Optional[List[Tuple[bytes, bytes]]] = None,
     ) -> AsyncGenerator[WebsocketCommunicator, None]:
         communicator = WebsocketCommunicator(
             application=agent_application,
