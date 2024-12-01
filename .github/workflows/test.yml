@@ -28,6 +28,11 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install uv
 
+      - name: Create and activate virtual environment
+        run: |
+          uv venv
+          . .venv/bin/activate
+
       - name: Install dependencies
         run: |
           uv pip install -e ".[test]"
