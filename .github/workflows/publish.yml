@@ -1,9 +1,9 @@
-name: Publish to PyPI
+name: Publish to PyPI and GitHub Release
 
 on:
   push:
     tags:
-      - "v*" # v로 시작하는 모든 태그에서 실행
+      - "v*"
 
 jobs:
   publish:
@@ -25,9 +25,18 @@ jobs:
       - name: Build package
         run: python -m build
 
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            dist/*.whl
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish to PyPI
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          twine upload dist/*
+          twine upload dist/*.whl
