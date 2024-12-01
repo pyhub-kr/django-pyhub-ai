@@ -1,0 +1,176 @@
+{% load static %}
+
+<div id="{{ chat_messages_dom_id|default:"" }}" hx-swap-oob="beforeend">
+    {% if mode == "thinking-start" %}
+        <script>
+            (function() {
+                const el = document.currentScript.closest('[hx-ext="ws"]');
+                htmx.trigger(el, "thinking-start");
+                document.currentScript.remove();
+            })();
+        </script>
+
+    {% elif mode == "thinking-end" %}
+        <script>
+            (function() {
+                const el = document.currentScript.closest('[hx-ext="ws"]');
+                htmx.trigger(el, "thinking-end");
+                document.currentScript.remove();
+            })();
+        </script>
+
+    {% elif mode == "page-reload" %}
+        <script>window.location.reload();</script>
+
+    {% elif mode == "delete" %}
+        <script>
+            (function () {
+                const el = document.querySelector('#{{ content_block.id }}');
+                el?.remove();
+                document.currentScript.remove();
+            })();
+        </script>
+
+    {% elif mode == "overwrite" %}
+        {# 새로운 메시지를 UI에 추가하거나, 덮어쓰기 #}
+        <div id="{{ content_block.id|default:"" }}" class="mb-4">
+            {% if content_block.role == "alert" %}
+                <dialog class="modal">
+                    <div class="modal-box">
+                        <h3 class="text-lg font-bold">알림</h3>
+                        <div class="markdown prose text-black py-4"></div>
+                        <div class="modal-action">
+                            <form method="dialog">
+                                <button class="btn">OK</button>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+                <script>
+                    (function () {
+                        const currentScript = document.currentScript;
+                        setTimeout(() => {
+                            const dialog = currentScript.parentElement.querySelector("dialog.modal");
+                            dialog.showModal();
+                            dialog.addEventListener("close", () => {
+                                dialog.remove();
+                                currentScript.remove();
+                            });
+                        }, 100);
+                    })();
+                </script>
+            {% elif content_block.role == "notice" %}
+                <div  class="flex flex-col gap-1 bg-blue-100 px-4 py-2 rounded-lg max-w-full break-words border
+                         border-blue-200">
+                    <div class="text-sm text-blue-800 font-bold">
+                        NOTICE
+                    </div>
+                    <div class="markdown prose text-blue-800"></div>
+                </div>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+            {% elif content_block.role == "usage" %}
+                <div class="flex items-center gap-1 opacity-50 ml-1 -mt-3">
+                    <i class="fas fa-info-circle text-xs ml-1"></i>
+                    <div class="markdown prose text-xs"></div>
+                </div>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+            {% elif content_block.role == "error" %}
+                <div class="flex flex-col gap-1 bg-red-100 px-4 py-2 rounded-lg max-w-full break-words border
+                        border-red-200">
+                    <div class="text-sm text-red-800 font-bold">
+                        ERROR
+                    </div>
+                    <div class="markdown prose text-red-800"></div>
+                </div>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+            {% elif content_block.role == "system" %}
+                <div class="flex flex-col gap-1 bg-blue-100 px-4 py-2 rounded-lg max-w-full break-words border
+                        border-blue-200">
+                    <div class="text-sm text-blue-800 font-bold">
+                        SYSTEM
+                    </div>
+                    <div class="text-sm font-mono font-medium tracking-tight text-blue-800
+                                whitespace-nowrap overflow-x-auto
+                                overflow-y-auto
+                                max-h-[240px] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                        {{ content_block.as_markdown|linebreaksbr }}
+                    </div>
+                </div>
+                {# <div class="text hidden">{{ content_block.as_markdown }}</div> #}
+            {% elif content_block.role == "user" %}
+                <div class="flex justify-end">
+                    <div
+                        class="flex flex-col gap-1 bg-white px-4 py-3 rounded-lg break-words border border-gray-200 shadow-sm">
+                        <div class="markdown prose text-gray-900"></div>
+                    </div>
+                </div>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+            {% elif content_block.role == "assistant" %}
+                <div class="flex flex-col gap-1 bg-gray-100 px-4 py-2 rounded-lg max-w-full break-words border border-gray-200">
+                    {# <img src="{% static 'pyhub_ai/icons/barista-1.png' %}" class="w-10 h-10" /> #}
+                    <div class="markdown prose text-gray-800"></div>
+                </div>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+            {% elif content_block.tool_name == "image" %}
+                <div class="markdown"></div>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+            {% else %}
+                <label for="{{ content_block.id }}_my_modal_7" class="btn btn-sm">
+                    {{ content_block.tool_name|default:"Tool" }} 도구 수행
+                </label>
+                <input type="checkbox" id="{{ content_block.id }}_my_modal_7" class="modal-toggle"/>
+                <div class="modal" role="dialog">
+                    <div class="modal-box">
+                        <h3 class="text-lg font-bold">
+                            {{ content_block.tool_name|default:"Tool" }}
+                        </h3>
+                        <p class="py-4">
+                            <div class="markdown prose"></div>
+                        </p>
+                    </div>
+                    <label class="modal-backdrop" for="{{ content_block.id }}_my_modal_7">Close</label>
+                </div>
+                <div class="text hidden">{{ content_block.as_markdown }}</div>
+            {% endif %}
+            <script>
+                (function () {
+                    const targetEl = document.currentScript.parentElement.querySelector(".text");
+                    if (targetEl) {
+                        const markdownEl = targetEl.parentElement.querySelector(".markdown");
+                        if (markdownEl) markdownEl.innerHTML = window.markdownToHtml(targetEl.textContent);
+                    }
+                    document.currentScript.remove();
+                })();
+            </script>
+        </div>
+    {% elif mode == "append" %}
+        {# 자바스크립트를 통해, 기존 메시지의 텍스트에 content 추가 #}
+        {# JS 문자열 백틱 문법과 markdown code 백틱 문법이 충돌하기에 script textContent를 통한 문자열 전달 #}
+        <script type="x-template">{{ content_block.as_markdown|safe }}</script>
+        <script>
+            (function () {
+                const sourceEl = document.currentScript.previousElementSibling;
+                const targetEl = document.querySelector('#{{ content_block.id }} .text');
+                if (targetEl) {
+                    const markdownEl = targetEl.parentElement.querySelector(".markdown");
+                    targetEl.textContent += sourceEl.textContent;
+                    markdownEl.innerHTML = window.markdownToHtml(targetEl.textContent);
+                    if (window.hljs?.highlightElement) {
+                        markdownEl.querySelectorAll("code").forEach((block) => {
+                            window.hljs.highlightElement(block);
+                        });
+                    }
+                    else {
+                        console.warn("hljs module not found");
+                    }
+                } else {
+                    console.warn("targetEl not found : #{{ content_block.id }} .text");
+                }
+                sourceEl?.remove();
+                document.currentScript.remove();
+            })();
+        </script>
+    {% endif %}
+
+</div>

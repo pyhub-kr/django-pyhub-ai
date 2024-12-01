@@ -1,0 +1,26 @@
+{% load uncached_static %}
+
+{# 주의: 모든 값은 문자열로서 처리 : None은 "None" 문자열, False를 넘겨도 "False" 문자열로 처리됩니다. #}
+<c-vars class="" icon_class="h-6 w-6" name="" multiple="" preview_display_selector=""
+        with_base64_field=""
+></c-vars>
+
+<label class="w-12 flex items-center justify-center cursor-pointer p-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300 transition duration-200 {{ class }}">
+    <c-pyhub.icons.image-album class="{{ icon_class }}"></c-pyhub.icons.image-album>
+    <input type="file" accept="image/*" class="hidden"
+           {% if name %}name="{{ name }}"{% endif %}
+           {% if multiple %}multiple="multiple"{% endif %}/>
+</label>
+
+<script>
+  (function () {
+    const withBase64Field = {% if with_base64_field %}true{% else %}false{% endif %};
+
+    const componentEl = document.currentScript.previousElementSibling;
+    const previewDisplayEl = document.querySelector("{{ preview_display_selector }}");
+    document.addEventListener('DOMContentLoaded', function () {
+      initImagePreviewFile(componentEl, previewDisplayEl, withBase64Field);
+    });
+  })();
+</script>
+<script src="{% uncached_static "pyhub/widgets/image_preview_file.js" %}"></script>

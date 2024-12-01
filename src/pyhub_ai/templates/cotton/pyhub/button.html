@@ -1,0 +1,56 @@
+{# ref: https://flowbite.com/docs/components/buttons/ #}
+
+{% load random_tags %}
+
+{% uuid4_hex as random_id %}
+
+<span>
+<{{ tag|default:"a" }}
+    id="{{ random_id }}"
+    class="relative btn {{ class }}"
+
+    {% if link %}href="{{ link }}"{% endif %}
+
+    {# htmx #}
+    {% if hx_get %}hx-get="{{ hx_get }}"{% endif %}
+    {% if hx_post %}hx-post="{{ hx_post }}"{% endif %}
+    {% if hx_put %}hx-put="{{ hx_put }}"{% endif %}
+    {% if hx_delete %}hx-delete="{{ hx_delete }}"{% endif %}
+    {% if hx_trigger %}hx-trigger="{{ hx_trigger }}"{% endif %}
+    {% if hx_target %}hx-target="{{ hx_target }}"{% endif %}
+    {% if hx_swap %}hx-swap="{{ hx_swap }}"{% endif %}
+    hx-indicator="#{{ random_id }}-htmx-indicator"
+
+    {# tooltip #}
+    {% if tooltip %}
+        x-data="{ tooltip: false }"
+        x-on:mouseover="tooltip = true"
+        x-on:mouseleave="tooltip = false"
+    {% endif %}
+
+    {% if onclick %}
+        onclick="{{ onclick }}"
+    {% endif %}
+
+    {{ attrs }}
+>
+    {% if tooltip %}
+        <div class="
+                absolute left-1/2 -top-[4px] -translate-x-1/2 -translate-y-[100%] z-10 py-2 px-3
+                whitespace-nowrap text-sm font-medium
+                text-white bg-gray-900 rounded-lg shadow-sm transition-opacity opacity-0 tooltip
+                {# dark:bg-gray-700 #}"
+             :class="tooltip ? 'opacity-100': ''">
+            {{ tooltip }}
+        </div>
+    {% endif %}
+
+    {{ label }}
+    {{ slot }}
+
+</{{ tag|default:"a" }}>
+
+<span id="{{ random_id }}-htmx-indicator" class="htmx-indicator hidden">
+    Loading ...
+</span>
+</span>

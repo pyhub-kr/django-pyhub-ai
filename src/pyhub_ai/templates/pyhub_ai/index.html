@@ -1,0 +1,66 @@
+{% extends "pyhub_ai/base.html" %}
+
+{% block content %}
+
+    <c-pyhub.h1>pyhub-ai</c-pyhub.h1>
+    <c-pyhub.alert>경고 메시지</c-pyhub.alert>
+
+    <c-pyhub.button tooltip="툴팁">Hello 버튼</c-pyhub.button>
+    <c-pyhub.button class="btn-primary" tooltip="툴팁">Hello 버튼</c-pyhub.button>
+
+    <button class="btn btn-primary">Button</button>
+    <button class="btn w-64 rounded-full">Button</button>
+
+    <h1>[h1] h1 test</h1>
+    <h2>[h2] h2 test</h2>
+
+    <c-pyhub.h2>markdown test</c-pyhub.h2>
+
+    <textarea id="source" class="hidden">
+## [H2] Python Code
+
+```python
+for i in range(10):
+    print(i, i**2)
+```
+
+### [H3] List
+
++ Item 1
++ Item 2
++ Item 3
+    - Sub item 1
+    - Sub item 2
+    - [ ] Sub item 3
+    - [x] Sub item 4
+
+1. Item 1
+2. Item 2
+3. Item 3
+
+#### [H4] blockquote
+
+> This is a blockquote.
+
+##### [h5] heading
+
+###### H6 Heading
+
+| Sex    |   proportion |
+|:-------|-------------:|
+| male   |     0.647587 |
+| female |     0.352413 |
+</textarea>
+    <div id="target" class="markdown prose prose-stone border p-4"></div>
+{% endblock %}
+
+{% block extra-script %}
+<script>
+    (function () {
+        const sourceEl = document.querySelector('#source');
+        const targetEl = document.querySelector('#target');
+        targetEl.innerHTML = window.markdownToHtml(sourceEl.value);
+    })();
+</script>
+{% endblock %}
+

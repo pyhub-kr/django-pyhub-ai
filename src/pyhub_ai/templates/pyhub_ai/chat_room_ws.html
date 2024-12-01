@@ -1,0 +1,111 @@
+{% extends "pyhub_ai/base.html" %}
+{% load uncached_static %}
+
+{% block content %}
+    <div class="bg-gray-100 flex flex-col h-screen">
+        <div id="chat-room-ws"
+             hx-ext="ws"
+             x-data="{ opened: false, thinking: false }"
+             @ws-open="opened = true"
+             @ws-close="opened = false"
+             @thinking-start="thinking = true"
+             @thinking-end="thinking = false"
+             ws-connect="{{ ws_url }}"
+             class="flex flex-col flex-grow overflow-hidden">
+
+            <div class="flex-grow relative">
+                <div id="chat-messages"
+                     class="bg-white rounded-lg shadow-md absolute inset-0 overflow-y-auto p-4 pb-20 m-4 mb-0">
+                </div>
+                <div class="absolute bottom-0 left-0 right-0 flex justify-center pb-4 pointer-events-none">
+                    <span x-show="thinking"
+                          class="loading loading-dots loading-lg z-10"></span>
+                </div>
+            </div>
+
+            <form ws-send id="chat-form" class="flex flex-col p-4 pt-0" novalidate="novalidate">
+                <div class="mb-2">
+                    <div id="image-preview" class="mt-2 flex flex-wrap gap-2"></div>
+                </div>
+                <div class="join">
+                    {# pycharm 에서 Empty Tag 경고가 뜬다면? - 설정 => Editor => Inspections => HTML 항목의 Empty tag 항목을 해제 #}
+                    <c-pyhub.widgets.image-preview-file
+                        class="join-item"
+                        name="images" multiple="multiple" icon_class="w-6 h-6" preview_display_selector="#image-preview"
+                        {# 이미지는 base64 인코딩해서 별도 필드로 전송 #}
+                        with_base64_field="true"></c-pyhub.widgets.image-preview-file>
+                    <input type="text" name="user_text" placeholder="메시지를 입력하세요" required="required"
+                           class="join-item flex-1 input input-bordered input-md focus:outline-none"
+                           autocomplete="off"
+                           :disabled="!opened"
+                           :placeholder="opened ? '메시지를 입력하세요.' : '연결 대기 중 ...'"
+                    />
+                    <button type="submit"
+                            class="join-item btn btn-primary"
+                            :disabled="!opened">
+                        전송
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra-script %}
+    <script type="x-template" id="alert-tpl">
+        <div
+            class="text bg-red-100 text-red-800 px-4 py-2 rounded-lg max-w-full break-words border border-red-200 mb-4">
+            <i class="fas fa-info-circle mr-1"></i>
+            ${message}
+        </div>
+    </script>
+    <script>
+        (function () {
+            const htmx = window.htmx;
+            htmx.config.wsReconnectDelay = (retryCount) => (3 * retryCount) * 1000;
+
+            const $el = document.querySelector("#chat-room-ws");
+            const alertTpl = document.querySelector('#alert-tpl').textContent;
+
+            const handlers = {
+                $el: $el,
+                alertTpl: alertTpl,
+                wsConnecting(event) {
+                },
+                wsOpen(event) {
+                    htmx.trigger($el, "ws-open");
+                },
+                wsBeforeSend(event) {
+                    const formEl = this.$el.querySelector('form');
+                    if (!!formEl.user_text.value) {
+                        formEl.reset();
+                    } else {
+                        event.preventDefault();
+                    }
+                },
+                wsAfterMessage(event) {
+                    setTimeout(() => {
+                        const listEl = this.$el.querySelector('#chat-messages');
+                        listEl.scrollTo({
+                            top: listEl.scrollHeight,
+                            behavior: 'smooth'
+                        });
+                    }, 0);
+                },
+                wsClose(event) {
+                    this.renderAlert('웹소켓 연결이 끊어졌습니다.');
+                    htmx.trigger($el, "ws-close");
+                },
+                wsError(event) {
+                    this.renderAlert('웹소켓 연결 중 오류가 발생했습니다.');
+                },
+                renderAlert(message) {
+                    const alertMessage = this.alertTpl.replace('${message}', message);
+                    const chatMessagesEl = this.$el.querySelector('#chat-messages');
+                    chatMessagesEl.insertAdjacentHTML('beforeend', alertMessage);
+                }
+            };
+            registerHtmxWsEventHandlers(handlers.$el, handlers);
+        })();
+    </script>
+{% endblock %}

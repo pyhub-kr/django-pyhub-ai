@@ -1,0 +1,31 @@
+{% load string_tags %}
+
+{# ref: https://flowbite.com/docs/components/alerts/ #}
+
+<c-vars type="info" />
+
+{# djlint:off #}
+<div role="alert"
+     class="flex items-center p-4 text-sm rounded-lg my-4
+        {% if type|lower == "info" %} text-blue-700 bg-blue-100 dark:bg-blue-200 dark:text-blue-800 selection:bg-blue-300 selection:text-blue-900
+        {% elif type|lower == "danger" or type|lower == "error" %} text-red-700 bg-red-100 dark:bg-red-200 dark:text-red-800 selection:bg-red-300 selection:text-red-900
+        {% elif type|lower == "success" %} text-green-700 bg-green-100 dark:bg-green-200 dark:text-green-800 selection:bg-green-300 selection:text-green-900
+        {% elif type|lower == "warning" %} text-yellow-700 bg-yellow-100 dark:bg-yellow-200 dark:text-yellow-800 selection:bg-yellow-300 selection:text-yellow-900
+        {% else %} text-gray-700 bg-gray-100 dark:bg-gray-200 dark:text-gray-800 selection:bg-gray-300 selection:text-gray-900
+        {% endif %}">
+
+    {% if type|lower == "info" %}
+        <i class="fas fa-info-circle mr-2 text-blue-800"></i>
+    {% elif type|lower == "danger" or type|lower == "error" %}
+        <i class="fas fa-exclamation-circle mr-2 text-red-800"></i>
+    {% elif type|lower == "success" %}
+        <i class="fas fa-check-circle mr-2 text-green-800"></i>
+    {% elif type|lower == "warning" %}
+        <i class="fas fa-exclamation-triangle mr-2 text-yellow-800"></i>
+    {% else %}
+        <i class="fas fa-info-circle mr-2 text-gray-800"></i>
+    {% endif %}
+
+    {% if slot %}{{ slot|strip|urlize|linebreaksbr }}{% endif %}
+</div>
+{# djlint:on #}

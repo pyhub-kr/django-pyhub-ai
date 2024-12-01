@@ -1,0 +1,37 @@
+{% load uncached_static %}
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block page-title %}pyhub-ai{% endblock %}</title>
+    <link rel="stylesheet" href="{% uncached_static "pyhub_ai/tailwind/styles.css" %}" />
+    <link rel="stylesheet" href="{% uncached_static 'pyhub/fontawesome-free/6.7.0-web/css/all.min.css' %}"/>
+    <script src="{% uncached_static "pyhub/htmx/2.0.2/htmx.min.js" %}"></script>
+
+    <script src="{% uncached_static "pyhub/htmx-ext/ws/2.0.1/ws.js" %}"></script>
+    <script src="{% uncached_static "pyhub/htmx-ext/ws/register.js" %}"></script>
+
+    <script src="{% uncached_static "pyhub/htmx-ext/sse/2.2.2/sse.js" %}"></script>
+    <script src="{% uncached_static "pyhub/alpinejs/3.14.3/cdn.min.js" %}" defer></script>
+</head>
+
+<body>
+<div class="container mx-auto px-4 max-w-3xl">
+    {% block content %}
+    {% endblock %}
+</div>
+</body>
+
+<link rel="stylesheet" href="{% uncached_static 'pyhub/highlightjs/11.10.0/styles/default.css' %}"/>
+<script src="{% uncached_static 'pyhub/highlightjs/11.10.0/highlight.min.js' %}"></script>
+
+<script src="{% uncached_static 'pyhub/showdown/2.1.0/showdown.min.js' %}"></script>
+<script src="{% uncached_static 'pyhub/markdown.js' %}"></script>
+
+{% block extra-script %}{% endblock %}
+<script>window.hljs?.highlightAll();</script>
+
+</html>
+

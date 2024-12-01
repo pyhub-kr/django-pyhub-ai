@@ -1,0 +1,72 @@
+{# cotton/maps/naver.html #}
+
+{% comment %}
+    https://guide.ncloud-docs.com/docs/maps-app
+    https://console.ncloud.com/naver-service/application
+{% endcomment %}
+
+<c-vars ncp_map_client_id="" class="" latitude=0 longitude=0 zoom=16 />
+
+{% if not ncp_map_client_id %}
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <strong class="font-bold">에러:</strong>
+        <span class="block sm:inline"> ncp_map_client_id 값 지정이 누락되었습니다.</span>
+    </div>
+{% else %}
+    <div {% if class %}class="{{ class }}"{% endif %}>
+        Loading ...
+    </div>
+
+    <script>
+      (async function () {
+        const mapContainer = document.currentScript.previousElementSibling;
+
+        const mapConfig = {
+          latitude: {{ latitude }},
+          longitude: {{ longitude }},
+          zoom: {{ zoom }}
+        };
+
+        async function loadNaverMapAPI() {
+          if (typeof window.naver === 'undefined' || typeof window.naver.maps === 'undefined') {
+            return new Promise((resolve) => {
+              const script = document.createElement('script');
+              script.type = 'text/javascript';
+              script.src = 'https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId={{ ncp_map_client_id }}&submodules=panorama,geocoder,drawing,visualization';
+              script.onload = function () {
+                console.log('네이버 지도 API가 로드되었습니다.');
+                resolve();
+              };
+              document.head.appendChild(script);
+            });
+          } else {
+            console.log('네이버 지도 API가 이미 로드되어 있습니다.');
+            return Promise.resolve();
+          }
+        }
+
+        async function initMap() {
+          let position = null;
+          if (mapConfig.latitude && mapConfig.longitude) {
+            position = new naver.maps.LatLng(mapConfig.latitude, mapConfig.longitude);
+          }
+
+          const map = new naver.maps.Map(mapContainer, {
+            center: position,
+            zoom: mapConfig.zoom,
+          });
+
+          if (position) {
+            const marker = new naver.maps.Marker({
+              position: position,
+              map: map
+            });
+          }
+        }
+
+        await loadNaverMapAPI();
+        await initMap();
+      })();
+    </script>
+
+{% endif %}

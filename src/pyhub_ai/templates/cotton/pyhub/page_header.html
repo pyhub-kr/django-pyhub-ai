@@ -1,0 +1,10 @@
+<c-vars text_class="text-3xl font-extrabold" wrapper_class="mb-8" />
+
+<div class="{{ wrapper_class }}">
+    <h2 class="order-1 text-gray-900 {{ text_class }} tracking-tight mt-2 {{ css_class }}">
+        {{ slot|default:"slot을 지정해주세요." }}
+        {% if small_label %}
+            <small class="ml-3 text-sm font-light text-gray-500">{{ small_label }}</small>
+        {% endif %}
+    </h2>
+</div>
