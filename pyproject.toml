@@ -18,6 +18,11 @@ dependencies = [
     "langchain-community",
     "langchain-experimental",
     "langchain-openai",
+    "pandas",
+    "numpy",
+    "tabulate",
+    "seaborn",
+    "matplotlib",
 ]
 requires-python = ">=3.9"
 readme = "README.md"
@@ -38,7 +43,6 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-data = ["pandas", "numpy", "tabulate", "seaborn", "matplotlib"]
 test = [
     "pytest",
     "pytest-django",
