@@ -61,7 +61,14 @@ class BaseChatConsumer(AsyncJsonWebsocketConsumer):
 
         await self.accept()
         if not await self.can_accept():
-            # private code로서 "연결을 수락할 수 없습니다." 임의 지정
+            user = self.scope["user"]
+            username = user.username if user.is_authenticated else "미인증 사용자"
+            await self.render_block(
+                TextContentBlock(
+                    role="error",
+                    value=f"{self.__class__.__module__}.{self.__class__.__name__}에서 웹소켓 연결을 거부했습니다. (username: {username})",
+                )
+            )
             await self.close(code=4000)
         else:
             await self.on_accept()
