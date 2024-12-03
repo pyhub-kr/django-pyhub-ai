@@ -39,7 +39,4 @@ jobs:
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          echo "TWINE_PASSWORD: $TWINE_PASSWORD"
-          B64=`echo ${TWINE_PASSWORD} | base64`
-          echo "B64: $B64"
           twine upload --verbose dist/*.whl
