@@ -1,3 +1,4 @@
+from collections import defaultdict
 import logging
 import os
 from io import StringIO
@@ -95,12 +96,14 @@ class LLMMixin:
     def get_llm_system_prompt(self) -> str:
         system_prompt_template = self.get_llm_system_prompt_template()
         context_data = self.get_llm_prompt_context_data()
-        return system_prompt_template.format(**context_data).strip()
+        safe_data = defaultdict(lambda: "<키 지정 필요>", context_data)
+        return system_prompt_template.format(**safe_data).strip()
 
     def get_llm_first_user_message(self) -> Optional[str]:
         context_data = self.get_llm_prompt_context_data()
         if self.llm_first_user_message_template:
-            return self.llm_first_user_message_template.format(**context_data)
+            safe_data = defaultdict(lambda: "<키 지정 필요>", context_data)
+            return self.llm_first_user_message_template.format_map(safe_data)
         return None
 
     def get_llm_model(self) -> LLMModel:
@@ -226,4 +229,5 @@ class AgentChatConsumer(LLMMixin, BaseChatConsumer):
     def get_welcome_message(self) -> SafeString:
         tpl = self.get_welcome_message_template().strip()
         context_data = self.get_llm_prompt_context_data()
-        return format_html(tpl, **context_data)
+        safe_data = defaultdict(lambda: "<키 지정 필요>", context_data)
+        return format_html(tpl, **safe_data)
