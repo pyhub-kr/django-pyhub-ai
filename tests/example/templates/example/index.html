@@ -1,0 +1,11 @@
+{% extends "example/base.html" %}
+
+{% block content %}
+  <h1>index</h1>
+
+  <ul>
+    <li>
+      <a href="{% url 'chat' 1 %}">LLM 채팅방 #1</a>
+    </li>
+  </ul>
+{% endblock %}

@@ -17,10 +17,16 @@ class TestAgentChatConsumer:
     @pytest.mark.it("미인증 사용자는 연결 즉시, 4000 코드와 함께 웹소켓 연결이 끊어져야 합니다.")
     async def test_connect_unauthenticated(self, make_communicator):
         async with make_communicator(self.path) as communicator:
-            # 미인증 상황이므로, 서버가 인증 검사 후 연결을 강제로 종료합니다.
-            message = await communicator.receive_output(timeout=1)
-            assert message["type"] == "websocket.close"
-            assert message["code"] == 4000
+            # 서버에서는 먼저 인증 여부를 검사합니다.
+            # 미인증 상황이므로, 서버에서는 클라이언트로 에러 메시지를 보내고, 웹소켓 연결을 먼저 종료합니다.
+
+            error_message = await communicator.receive_output(timeout=1)
+            assert error_message["type"] == "websocket.send"
+
+            # 연결 종료 메시지 확인
+            close_message = await communicator.receive_output(timeout=1)
+            assert close_message["type"] == "websocket.close"
+            assert close_message["code"] == 4000
 
     @pytest.fixture
     async def auth_communicator(

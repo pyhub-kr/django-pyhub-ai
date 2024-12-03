@@ -43,8 +43,15 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-django", "pytest-testdox", "pytest-asyncio"]
-dev = ["django-debug-toolbar", "black", "isort", "ruff"]
+test = [
+    "pytest",
+    "pytest-django",
+    "pytest-testdox",
+    "pytest-asyncio",
+    "django-debug-toolbar",
+    "django-environ",
+]
+dev = ["django-debug-toolbar", "black", "isort", "ruff", "djlint"]
 
 [build-system]
 requires = ["hatchling"]
@@ -56,11 +63,12 @@ exclude = ["src/pyhub_ai/static_src/**/*", "**/__pycache__", "**/.DS_Store"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
-DJANGO_SETTINGS_MODULE = "tests.settings"
+DJANGO_SETTINGS_MODULE = "tests.myproj.settings"
 python_files = ["test_*.py", "*_test.py"]
 addopts = "-ra --testdox --disable-warnings"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+env = ["DATABASE_URL=sqlite://:memory:"]
 
 [tool.black]
 line-length = 120
@@ -75,3 +83,27 @@ line-length = 120
 [tool.ruff]
 line-length = 120
 target-version = "py39"
+
+# https://www.djlint.com/docs/configuration/
+[tool.djlint]
+profile = "django"
+indent = 2
+# blank_line_after_tag = "load,extends,include"
+# blank_line_before_tag = "load,extends,include"
+# line_break_after_multiline_tag = true
+# close_void_tags = true
+# custom_html = "mjml,simple-greeting,c-\\w+"
+# exclude = ".venv,venv,.tox,.eggs,..."
+# format_attribute_template_tags = true
+# format_css = true
+# format_js = true
+# ignore = "H014,H015"
+# ignore_blocks = "raw,example"
+# ignore_case = true
+# linter_output_format = "{filename}:{line}: {code} {message} {match}"
+# max_attribute_length = 10
+# max_blank_lines = 2
+# max_line_length = 120
+# no_function_formatting = true
+# preserve_blank_lines = true
+# preserve_leading_space = true

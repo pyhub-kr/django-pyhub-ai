@@ -1,29 +1,38 @@
-"""
-Django test settings for pyhub_ai app
-"""
-
+from environ import Env
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = Env()
+
 SECRET_KEY = "django-insecure-test-key-do-not-use-in-production"
 
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 INSTALLED_APPS = [
+    # third party apps
+    "daphne",
+    # django apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-] + [
+    # third party apps
+    "django_cotton",
+    "debug_toolbar",
+    # local apps
     "pyhub_ai",
+    # example apps
+    "accounts",
+    "example",
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -49,15 +58,10 @@ TEMPLATES = [
     },
 ]
 
-# Database
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
-    }
+    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
 }
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -73,8 +77,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = "ko-kr"
-TIME_ZONE = "UTC"
+LANGUAGE_CODE = env.str("LANGUAGE_CODE", default="ko-kr")
+TIME_ZONE = env.str("TIME_ZONE", default="UTC")
 USE_I18N = True
 USE_TZ = True
 
@@ -88,4 +92,8 @@ CHANNEL_LAYERS = {
     },
 }
 
-ASGI_APPLICATION = "pyhub_ai.routing.application"
+ASGI_APPLICATION = "myproj.asgi.application"
+
+ROOT_URLCONF = "myproj.urls"
+
+INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])
