@@ -1,5 +1,6 @@
 from base64 import b64encode
 from dataclasses import dataclass
+import json
 from typing import Callable, Any, Literal, Union, Optional
 from uuid import uuid4
 
@@ -145,21 +146,29 @@ class MessageBlock:
     content_block: ContentBlock
     template_name: str
     send_func: Callable[[str], Any]
+    output_format: Literal["json", "htmx"] = "htmx"
 
     async def render(
         self,
         mode: MessageBlockRenderModeType = "overwrite",
     ) -> "MessageBlock":
-        html = render_to_string(
-            self.template_name,
-            {
+        if self.output_format == "htmx":
+            html = render_to_string(self.template_name, {
                 "chat_messages_dom_id": self.chat_messages_dom_id,
                 "content_block": self.content_block,
                 "mode": mode,
-            },
-        )
-        await self.send_func(html)
-        return self
+            })
+            await self.send_func(html)
+            return self
+        elif self.output_format == "json":
+            await self.send_func(json.dumps({
+                "id": self.content_block.id,
+                "content_block": self.content_block.as_markdown(),
+                "mode": mode,
+            }, ensure_ascii=False))
+            return self
+        else:
+            raise ValueError(f"Invalid output format: {self.output_format}")
 
     async def append(self, content_block: Union[ContentBlock, str]) -> "MessageBlock":
         if isinstance(content_block, str):

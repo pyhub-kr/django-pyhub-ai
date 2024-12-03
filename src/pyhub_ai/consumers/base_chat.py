@@ -1,8 +1,9 @@
-from typing import Dict, List, Optional, AsyncIterator, Type
+from typing import Dict, List, Literal, Optional, AsyncIterator, Type
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.core.files.base import File
 from django.forms import Form
+from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
@@ -43,6 +44,8 @@ class BaseChatConsumer(AsyncJsonWebsocketConsumer):
     base64_field_name_postfix = "__base64"
     template_name = "pyhub_ai/_chat_message.html"
 
+    output_format: Literal["json", "htmx"] = "htmx"
+
     async def can_accept(self) -> bool:
         """연결을 수락할 수 있는지 여부를 반환합니다.
 
@@ -60,6 +63,7 @@ class BaseChatConsumer(AsyncJsonWebsocketConsumer):
         # https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent/code
 
         await self.accept()
+
         if not await self.can_accept():
             user = self.scope["user"]
             username = user.username if user.is_authenticated else "미인증 사용자"
@@ -194,11 +198,24 @@ class BaseChatConsumer(AsyncJsonWebsocketConsumer):
         """
         yield TextContentBlock("")
 
+    def get_output_format(self) -> Literal["json", "htmx"]:
+        # 캐시된 값이 있으면 반환
+        if not hasattr(self, "_output_format_cache"):
+            query_string = self.scope.get("query_string", b"")
+            query_params = QueryDict(query_string)
+            fmt = query_params.get("format", None)
+            # 캐시에 저장
+            self._output_format_cache = fmt if fmt is not None else self.output_format
+
+        return self._output_format_cache
+
     async def render_block(
         self,
         content_block: Optional[ContentBlock] = None,
         mode: MessageBlockRenderModeType = "overwrite",
     ) -> MessageBlock:
+        output_format = self.get_output_format()
+
         if content_block is None:
             content_block = VoidContentBlock()
 
@@ -207,6 +224,7 @@ class BaseChatConsumer(AsyncJsonWebsocketConsumer):
             content_block=content_block,
             template_name=self.get_template_name(),
             send_func=self.send,
+            output_format=output_format,
         )
         await message_block.render(mode)
         return message_block
