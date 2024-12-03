@@ -55,7 +55,7 @@ dev = ["django-debug-toolbar", "black", "isort", "ruff", "djlint"]
 
 [project.urls]
 Homepage = "https://github.com/pyhub-kr/django-pyhub-ai"
-# Documentation = "https://pyhub-kr.github.io/django-pyhub-ai"
+Documentation = "https://django-pyhub-ai.readthedocs.io/"
 Repository = "https://github.com/pyhub-kr/django-pyhub-ai"
 Issues = "https://github.com/pyhub-kr/django-pyhub-ai/issues"
 # Changelog = "https://github.com/pyhub-kr/django-pyhub-ai/blob/main/CHANGELOG.md"

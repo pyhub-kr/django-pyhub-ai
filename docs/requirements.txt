@@ -1,0 +1,4 @@
+sphinx~=8.1.0
+sphinx-rtd-theme~=3.0.0
+django~=4.2.0
+myst-parser~=4.0.0 
