@@ -1,5 +1,7 @@
 # django-pyhub-ai
 
+> **Note**: 이 라이브러리는 현재 베타버전입니다. 기능이 변경될 수 있으며, 피드백을 환영합니다.
+
 장고의 핵심 철학 중 DRY(Don't Repeat Yourself) 철학을 기반으로 반복적이고 번거로운 작업을 제거하고, 효율적인 에이전트 기반 채팅 서비스를 손쉽게 구축할 수 있도록 돕는 라이브러리입니다.
 
 이 라이브러리는 Django 프로젝트에 자연스럽게 통합되며, OpenAI API와 같은 최신 AI 기술을 활용한 기능들을 간단하게 구현할 수 있는 도구들을 하려 합니다.
@@ -56,9 +58,9 @@ django-pyhub-ai와 함께라면 개발자는 에이전트 챗봇 개발에 있�
 
 아래 코드 만으로 언어 강사 에이전트 구현은 끝납니다. 각 설정들은 `get_속성명` 메서드를 재정의하여 동적으로 지정하실 수도 있습니다.
 
-```python
-# example 앱의 consumers.py 파일
+[example 앱의 consumers.py 파일](./tests/example/consumers.py)
 
+```python
 from pyhub_ai.consumers import AgentChatConsumer
 from pyhub_ai.specs import LLMModel
 
@@ -77,7 +79,11 @@ You are a language tutor.
         "상황": "친구와 식당에서 식사하는 상황",
         "레벨": "초급",
     }
+```
 
+[example 앱의 routing.py 파일](./tests/example/routing.py)
+
+```python
 # example/routing.py
 from django.urls import path
 from .consumers import LanguageTutorChatConsumer
@@ -104,8 +110,9 @@ Consumer에서는 유저 입력 만을 처리할 뿐 UI 렌더링은 아래 예�
 HTMX 기반으로 구현된 `page_ai/chat_room_ws.html` 템플릿을 제공해드리구요.
 `ws_url` 변수를 통해 웹소켓 연결 주소를 지정하시면 페이지 구현 끝입니다.
 
+[example 앱의 views.py 파일](./tests/example/views.py)
+
 ```python
-# example 앱의 views.py 파일
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -119,8 +126,11 @@ def chat(request, pk: int):
             "ws_url": ws_url,
         },
     )
+```
 
-# example/urls.py
+[example 앱의 urls.py 파일](./tests/example/urls.py)
+
+```python
 from django.urls import path
 from . import views
 

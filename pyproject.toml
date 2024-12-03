@@ -1,6 +1,6 @@
 [project]
 name = "django-pyhub-ai"
-version = "0.5.0"
+version = "0.5.1"
 description = "Django app library for AI integration"
 authors = [{ name = "Chinseok Lee", email = "me@pyhub.kr" }]
 dependencies = [
@@ -52,6 +52,13 @@ test = [
     "django-environ",
 ]
 dev = ["django-debug-toolbar", "black", "isort", "ruff", "djlint"]
+
+[project.urls]
+Homepage = "https://github.com/pyhub-kr/django-pyhub-ai"
+# Documentation = "https://pyhub-kr.github.io/django-pyhub-ai"
+Repository = "https://github.com/pyhub-kr/django-pyhub-ai"
+Issues = "https://github.com/pyhub-kr/django-pyhub-ai/issues"
+# Changelog = "https://github.com/pyhub-kr/django-pyhub-ai/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["hatchling"]
