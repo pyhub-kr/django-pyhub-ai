@@ -330,7 +330,7 @@ urlpatterns = [
 
 혹시 아래와 같이 OpenAI API Key 에러가 발생하시면, `.env` 파일에 지정한 `OPENAI_API_KEY` 환경변수 이름에 오타가 없는 지 확인해주시고, `mysite/settings.py` 파일에 지정한 `OPENAI_API_KEY` 환경변수 이름에 오타가 없는 지 확인해주세요.
 
-![](./assets/openai-api-key-error.png)
+![](./assets/openai-api-key-miss.png)
 
 ## 마치며
 
