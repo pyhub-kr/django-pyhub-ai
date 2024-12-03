@@ -38,7 +38,7 @@ class MultipleImageField(forms.ImageField):
         super().validate(file)
 
         if self.max_file_size is not None:
-            if file.size > self.max_file_size:
+            if file and file.size > self.max_file_size:
                 raise forms.ValidationError(
                     f"파일 크기는 {self.max_file_size / (1024 * 1024):.2f}MB를 초과할 수 없습니다. "
                     f"현재 파일 크기: {file.size / (1024 * 1024):.2f}MB"

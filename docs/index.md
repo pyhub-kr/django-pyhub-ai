@@ -9,6 +9,5 @@
 :maxdepth: 2
 :caption: 목차
 
-installation/index
 quickstart/index
 ```

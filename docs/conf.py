@@ -22,7 +22,8 @@ extensions = [
 ]
 
 # Theme settings
-html_theme = "sphinx_rtd_theme"
+# https://pydata-sphinx-theme.readthedocs.io
+html_theme = "pydata_sphinx_theme"
 html_show_sourcelink = False  # "view page source" 링크 제거
 
 # Intersphinx mapping
