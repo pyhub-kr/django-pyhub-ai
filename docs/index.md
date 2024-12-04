@@ -10,6 +10,7 @@
 :caption: 목차
 
 quickstart/index
+courses/index
 ```
 
 ![](./assets/screenshot-01.gif)
