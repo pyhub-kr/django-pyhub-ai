@@ -1,4 +1,8 @@
-# 첫 채팅 페이지 만들기
+# 첫 LLM 채팅 챗봇 만들기
+
+LLM API를 활용하거나 LLM 에이전트를 만드셨다고 해도, 이를 웹서비스에 접목할려면 백엔드에서는 API 개발이 필요하고 프론트엔드에서는 UI를 구성하고 API 요청을 보내고 응답을 받아 화면에 표시하는 등의 작업이 필요합니다.
+
+본 실습에서는 `django-pyhub-ai` 라이브러리를 활용하여 HTML/CSS/JS 프론트엔드 코드는 일절 없이, 백엔드 코드도 설정에 가까운 코드 만으로 LLM 챗봇을 구현해보겠습니다.
 
 ## 이 페이지를 시작하기에 앞서
 
@@ -303,11 +307,11 @@ application = ProtocolTypeRouter({
 })
 ```
 
-이제 HTML 페이지를 통해 웹소켓 요청을 보내면 채팅 페이지를 사용할 수 있습니다.
+이제 HTML 페이지를 통해 웹소켓 요청을 보내면 챗봇 페이지를 사용할 수 있습니다.
 
-## 채팅방 페이지 구현하기
+## 챗봇 페이지 구현하기
 
-채팅방 템플릿은 HTMX 기반으로 구현된 `pyhub_ai/chat_room_ws.html` 템플릿을 제공해드립니다. View 내에서 `ws_url` 값으로만 웹소켓 주소만 지정해주시면 기본 동작합니다. `example/routing.py` 파일에 명시한 웹소켓 주소를 참고해주세요. URL은 절대 주소로 지정하므로 웹소켓 주소를 슬래시(/)로 시작토록 합니다.
+챗봇 페이지 템플릿은 HTMX 기반으로 구현된 `pyhub_ai/chat_room_ws.html` 템플릿을 제공해드립니다. View 내에서 `ws_url` 값으로만 웹소켓 주소만 지정해주시면 기본 동작합니다. `example/routing.py` 파일에 명시한 웹소켓 주소를 참고해주세요. URL은 절대 주소로 지정하므로 웹소켓 주소를 슬래시(/)로 시작토록 합니다.
 
 ```python
 # example/views.py
@@ -335,14 +339,12 @@ urlpatterns = [
 
 이제 웹브라우저를 열어, [http://localhost:8000/example/chat/language-tutor/](http://localhost:8000/example/chat/language-tutor/) 경로로 접속해주세요. 아래와 같이 LLM으로부터 첫 인사를 받으시면 성공입니다!!! 🥳
 
-![](./assets/first-chat-page-01.png)
+![](./assets/first-chat-bot-01.png)
 
 혹시 아래와 같이 OpenAI API Key 에러가 발생하시면, `.env` 파일에 지정한 `OPENAI_API_KEY` 환경변수 이름에 오타가 없는 지 확인해주시고, `mysite/settings.py` 파일에 지정한 `OPENAI_API_KEY` 환경변수 이름에 오타가 없는 지 확인해주세요.
 
 ![](./assets/openai-api-key-miss.png)
 
-## 마치며
+프론트엔드 코드 하나 없이 LLM 챗봇 페이지를 구현했습니다. ;-)
 
-첫 채팅 페이지 구현을 마칩니다. 앞으로 다양한 LLM 에이전트 예시를 만들어보겠습니다.
-
-앞으로 많은 응원 부탁드리구요. 주변에도 많이 알려주세요. ;-)
+이제 데이터 분석 에이전트 챗봇을 구현해보겠습니다.

@@ -6,7 +6,7 @@ import pandas as pd
 from langchain_core.messages import HumanMessage, AIMessage
 
 from ..agents import DataAnalystChatAgent
-from .llm import AgentChatConsumer, current_app
+from .llm import AgentChatConsumer, find_file_in_apps
 
 
 class DataAnalystMixin:
@@ -20,7 +20,7 @@ class DataAnalystMixin:
             dataframe_path = self.get_dataframe_path()
             if isinstance(dataframe_path, str):
                 if not exists(dataframe_path):
-                    dataframe_path = current_app(dataframe_path)
+                    dataframe_path = find_file_in_apps(dataframe_path)
                 dataframe_path = Path(dataframe_path)
             if not dataframe_path:
                 raise ValueError("데이터프레임 파일 경로가 설정되지 않았습니다.")

@@ -1,6 +1,6 @@
 # example 앱의 consumers.py 파일
 
-from pyhub_ai.consumers import AgentChatConsumer
+from pyhub_ai.consumers import AgentChatConsumer, DataAnalystChatConsumer
 from pyhub_ai.specs import LLMModel
 
 
@@ -28,3 +28,21 @@ You are a language tutor.
         "상황": "친구와 식당에서 식사하는 상황",
         "레벨": "초급",
     }
+
+
+class TitanicDataAnalystChatConsumer(DataAnalystChatConsumer):
+    llm_model = LLMModel.OPENAI_GPT_4O
+    llm_temperature = 0
+    llm_system_prompt_path = "prompts/data-analyst-v02-en.yaml"
+    dataframe_path = "data/titanic.csv"
+    column_guideline = """
+PassengerId: 승객 번호
+Survived: 생존 여부 (0: 사망, 1: 생존)
+Pclass: 승객 클래스 (1: 1등석, 2: 2등석, 3: 3등석)
+Name: 이름
+Sex: 성별
+Age: 나이
+SibSp: 형제 또는 배우자 수
+    """
+
+    welcome_message_template = "<span class='font-bold'>타이타닉 데이터 분석</span>을 시작합니다."

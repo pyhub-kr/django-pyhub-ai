@@ -105,9 +105,6 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
-
-    # footer: https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/layout.html#footer
-    # "footer_center": ["강의/기술지원 문의 : help@pyhub.kr"],
 }
 
 # html_show_sourcelink = False  # "view page source" 링크 제거

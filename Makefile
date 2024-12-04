@@ -1,8 +1,8 @@
 build:
-	uv run python -m build --wheel
+	uv run -m build --wheel
 
 test:
-	uv run python -m pytest tests/
+	uv run -m pytest tests/
 
 doc-server:
 	cd docs && uv run sphinx-autobuild . _build/html
