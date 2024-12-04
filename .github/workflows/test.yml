@@ -35,14 +35,18 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install uv
 
-      - name: Create and activate virtual environment
+      - name: Create and activate virtual environment on Linux
+        if: runner.os != 'Windows'
         run: |
           uv venv
-          if [ "${{ matrix.os }}" = "windows-latest" ]; then
-            .venv\Scripts\activate
-          else
-            . .venv/bin/activate
-          fi
+          . .venv/bin/activate
+
+      - name: Create and activate virtual environment on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          uv venv
+          .venv\Scripts\Activate
 
       - name: Install dependencies
         run: |
