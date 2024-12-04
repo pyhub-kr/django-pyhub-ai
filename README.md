@@ -2,6 +2,8 @@
 
 > **Note**: 이 라이브러리는 현재 베타버전입니다. 기능이 변경될 수 있으며, 피드백을 환영합니다.
 
+[django-pyhub-ai 튜토리얼](https://django-pyhub-ai.readthedocs.io)을 참고하여, 빠르게 장고 기반의 LLM 에이전트 챗봇 서비스를 구축해보세요.
+
 장고의 핵심 철학 중 DRY(Don't Repeat Yourself) 철학을 기반으로 반복적이고 번거로운 작업을 제거하고, 효율적인 에이전트 기반 채팅 서비스를 손쉽게 구축할 수 있도록 돕는 라이브러리입니다.
 
 이 라이브러리는 Django 프로젝트에 자연스럽게 통합되며, OpenAI API와 같은 최신 AI 기술을 활용한 기능들을 간단하게 구현할 수 있는 도구들을 하려 합니다.
@@ -155,7 +157,6 @@ urlpatterns = [
   - `daphne`: `INSTALLED_APPS` 리스트 처음에 추가해주셔야만, 장고 기본 `runserver` 명령을 재정의하여 ASGI 개발서버로 구동됩니다.
   - `pyhub_ai`: 본 라이브러리
   - `django_cotton`: `django-cotton` 컴포넌트를 사용하므로, 꼭 추가해주세요.
-+ TODO: 공식문서로서 작성 예정
 
 ## License
 

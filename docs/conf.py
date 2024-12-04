@@ -17,9 +17,21 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "sphinx_comments",
     "sphinx_rtd_theme",
     "myst_parser",
 ]
+
+# https://sphinx-comments.readthedocs.io/en/latest/utterances.html#activate-utteranc-es
+comments_config = {
+   "utterances": {
+      "repo": "pyhub-kr/django-pyhub-ai-feedback",
+      "issue-term": "pathname",
+      "theme": "github-light",
+      "label": "comment",
+      "crossorigin": "anonymous",
+   }
+}
 
 # Theme settings
 # https://pydata-sphinx-theme.readthedocs.io
