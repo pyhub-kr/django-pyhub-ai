@@ -7,7 +7,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 # Project information
 project = "django-pyhub-ai"
-copyright = "2024, 파이썬사랑방"
 author = "Chinseok Lee"
 
 # Extensions
@@ -17,26 +16,101 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
-    "sphinx_comments",
-    "sphinx_rtd_theme",
+    "sphinx_copybutton",
+    "sphinx_design",
+    "sphinx_togglebutton",
     "myst_parser",
 ]
 
-# https://sphinx-comments.readthedocs.io/en/latest/utterances.html#activate-utteranc-es
-comments_config = {
-   "utterances": {
-      "repo": "pyhub-kr/django-pyhub-ai-feedback",
-      "issue-term": "pathname",
-      "theme": "github-light",
-      "label": "comment",
-      "crossorigin": "anonymous",
-   }
+myst_enable_extensions = ["colon_fence"]
+
+# https://sphinx-design.readthedocs.io/en/pydata-theme/get_started.html#creating-custom-directives
+sd_custom_directives = {
+    "dropdown-syntax": {
+        "inherit": "dropdown",
+        "argument": "Syntax",
+        "options": {
+            "color": "primary",
+            "icon": "code",
+        },
+    }
 }
+
+is_enable_comments = True
+
+if is_enable_comments:
+    extensions.append("sphinx_comments")
+    # https://sphinx-comments.readthedocs.io/en/latest/utterances.html#activate-utteranc-es
+    comments_config = {
+        "utterances": {
+            "repo": "pyhub-kr/django-pyhub-ai-feedback",
+            "issue-term": "pathname",
+            "theme": "github-light",
+            "label": "comment",
+            "crossorigin": "anonymous",
+        }
+    }
 
 # Theme settings
 # https://pydata-sphinx-theme.readthedocs.io
 html_theme = "pydata_sphinx_theme"
-html_show_sourcelink = False  # "view page source" 링크 제거
+html_favicon = "./assets/favicon-128.png"
+html_context = {
+    "github_user": "pyhub-kr",
+    "github_repo": "django-pyhub-ai",
+    "github_version": "main",
+    "doc_path": "docs",
+}
+html_theme_options = {
+    "use_edit_page_button": True,
+
+    # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
+    # "announcement": "Here's a <a href='https://pydata.org'>PyData Announcement!</a>",
+
+    "logo": {
+        "text": "django-pyhub-ai 튜토리얼",
+        "alt_text": "django-pyhub-ai 튜토리얼 - Home",
+        "image_light": "./assets/favicon-128.png",
+        "image_dark": "./assets/favicon-128.png",
+    },
+    # 상단 nav 중앙 링크
+    # "external_links": [
+    #     {"name": "link-one-name", "url": "https://<link-one>"},
+    #     {"name": "link-two-name", "url": "https://<link-two>"}
+    # ],
+    "icon_links_label": "Quick Links",
+    "icon_links": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/pyhub-kr/django-pyhub-ai", 
+            "icon": "fa-brands fa-square-github",
+            "type": "fontawesome",
+        },
+        {
+            "name": "Facebook 그룹",
+            "url": "https://facebook.com/groups/askdjango",
+            "icon": "fa-brands fa-square-facebook",
+            "type": "fontawesome",
+        },
+        {
+            "name": "유튜브 채널",
+            "url": "https://www.youtube.com/@pyhub-kr",
+            "icon": "fa-brands fa-youtube",
+            "type": "fontawesome",
+        },
+        {
+            "name": "인프런 장고 강의",
+            "url": "https://inf.run/Fcn6n",
+            "icon": "fa-solid fa-chalkboard-teacher",
+            "type": "fontawesome",
+        },
+    ],
+
+    # footer: https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/layout.html#footer
+    # "footer_center": ["강의/기술지원 문의 : help@pyhub.kr"],
+}
+
+# html_show_sourcelink = False  # "view page source" 링크 제거
 
 # Intersphinx mapping
 intersphinx_mapping = {
@@ -49,15 +123,14 @@ master_doc = "index"
 
 # Markdown support
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
-} 
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 
-# templates_path = ["_templates"]
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'venv', ".venv"]
+templates_path = ["_templates", "templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", ".venv"]
 
 # suppress_warnings = [
 #     'toc.excluded',
 #     'myst.xref_missing',
 # ]
-

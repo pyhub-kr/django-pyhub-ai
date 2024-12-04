@@ -181,7 +181,7 @@ Visual Studio Code에서는 File 메뉴에 "모두 저장 (Save All)" 메뉴가 
 ```
 
 ```{tip}
-`OPENAI_API_KEY` 환경변수가 정의되어있지 않더라도, 오류없이 동작토록 하실려면 아래와 같이 디폴트 값을 지정해주시면 됩니다.
+`OPENAI_API_KEY` 환경변수가 정의되어있지 않더라도, 오류없이 동작토록 하실려면 아래와 같이 디폴트 값을 지정해주세요. 그럼 해당 환경변수가 없어도 오류없이 디폴트 값으로 동작합니다.
 
     OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
 ```
@@ -200,8 +200,6 @@ Visual Studio Code에서는 File 메뉴에 "모두 저장 (Save All)" 메뉴가 
 + 3순위) 환경변수 `OPENAI_API_KEY`
 
 아래 코드를 `example/consumers.py` 경로에 복사해주세요. `settings.OPENAI_API_KEY`를 활용하여 동작할 것입니다. 각 Consumer 마다 다른 `OPENAI_API_KEY`를 사용하고 싶다면 `AgentChatConsumer` 클래스의 `llm_openai_api_key` 속성을 활용하시면 됩니다.
-
-`AgentChatConsumer`에서는 디폴트 설정으로 유저가 로그인된 상황에서만 웹소켓 접속을 허용합니다. 지금은 테스트 목적으로 비로그인 상황에서도 웹소켓 접속을 허용하기 위해, `can_accept` 메서드를 재정의하여 `True`를 반환토록 하겠습니다.
 
 ```python
 # example/consumers.py
@@ -229,6 +227,10 @@ You are a language tutor.
     async def can_accept(self) -> bool:
         return True
 ```
+
+`AgentChatConsumer`에서는 디폴트 설정으로 유저가 로그인된 상황에서만 웹소켓 접속을 허용합니다.
+지금은 간단한 구현을 위해 비로그인 상황에서도 웹소켓 접속을 허용하겠구요.
+`can_accept` 메서드를 재정의하여 `True`를 반환토록 했습니다.
 
 ## Routing을 통해 Consumer 연결하기
 
@@ -300,7 +302,7 @@ application = ProtocolTypeRouter({
 
 ## 채팅방 페이지 구현하기
 
-채팅방 템플릿은 HTMX 기반으로 구현된 `pyhub_ai/chat_room_ws.html` 템플릿을 제공해드립니다. View 내에서 `ws_url` 값으로만 웹소켓 주소만 지정해주시면 기본 동작합니다.
+채팅방 템플릿은 HTMX 기반으로 구현된 `pyhub_ai/chat_room_ws.html` 템플릿을 제공해드립니다. View 내에서 `ws_url` 값으로만 웹소켓 주소만 지정해주시면 기본 동작합니다. `example/routing.py` 파일에 명시한 웹소켓 주소를 참고해주세요. URL은 절대 주소로 지정하므로 웹소켓 주소를 슬래시(/)로 시작토록 합니다.
 
 ```python
 # example/views.py
@@ -313,6 +315,8 @@ def language_tutor_chat(request):
         "ws_url": "/ws/example/chat/language-tutor/",
     })
 ```
+
+웹소켓 접속 프로토콜은 `ws://` 혹은 `wss://`를 사용하는 데요. http 서버와 웹소켓 서버가 같은 호스트일 경우, HTMX 라이브러리에서는 `ws://`, `wss://` 프로토콜을 자동으로 붙여주므로 별도로 지정해주지 않아도 됩니다.
 
 ```python
 # example/urls.py

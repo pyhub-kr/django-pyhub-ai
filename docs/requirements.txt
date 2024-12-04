@@ -3,5 +3,9 @@ django~=4.2.0
 myst-parser~=4.0.0 
 sphinx-autobuild~=2024.10.3
 sphinx-rtd-theme~=3.0.0
-pydata-sphinx-theme~=0.16.0
+sphinx-copybutton~=0.5.2
 sphinx-comments2 @ https://github.com/allieus/sphinx-comments2/archive/refs/heads/master.zip
+sphinx-design~=0.6.1
+sphinx-togglebutton~=0.3.2
+pydata-sphinx-theme~=0.16.0
+
