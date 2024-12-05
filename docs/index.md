@@ -16,6 +16,12 @@ quickstart/index
 courses/index
 ```
 
+## 튜토리얼 영상
+
+<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw" frameborder="0" allowfullscreen></iframe>
+
+## 스크린샷
+
 ::::{grid} 2
 :::{grid-item} LLM 채팅 챗봇 시연
 ![LLM 채팅 챗봇 시연](./assets/screenshot-01.gif)
