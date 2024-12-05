@@ -1,6 +1,7 @@
 from typing import Dict, List, Literal, Optional, AsyncIterator, Type
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from django.core.exceptions import ImproperlyConfigured
 from django.core.files.base import File
 from django.forms import Form
 from django.http import QueryDict
@@ -172,7 +173,7 @@ class BaseChatConsumer(AsyncJsonWebsocketConsumer):
             if user and user.is_authenticated:
                 return user
         except KeyError:
-            raise RuntimeError(
+            raise ImproperlyConfigured(
                 "scope['user']에 접근할 수 없습니다. "
                 "channels.auth.AuthMiddlewareStack이 ASGI 애플리케이션에 "
                 "올바르게 구성되어 있는지 확인하세요. "
