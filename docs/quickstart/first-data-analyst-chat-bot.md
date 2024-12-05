@@ -1,5 +1,10 @@
 # 첫 데이터 분석 에이전트 챗봇
 
+## 튜토리얼 영상
+
+20분 57초부터 시작합니다.
+<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw?start=1257" frameborder="0" allowfullscreen></iframe>
+
 ## 시작하기 전에
 
 [첫 LLM 채팅 챗봇 만들기](first-chat-bot) 실습은 어떠셨나요?

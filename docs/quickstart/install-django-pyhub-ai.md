@@ -1,5 +1,10 @@
 # django-pyhub-ai 라이브러리 설치하기
 
+## 튜토리얼 영상
+
+6분 20초부터 시작합니다.
+<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw?start=380" frameborder="0" allowfullscreen></iframe>
+
 ## 라이브러리 설치
 
 `python manage.py runserver` 터미널은 그대로 두시고, 새로운 터미널을 열어주세요. `runserver` 터미널과 명령 터미널은 분리해서 사용하시면 편리합니다.

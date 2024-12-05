@@ -2,6 +2,12 @@
 
 이미 장고 프로젝트가 생성되어있으시고, ASGI 설정 및 웹소켓 설정이 되어있으시다면 다음 단계로 넘어가셔도 됩니다.
 
+## 튜토리얼 영상
+
+1분부터 시작합니다.
+<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw?start=60" frameborder="0" allowfullscreen></iframe>
+
+
 ## 파이썬 버전 확인
 
 | 장고 버전 | 지원하는 파이썬 버전 |

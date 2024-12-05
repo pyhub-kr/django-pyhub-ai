@@ -4,6 +4,11 @@ LLM API를 활용하거나 LLM 에이전트를 만드셨다고 해도, 이를 �
 
 본 실습에서는 `django-pyhub-ai` 라이브러리를 활용하여 HTML/CSS/JS 프론트엔드 코드는 일절 없이, 백엔드 코드도 설정에 가까운 코드 만으로 LLM 챗봇을 구현해보겠습니다.
 
+## 튜토리얼 영상
+
+7분 33초부터 시작합니다.
+<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw?start=453" frameborder="0" allowfullscreen></iframe>
+
 ## 이 페이지를 시작하기에 앞서
 
 1. 장고 프로젝트 생성 및 ASGI 활성화가 필요하신 분은 [](basic-setup) 페이지를 참고해서 설정해주세요.
