@@ -22,7 +22,9 @@ python -m pip install django-pyhub-ai
 
 `mysite/settings.py` 파일을 여신 후에 `INSTALLED_APPS` 항목에 `pyhub_ai` 앱과 `django_cotton` 앱을 추가해주세요. 순서는 상관없습니다.
 
-```python
+```{code-block} python
+:caption: mysite/settings.py
+
 INSTALLED_APPS = [
     # ...
     'pyhub_ai',

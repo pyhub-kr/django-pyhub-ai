@@ -65,7 +65,7 @@ html_theme_options = {
     "use_edit_page_button": True,
 
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
-    # "announcement": "Here's a <a href='https://pydata.org'>PyData Announcement!</a>",
+    "announcement": "이 라이브러리는 현재 베타버전입니다. 기능이 자주 추가되고 변경될 수 있습니다. 다양한 <a href='mailto:me@pyhub.kr'>피드백</a>을 환영합니다.",
 
     "logo": {
         "text": "django-pyhub-ai 튜토리얼",
@@ -105,6 +105,15 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
+
+# https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/navigation.html#control-how-many-navigation-levels-are-shown-by-default
+    "show_nav_level": 2,
+
+    # 지정 이름의 템플릿을 include
+    # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/layout.html#layout-footer
+    # layout.html 템플릿을 재정의하여 별도 템플릿 없이 layout.html 템플릿에서 직접 footer 정의
+    # "footer_start": ["copyright", "sphinx-version"],
+    # "footer_end": ["theme-version"],
 }
 
 # html_show_sourcelink = False  # "view page source" 링크 제거

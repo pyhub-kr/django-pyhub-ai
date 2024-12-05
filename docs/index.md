@@ -16,4 +16,11 @@ quickstart/index
 courses/index
 ```
 
-![](./assets/screenshot-01.gif)
+::::{grid} 2
+:::{grid-item} LLM 채팅 챗봇 시연
+![LLM 채팅 챗봇 시연](./assets/screenshot-01.gif)
+:::
+:::{grid-item} 데이터 분석 에이전트 챗봇 시연
+![데이터 분석 에이전트 챗봇 시연](./assets/screenshot-02.gif)
+:::
+::::

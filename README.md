@@ -9,6 +9,11 @@
 이 라이브러리는 Django 프로젝트에 자연스럽게 통합되며, OpenAI API와 같은 최신 AI 기술을 활용한 기능들을 간단하게 구현할 수 있는 도구들을 하려 합니다.
 복잡한 설정이나 반복적인 코드를 작성할 필요 없이, django-pyhub-ai를 통해 에이전트 채팅 서비스 개발을 더욱 간편하고 직관적으로 만들어보세요.
 
+<p float="left">
+  <img src="./docs/assets/screenshot-01.gif" width="49%" />
+  <img src="./docs/assets/screenshot-02.gif" width="49%" />
+</p>
+
 ## 주요 특징
 
 django-pyhub-ai와 함께라면 개발자는 에이전트 챗봇 개발에 있어서 비효율적인 반복 작업에서 벗어나 비즈니스 로직에 집중할 수 있습니다.

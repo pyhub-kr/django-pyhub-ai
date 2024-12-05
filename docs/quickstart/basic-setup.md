@@ -189,13 +189,17 @@ python -m pip install channels daphne
 
 `mysite/settings.py` 파일을 여시면 70번째 줄 쯤에 아래 코드가 보이실 겁니다.
 
-```python
+```{code-block} python
+:caption: mysite/settings.py
+
 WSGI_APPLICATION = 'mysite.wsgi.application'
 ```
 
 이 코드를 주석 처리하고, 아래와 같이 `ASGI_APPLICATION` 설정을 추가해주세요.
 
-```python
+```{code-block} python
+:caption: mysite/settings.py
+
 # WSGI_APPLICATION = 'mysite.wsgi.application'
 ASGI_APPLICATION = 'mysite.asgi.application'
 ```
@@ -203,7 +207,9 @@ ASGI_APPLICATION = 'mysite.asgi.application'
 그리고, 33번째 줄 쯤에 `INSTALLED_APPS` 설정이 있습니다. `INSTALLED_APPS` 리스트 처음에 `daphne` 앱을 추가해주세요.
 장고 기본의 `runserver` 명령은 WSGI 만을 지원하므로, `daphne` 앱을 가장 앞에 추가해주어야 `daphne` 앱의 `runserver` 명령이 먼저 동작할 수 있기 때문입니다.
 
-```python
+```{code-block} python
+:caption: mysite/settings.py
+
 INSTALLED_APPS = [
     "daphne",
     # 생략 ...

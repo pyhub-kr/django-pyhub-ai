@@ -15,8 +15,9 @@ LLM API를 활용하거나 LLM 에이전트를 만드셨다고 해도, 이를 �
 
 `mysite/asgi.py` 파일을 열어주세요. 상단 주석은 제거하셔도 됩니다.
 
-```python
-# mysite/asgi.py
+```{code-block} python
+:caption: mysite/asgi.py
+
 import os
 
 from django.core.asgi import get_asgi_application
@@ -30,8 +31,8 @@ application = get_asgi_application()
 
 아래와 같이 수정해주세요. `ProtocolTypeRouter`를 통해 HTTP 요청과 웹소켓 요청을 분기해서 처리할 수 있습니다.
 
-```python
-# mysite/asgi.py
+```{code-block} python
+:caption: mysite/asgi.py
 import os
 
 from channels.routing import ProtocolTypeRouter
@@ -57,28 +58,31 @@ python manage.py startapp example
 
 생성하신 앱은 반드시 `mysite/settings.py` 파일의 `INSTALLED_APPS` 리스트에 추가하셔야만, 현재 장고 프로젝트에 등록되고 장고 앱으로서 대접을 받을 수 있습니다.
 
-```python
+```{code-block} python
+:caption: mysite/settings.py
+
 INSTALLED_APPS = [
     ...
     'example',
 ]
 ```
 
-`example` 앱 내에는 `urls.py` 파일이 없습니다. `example/urls.py` 파일을 아래 내용을 생성해주세요.
+`example` 앱 내에는 `urls.py` 파일이 없습니다. `example/urls.py` 파일에 아래 코드를 적용해주세요.
 
-```python
-# example/urls.py
+```{code-block} python
+:caption: example/urls.py
+
 from django.urls import path
 from . import views
 
-urlpatterns = [
-]
+urlpatterns = []
 ```
 
 현 장고 프로젝트의 ROOT URL 설정인 `mysite/urls.py`가 아래와 같이 있습니다.
 
-```python
-# mysite/urls.py
+```{code-block} python
+:caption: mysite/urls.py
+
 from django.contrib import admin
 from django.urls import path
 
@@ -89,8 +93,9 @@ urlpatterns = [
 
 아래와 같이 `example.urls`를 포함하도록 수정해주세요. 그리고 최상위 URL로 접근했을 때 `example/`로 페이지 이동하도록 설정해줍니다.
 
-```python
-# mysite/urls.py
+```{code-block} python
+:caption: mysite/urls.py
+
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
@@ -144,8 +149,9 @@ python -m pip install django-environ
 
 `mysite/settings.py` 코드를 열어 최상단으로 이동해주세요. `.env` 파일을 로딩하는 코드를 추가해주겠습니다.
 
-```python
-# mysite/settings.py
+```{code-block} python
+:caption: mysite/settings.py
+
 from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 # 나머지 기존 코드 생략
@@ -153,8 +159,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 아래와 같이 `.env` 경로를 계산하고, `.env` 경로에 파일이 있을 때 환경변수로서 로딩토록 합니다. `overwrite=True` 옵션은 기존 환경변수를 덮어쓰는 옵션입니다. 이를 지정하지 않는다면 `.env` 파일에 환경변수를 명시했다하더라도 같은 이름의 환경변수가 이미 등록되어있는 경우 덮어쓰지 않고 무시됩니다.
 
-```python
-# mysite/settings.py
+```{code-block} python
+:caption: mysite/settings.py
+
 from pathlib import Path
 from environ import Env
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -210,8 +217,8 @@ Visual Studio Code에서는 File 메뉴에 "모두 저장 (Save All)" 메뉴가 
 
 아래 코드를 `example/consumers.py` 경로에 복사해주세요. `settings.OPENAI_API_KEY`를 활용하여 동작할 것입니다. 각 Consumer 마다 다른 `OPENAI_API_KEY`를 사용하고 싶다면 `AgentChatConsumer` 클래스의 `llm_openai_api_key` 속성을 활용하시면 됩니다.
 
-```python
-# example/consumers.py
+```{code-block} python
+:caption: example/consumers.py
 
 from pyhub_ai.consumers import AgentChatConsumer
 from pyhub_ai.specs import LLMModel
@@ -245,8 +252,8 @@ You are a language tutor.
 
 장고 View가 `urls.py`를 통해 URL 매핑하듯이, Consumer도 `example/routing.py` 파일을 통해 URL 매핑을 해주어야 합니다. 아래 코드를 `example/routing.py` 경로에 복사해주세요.
 
-```python
-# example/routing.py
+```{code-block} python
+:caption: example/routing.py
 
 from django.urls import path
 from .consumers import LanguageTutorChatConsumer
@@ -266,8 +273,9 @@ websocket_urlpatterns = [
 
 `mysite/asgi.py` 파일은 현재 아래와 같구요.
 
-```python
-# mysite/asgi.py
+```{code-block} python
+:caption: mysite/asgi.py
+
 import os
 
 from channels.routing import ProtocolTypeRouter
@@ -288,8 +296,9 @@ application = ProtocolTypeRouter({
 + `AuthMiddlewareStack`를 통해 웹소켓 요청 처리 시에 쿠키/세션/인증 처리를 지원합니다.
 + `URLRouter`를 통해 URL 매핑을 지원합니다.
 
-```python
-# mysite/asgi.py
+```{code-block} python
+:caption: mysite/asgi.py
+
 import os
 
 from channels.routing import ProtocolTypeRouter, URLRouter
@@ -313,8 +322,8 @@ application = ProtocolTypeRouter({
 
 챗봇 페이지 템플릿은 HTMX 기반으로 구현된 `pyhub_ai/chat_room_ws.html` 템플릿을 제공해드립니다. View 내에서 `ws_url` 값으로만 웹소켓 주소만 지정해주시면 기본 동작합니다. `example/routing.py` 파일에 명시한 웹소켓 주소를 참고해주세요. URL은 절대 주소로 지정하므로 웹소켓 주소를 슬래시(/)로 시작토록 합니다.
 
-```python
-# example/views.py
+```{code-block} python
+:caption: example/views.py
 
 from django.shortcuts import render
 
@@ -327,8 +336,9 @@ def language_tutor_chat(request):
 
 웹소켓 접속 프로토콜은 `ws://` 혹은 `wss://`를 사용하는 데요. http 서버와 웹소켓 서버가 같은 호스트일 경우, HTMX 라이브러리에서는 `ws://`, `wss://` 프로토콜을 자동으로 붙여주므로 별도로 지정해주지 않아도 됩니다.
 
-```python
-# example/urls.py
+```{code-block} python
+:caption: example/urls.py
+
 from django.urls import path
 from . import views
 

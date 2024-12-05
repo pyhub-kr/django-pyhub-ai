@@ -8,8 +8,8 @@
 
 앞선 실습에서의 핵심 코드는 웹소켓 연결을 처리하는 Consumer였습니다. 그 외 라우팅은 단지 URL만 연결해줄 뿐이었구요. 챗봇 페이지는 `pyhub_ai/chat_room_ws.html` 템플릿만 렌더링하면서 `ws_url` 값만 지정해주면 동작했었습니다. 물론 챗봇 페이지 템플릿도 커스터마이징 가능합니다.
 
-```python
-# example/consumers.py
+```{code-block} python
+:caption: example/consumers.py
 
 from pyhub_ai.consumers import AgentChatConsumer
 from pyhub_ai.specs import LLMModel
@@ -62,8 +62,8 @@ You are a language tutor.
     - `data-analyst-v02-en.yaml` 프롬프트에서는 컬럼 가이드라인을 받도록 설계되어있습니다. 이에 데이터의 컬럼 가이드라인을 지정해줍니다.
     - 매 웹소켓 연결이 맺어질 때마다 동적으로 컬럼 가이드라인을 지정하실려면 `get_column_guideline` 메서드를 구현해주세요.
 
-```python
-# example/consumers.py
+```{code-block} python
+:caption: example/consumers.py
 
 from pyhub_ai.consumers import DataAnalystChatConsumer
 
@@ -91,23 +91,24 @@ SibSp: 형제 또는 배우자 수
 이 Consumer 구현이 "데이터 분석 에이전트 챗봇" 구현에서 가장 어려운 부분이었구요.
 나머진 연결만 시켜주시면 데이터 분석 에이전트 챗봇 구현 끝입니다.
 
-```python
-# example/routing.py 에 추가
+```{code-block} python
+:caption: example/routing.py 에 추가
+
 path("ws/example/analyst/titanic/", TitanicDataAnalystChatConsumer.as_asgi()),
 ```
 
 위 웹소켓 연결 주소와 맞춰 장고 뷰 함수를 구현해주세요.
 
-```python
-# example/urls.py 에 추가
+```{code-block} python
+:caption: example/urls.py 에 추가
 
 path("analyst/titanic/", views.titanic_data_analyst_chat, name="analyst-titanic"),
 ```
 
 뷰 함수도 이전 `language_tutor_chat` 뷰 함수와 `ws_url` 값만 다를 뿐, 그 외 코드는 동일합니다.
 
-```python
-# example/views.py 에 추가
+```{code-block} python
+:caption: example/views.py 에 추가
 
 def titanic_data_analyst_chat(request):
     return render(request, "pyhub_ai/chat_room_ws.html", {
