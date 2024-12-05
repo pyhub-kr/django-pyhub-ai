@@ -3,7 +3,16 @@
 ## 튜토리얼 영상
 
 6분 20초부터 시작합니다.
-<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw?start=380" frameborder="0" allowfullscreen></iframe>
+
+```{raw} html
+<div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/10Fp78n3jSw?start=380"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>
+```
 
 ## 라이브러리 설치
 

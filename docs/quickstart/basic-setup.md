@@ -5,8 +5,16 @@
 ## 튜토리얼 영상
 
 1분부터 시작합니다.
-<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw?start=60" frameborder="0" allowfullscreen></iframe>
 
+```{raw} html
+<div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/10Fp78n3jSw?start=60"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>
+```
 
 ## 파이썬 버전 확인
 

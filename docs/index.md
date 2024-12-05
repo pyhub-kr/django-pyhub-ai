@@ -18,7 +18,15 @@ courses/index
 
 ## 튜토리얼 영상
 
-<iframe width="100%" height="500" src="https://www.youtube.com/embed/10Fp78n3jSw" frameborder="0" allowfullscreen></iframe>
+```{raw} html
+<div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/10Fp78n3jSw"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>
+```
 
 ## 스크린샷
 

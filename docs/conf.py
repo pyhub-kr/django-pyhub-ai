@@ -134,6 +134,10 @@ source_suffix = {
 }
 
 templates_path = ["_templates", "templates"]
+
+html_static_path = ['_static']
+html_css_files = ['custom.css']
+
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", ".venv"]
 
 # suppress_warnings = [
