@@ -6,7 +6,8 @@ import pandas as pd
 from langchain_core.messages import HumanMessage, AIMessage
 
 from ..agents import DataAnalystChatAgent
-from .llm import AgentChatConsumer, find_file_in_apps
+from .llm import AgentChatConsumer
+from ..utils import find_file_in_apps
 
 
 class DataAnalystMixin:

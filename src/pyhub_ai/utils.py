@@ -4,13 +4,15 @@ import re
 from base64 import b64encode, b64decode
 from enum import Enum
 from io import BytesIO
-from typing import Dict, List, Optional, IO, Tuple
+from pathlib import Path
+from typing import Dict, List, Optional, IO, Tuple, Union
 
 from PIL import Image
+
+from django.apps import apps
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.utils.datastructures import MultiValueDict
-
 
 logger = logging.getLogger(__name__)
 
@@ -166,3 +168,26 @@ def get_image_mimetype(header: bytes) -> Optional[Mimetypes]:
             if header[offset : offset + len(signature)] == signature:
                 return mimetype
     return None
+
+
+def find_file_in_apps(*paths: Union[str, Path]) -> Path:
+    """주어진 경로에서 파일을 찾아 반환합니다.
+
+    먼저 PYHUB_AI_APP_DIR에서 파일을 찾고, 없으면 설치된 모든 Django 앱에서 순차적으로 검색합니다.
+
+    Args:
+        *paths: 찾고자 하는 파일의 경로 구성요소들. str 또는 Path 객체.
+
+    Returns:
+        Path: 찾은 파일의 전체 경로
+
+    Raises:
+        FileNotFoundError: 주어진 경로에서 파일을 찾을 수 없는 경우
+    """
+
+    for app_config in apps.get_app_configs():
+        path = Path(app_config.path).joinpath(*paths)
+        if path.exists():
+            return path
+
+    raise FileNotFoundError(f"{paths} 경로의 파일을 찾을 수 없습니다.")
