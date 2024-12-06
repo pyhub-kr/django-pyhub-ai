@@ -2,6 +2,26 @@
 
 {% extends "!layout.html" %}
 
+{%- block css %}
+    {# Google Tag Manager : <head>에서 최대한 위에 배치 #}
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{{ GTM_ID }}');</script>
+    {# End Google Tag Manager #}
+    {{ super() }}
+{%- endblock css %}
+
+{% block body_tag %}
+    {{ super() }}
+    {# 여는 <body> 태그 바로 뒤에 코드를 붙여넣으세요. #}
+    {# Google Tag Manager (noscript) #}
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ GTM_ID }}"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    {# End Google Tag Manager (noscript) #}
+{% endblock body_tag %}
+
 {%- block footer %}
     <footer class="bd-footer">
         <div class="bd-footer__inner bd-page-width">
@@ -23,3 +43,4 @@
         </div>
     </footer>
 {%- endblock footer %}
+

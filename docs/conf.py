@@ -60,6 +60,8 @@ html_context = {
     "github_repo": "django-pyhub-ai",
     "github_version": "main",
     "doc_path": "docs",
+    # https://tagmanager.google.com/?hl=ko#/container/accounts/6260619830/containers/201568180/workspaces/2
+    "GTM_ID": "GTM-57JDH7NG",
 }
 html_theme_options = {
     "use_edit_page_button": True,
