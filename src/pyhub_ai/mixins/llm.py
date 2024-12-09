@@ -3,7 +3,7 @@ from collections import defaultdict
 from io import StringIO
 from os.path import exists
 from pathlib import Path
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Type, Union
 
 import httpx
 import yaml
@@ -24,7 +24,7 @@ class LLMMixin:
     llm_system_prompt_template: Union[str, BasePromptTemplate] = ""
     llm_prompt_context_data: Optional[Dict] = None
     llm_first_user_message_template: Optional[str] = None
-    llm_model: LLMModel = LLMModel.OPENAI_GPT_4O
+    llm_model: Type[LLMModel] = LLMModel.OPENAI_GPT_4O
     llm_temperature: float = 1
     llm_max_tokens: int = 4096
 
@@ -40,7 +40,7 @@ class LLMMixin:
         if llm_model_name.startswith("OPENAI_"):
             return ChatOpenAI(
                 openai_api_key=self.get_llm_openai_api_key(),
-                model_name=self.get_llm_model(),
+                model_name=self.get_llm_model().value,
                 temperature=self.get_llm_temperature(),
                 max_tokens=self.get_llm_max_tokens(),
                 streaming=True,
@@ -86,7 +86,7 @@ class LLMMixin:
             return self.llm_first_user_message_template.format_map(safe_data)
         return None
 
-    def get_llm_model(self) -> LLMModel:
+    def get_llm_model(self) -> Type[LLMModel]:
         return self.llm_model
 
     def get_llm_temperature(self) -> float:
