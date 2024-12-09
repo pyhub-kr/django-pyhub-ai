@@ -48,10 +48,12 @@ class ChatMixin:
         await self.response_queue_manager.start_polling()
 
     async def chat_message_put(self, text: Optional[str]) -> None:
-        await self.response_queue_manager.put(text)
+        if self.response_queue_manager:
+            await self.response_queue_manager.put(text)
 
     async def chat_shutdown(self):
-        await self.response_queue_manager.shutdown()
+        if self.response_queue_manager:
+            await self.response_queue_manager.shutdown()
 
     def get_template_name(self) -> str:
         return self.template_name
