@@ -7,14 +7,12 @@ from typing import Dict, Optional, Union
 
 import httpx
 import yaml
-
+from django.conf import settings
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import BasePromptTemplate
 from langchain_core.prompts.loading import load_prompt, load_prompt_from_config
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
-
-from django.conf import settings
 
 from ..specs import LLMModel
 from ..utils import find_file_in_apps

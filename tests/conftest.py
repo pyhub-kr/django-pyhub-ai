@@ -1,16 +1,16 @@
 from contextlib import asynccontextmanager
-from uuid import uuid4
 from typing import AsyncGenerator, List, Optional, Tuple
+from uuid import uuid4
 
+import pytest
 from asgiref.sync import sync_to_async
 from asgiref.typing import ASGIApplication
-import pytest
-
 from channels.auth import AuthMiddlewareStack
 from channels.routing import URLRouter
 from channels.testing import WebsocketCommunicator
+from django.contrib.auth import BACKEND_SESSION_KEY, HASH_SESSION_KEY, SESSION_KEY
 from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.auth import SESSION_KEY, BACKEND_SESSION_KEY, HASH_SESSION_KEY
+from django.test import AsyncClient
 
 from pyhub_ai.routing import websocket_urlpatterns
 
@@ -62,3 +62,9 @@ async def auth_credentials(django_user_model) -> tuple[str, str]:
     await sync_to_async(session.save)()
 
     return username, session.session_key
+
+
+@pytest.fixture
+def csrf_async_client() -> AsyncClient:
+    """CSRF 검증이 활성화된 AsyncClient fixture"""
+    return AsyncClient(enforce_csrf_checks=True)

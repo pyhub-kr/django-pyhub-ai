@@ -1,0 +1,76 @@
+{% extends "pyhub_ai/base.html" %}
+{% load uncached_static %}
+
+{% block content %}
+    {% if not connect_url %}
+        <c-pyhub.alert type="error">템플릿 렌더링 시에 접속 주소 (connect_url) 설정이 필요합니다.</c-pyhub.alert>
+    {% else %}
+        <div class="bg-gray-100 flex flex-col h-screen">
+            <div id="chat-room"
+
+                 hx-get="{{ connect_url }}"
+                 hx-swap="beforeend"
+                 hx-trigger="load"
+                 hx-target="#chat-messages"
+
+                 x-data="{ opened: true, thinking: false }"
+                 @thinking-start="thinking = true"
+                 @thinking-end="thinking = false"
+
+                 class="flex flex-col flex-grow overflow-hidden">
+
+                <div class="flex-grow relative">
+                    <div id="chat-messages"
+                         class="bg-white rounded-lg shadow-md absolute inset-0 overflow-y-auto p-4 pb-20 m-4 mb-0"
+                    >
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 flex justify-center pb-4 pointer-events-none">
+                        <span x-show="thinking"
+                              class="loading loading-dots loading-lg z-10"></span>
+                    </div>
+                </div>
+
+                <form
+                      hx-ext="streaming-html"
+                      hx-post="{{ connect_url }}"
+                      hx-target="#chat-room"
+                      hx-swap="beforeend"
+                      hx-on:chunk="
+                          if (event.detail.count === 0) { this.reset(); };
+                          setTimeout(() => {
+                              const listEl = document.querySelector('#chat-messages');
+                              listEl.scrollTo({
+                                  top: listEl.scrollHeight,
+                                  behavior: 'smooth'
+                              });
+                          }, 0);
+                      "
+
+                      id="chat-form" class="flex flex-col p-4 pt-0" novalidate="novalidate">
+                    <div class="mb-2">
+                        <div id="image-preview" class="mt-2 flex flex-wrap gap-2"></div>
+                    </div>
+                    <div class="join">
+                        {# pycharm 에서 Empty Tag 경고가 뜬다면? - 설정 => Editor => Inspections => HTML 항목의 Empty tag 항목을 해제 #}
+                        <c-pyhub.widgets.image-preview-file
+                            class="join-item"
+                            name="images" multiple="multiple" icon_class="w-6 h-6" preview_display_selector="#image-preview"
+                            {# 이미지는 base64 인코딩해서 별도 필드로 전송 #}
+                            with_base64_field="true"></c-pyhub.widgets.image-preview-file>
+                        <input type="text" name="user_text" placeholder="메시지를 입력하세요" required="required"
+                               class="join-item flex-1 input input-bordered input-md focus:outline-none"
+                               autocomplete="off"
+                               :disabled="!opened"
+                               :placeholder="opened ? '메시지를 입력하세요.' : '연결 대기 중 ...'"
+                        />
+                        <button type="submit"
+                                class="join-item btn btn-primary"
+                                :disabled="!opened">
+                            전송
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

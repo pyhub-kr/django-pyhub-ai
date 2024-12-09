@@ -4,6 +4,10 @@ build:
 test:
 	uv run -m pytest tests/
 
+format:
+	uv run -m black ./src ./tests/
+	uv run -m isort ./src ./tests/
+
 doc-server:
 	cd docs && uv run sphinx-autobuild . _build/html
 

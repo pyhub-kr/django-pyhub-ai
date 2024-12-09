@@ -1,9 +1,9 @@
-from .llm import LLMMixin, AgentChatConsumer
-from .data_analyst import DataAnalystMixin, DataAnalystChatConsumer
+from .agent import AgentChatConsumer
+from .chat import ChatConsumer
+from .data_analyst import DataAnalystChatConsumer
 
 __all__ = [
-    "LLMMixin",
     "AgentChatConsumer",
-    "DataAnalystMixin",
+    "ChatConsumer",
     "DataAnalystChatConsumer",
 ]

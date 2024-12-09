@@ -1,7 +1,8 @@
+import json
+from asyncio import iscoroutinefunction
 from base64 import b64encode
 from dataclasses import dataclass
-import json
-from typing import Callable, Any, Literal, Union, Optional
+from typing import Any, Callable, Literal, Optional, Union
 from uuid import uuid4
 
 import pandas as pd
@@ -16,14 +17,14 @@ from .utils import Mimetypes
 class ContentBlock:
     value: Optional[str] = None
     id: Optional[str] = None  # 메시지 ID
-    role: Optional[Literal["system", "user", "assistant", "tool", "notice", "usage", "error", "alert"]] = None
+    role: Optional[Literal["system", "user", "assistant", "tool", "event", "notice", "usage", "error", "alert"]] = None
     usage_metadata: Optional[UsageMetadata] = None  # 사용 메타데이터
     template_name: Optional[str] = None
     send_func: Optional[Callable[[str], Any]] = None
 
     def __post_init__(self):
         if self.id is None:
-            self.id = "content_block_" + uuid4().hex
+            self.id = "id_" + uuid4().hex
         self.id = self.id.replace("-", "_").strip()
 
     def as_markdown(self) -> Optional[str]:
@@ -44,8 +45,9 @@ class ContentBlock:
         return None
 
 
-class VoidContentBlock(ContentBlock):
-    pass
+@dataclass
+class EventContentBlock(ContentBlock):
+    role: Literal["event"] = "event"
 
 
 @dataclass
@@ -73,7 +75,7 @@ class CodeContentBlock(ContentBlock):
 
     value: str = ""
     lang: Literal["python"] = "python"
-    role = "tool"
+    role: Literal["tool"] = "tool"
     tool_name: Optional[str] = None
 
     def as_markdown(self) -> str:
@@ -145,51 +147,64 @@ class MessageBlock:
     chat_messages_dom_id: str
     content_block: ContentBlock
     template_name: str
-    send_func: Callable[[str], Any]
-    output_format: Literal["json", "htmx"] = "htmx"
+    send_func: Optional[Callable[[str], Any]] = None
+    render_format: Literal["json", "htmx"] = "htmx"
 
     async def render(
         self,
         mode: MessageBlockRenderModeType = "overwrite",
-    ) -> "MessageBlock":
-        if self.output_format == "htmx":
-            html = render_to_string(self.template_name, {
-                "chat_messages_dom_id": self.chat_messages_dom_id,
-                "content_block": self.content_block,
-                "mode": mode,
-            })
-            await self.send_func(html)
-            return self
-        elif self.output_format == "json":
-            await self.send_func(json.dumps({
+    ) -> str:
+        if self.render_format == "htmx":
+            text = render_to_string(
+                self.template_name,
+                {
+                    "chat_messages_dom_id": self.chat_messages_dom_id,
+                    "content_block": self.content_block,
+                    "mode": mode,
+                },
+            )
+        elif self.render_format == "json":
+            obj = {
                 "id": self.content_block.id,
-                "content_block": self.content_block.as_markdown(),
+                "content": self.content_block.as_markdown(),
                 "mode": mode,
-            }, ensure_ascii=False))
-            return self
+                "role": self.content_block.role,
+            }
+            text = json.dumps(
+                obj,
+                ensure_ascii=False,
+            )
         else:
-            raise ValueError(f"Invalid output format: {self.output_format}")
+            raise ValueError(f"Invalid output format: {self.render_format}")
 
-    async def append(self, content_block: Union[ContentBlock, str]) -> "MessageBlock":
+        if self.send_func:
+            if iscoroutinefunction(self.send_func):
+                await self.send_func(text)
+            else:
+                self.send_func(text)
+
+        return text
+
+    async def append(self, content_block: Union[ContentBlock, str]) -> None:
         if isinstance(content_block, str):
             content_block = TextContentBlock(value=content_block)
         self.content_block = content_block
-        return await self.render(mode="append")
+        await self.render(mode="append")
 
-    async def update(self, content_block: Union[ContentBlock, str]) -> "MessageBlock":
+    async def update(self, content_block: Union[ContentBlock, str]) -> None:
         if isinstance(content_block, str):
             content_block = TextContentBlock(value=content_block)
         self.content_block = content_block
-        return await self.render(mode="overwrite")
+        await self.render(mode="overwrite")
 
-    async def delete(self) -> "MessageBlock":
-        return await self.render(mode="delete")
+    async def delete(self) -> None:
+        await self.render(mode="delete")
 
-    async def page_reload(self) -> "MessageBlock":
-        return await self.render(mode="page-reload")
+    async def page_reload(self) -> None:
+        await self.render(mode="page-reload")
 
-    async def thinking_start(self) -> "MessageBlock":
-        return await self.render(mode="thinking-start")
+    async def thinking_start(self) -> None:
+        await self.render(mode="thinking-start")
 
-    async def thinking_end(self) -> "MessageBlock":
-        return await self.render(mode="thinking-end")
+    async def thinking_end(self) -> None:
+        await self.render(mode="thinking-end")

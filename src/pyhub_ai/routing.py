@@ -1,8 +1,8 @@
-from django.urls import path, include
+from django.urls import path
 
 from .consumers import AgentChatConsumer, DataAnalystChatConsumer
 
-prefix = "ws/pyhub-ai/chat/"
+prefix = "ws/pyhub-ai/agent/"
 
 websocket_urlpatterns = [
     # path(
@@ -14,6 +14,6 @@ websocket_urlpatterns = [
     #         ]
     #     ),
     # ),
-    path(f"{prefix}agent/", AgentChatConsumer.as_asgi()),
-    path(f"{prefix}data-analyst/", DataAnalystChatConsumer.as_asgi()),
+    path(f"{prefix}chat/", AgentChatConsumer.as_asgi()),
+    path(f"{prefix}analyst/", DataAnalystChatConsumer.as_asgi()),
 ]

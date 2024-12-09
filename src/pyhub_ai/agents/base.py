@@ -2,7 +2,7 @@ from typing import Optional, Sequence
 
 from langchain_core.agents import AgentFinish
 from langchain_core.messages import BaseMessage
-from langchain_core.messages.ai import UsageMetadata, AIMessage
+from langchain_core.messages.ai import AIMessage, UsageMetadata
 
 
 class XAgentFinish(AgentFinish):

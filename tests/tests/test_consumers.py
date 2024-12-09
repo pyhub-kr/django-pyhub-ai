@@ -1,6 +1,7 @@
+import asyncio
 from typing import AsyncGenerator
-import pytest
 
+import pytest
 from channels.testing import WebsocketCommunicator
 
 
@@ -12,7 +13,7 @@ class TestAgentChatConsumer:
     WebSocket 연결 인증 및 권한 검증을 테스트합니다.
     """
 
-    path = "/ws/pyhub-ai/chat/agent/"
+    path = "/ws/pyhub-ai/agent/chat/"
 
     @pytest.mark.it("미인증 사용자는 연결 즉시, 4000 코드와 함께 웹소켓 연결이 끊어져야 합니다.")
     async def test_connect_unauthenticated(self, make_communicator):
@@ -20,13 +21,24 @@ class TestAgentChatConsumer:
             # 서버에서는 먼저 인증 여부를 검사합니다.
             # 미인증 상황이므로, 서버에서는 클라이언트로 에러 메시지를 보내고, 웹소켓 연결을 먼저 종료합니다.
 
-            error_message = await communicator.receive_output(timeout=1)
-            assert error_message["type"] == "websocket.send"
+            # 모든 웹소켓 메시지 수집
+            messages = []
+            while True:
+                try:
+                    message = await communicator.receive_output(timeout=1)
+                    messages.append(message)
+                    if message["type"] == "websocket.close":
+                        break
+                    await asyncio.sleep(1)
+                except TimeoutError:
+                    break
 
-            # 연결 종료 메시지 확인
-            close_message = await communicator.receive_output(timeout=1)
-            assert close_message["type"] == "websocket.close"
-            assert close_message["code"] == 4000
+            # 메시지 개수 확인 및 연결 종료 검증
+            assert len(messages) > 0, "수신 메시지가 있어야만 합니다."
+
+            close_message = messages[-1]
+            assert close_message["type"] == "websocket.close", "마지막 메시지는 웹소켓 연결 종료 메시지여야 합니다."
+            assert close_message["code"] == 4000, "커스텀 종료 코드는 4000이어야 합니다."
 
     @pytest.fixture
     async def auth_communicator(
@@ -51,4 +63,4 @@ class TestAgentChatConsumer:
     async def test_connect_authenticated(self, auth_communicator):
         async with auth_communicator as communicator:
             message = await communicator.receive_output(timeout=1)
-            assert message["type"] != "websocket.close"
+            assert message["type"] == "websocket.send"

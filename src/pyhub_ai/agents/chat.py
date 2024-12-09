@@ -1,26 +1,25 @@
 import logging
-from typing import List, AsyncIterator, Union, Optional, Callable, Awaitable
+from typing import AsyncIterator, Awaitable, Callable, List, Optional, Union
 
 import openai
 from django.core.files import File
 from langchain.agents import AgentExecutor
 from langchain.agents.format_scratchpad import format_to_tool_messages
 from langchain_core.language_models import BaseChatModel
-from langchain_core.messages import HumanMessage, BaseMessage, SystemMessage
-from langchain_core.messages.ai import AIMessageChunk, AIMessage
+from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from langchain_core.messages.ai import AIMessage, AIMessageChunk
 from langchain_core.prompts import (
-    ChatPromptTemplate,
     BasePromptTemplate,
+    ChatPromptTemplate,
     MessagesPlaceholder,
 )
 from langchain_core.prompts.chat import BaseMessagePromptTemplate
 from langchain_core.runnables import AddableDict, Runnable, RunnablePassthrough
 from langchain_core.tools import BaseTool
 
-from ..blocks import ContentBlock, TextContentBlock, ImageUrlContentBlock
-from ..parsers import XToolsAgentOutputParser
-from ..utils import encode_image_files
-
+from pyhub_ai.blocks import ContentBlock, ImageUrlContentBlock, TextContentBlock
+from pyhub_ai.parsers import XToolsAgentOutputParser
+from pyhub_ai.utils import encode_image_files
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +38,7 @@ class ChatAgent:
         self,
         llm: BaseChatModel,
         system_prompt: Union[str, BasePromptTemplate],
-        initial_messages: Optional[List[Union[HumanMessage, AIMessage]]] = None,
+        previous_messages: Optional[List[Union[HumanMessage, AIMessage]]] = None,
         tools: Optional[List[BaseTool]] = None,
         on_conversation_complete: Optional[
             Callable[[HumanMessage, AIMessage, Optional[List[AddableDict]]], Awaitable[None]]
@@ -54,7 +53,7 @@ class ChatAgent:
         Args:
             llm (BaseChatModel): 대형 언어 모델.
             system_prompt (Union[str, BasePromptTemplate]): 시스템 프롬프트.
-            initial_messages (Optional[List[Union[HumanMessage, AIMessage]]]): 초기 메시지 목록.
+            previous_messages (Optional[List[Union[HumanMessage, AIMessage]]]): 초기 메시지 목록.
             tools (Optional[List[BaseTool]]): 사용할 도구 목록.
             on_conversation_complete (Optional[Callable[[HumanMessage, AIMessage], None]]): 메시지가 완성되면 호출할 콜백 함수.
             max_iterations (int): 최대 반복 횟수. tools 옵션을 사용할 때만 사용됩니다.
@@ -68,8 +67,8 @@ class ChatAgent:
         if system_prompt:
             base_messages.append(SystemMessage(system_prompt))
 
-        if initial_messages:
-            base_messages.extend(initial_messages)
+        if previous_messages:
+            base_messages.extend(previous_messages)
 
         base_messages.extend(
             (

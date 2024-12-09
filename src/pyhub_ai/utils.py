@@ -1,18 +1,17 @@
 import logging
 import mimetypes
 import re
-from base64 import b64encode, b64decode
+from base64 import b64decode, b64encode
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, List, Optional, IO, Tuple, Union
-
-from PIL import Image
+from typing import IO, Dict, List, Optional, Tuple, Union
 
 from django.apps import apps
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.utils.datastructures import MultiValueDict
+from PIL import Image
 
 logger = logging.getLogger(__name__)
 

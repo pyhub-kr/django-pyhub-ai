@@ -1,14 +1,24 @@
 {% extends "example/base.html" %}
 
 {% block content %}
-  <h1>index</h1>
+    <h1>index</h1>
 
-  <ul>
-    <li>
-      <a href="{% url 'chat' 1 %}">#1. LLM 채팅방</a>
-    </li>
-    <li>
-      <a href="{% url 'analyst' 1 %}">#2. Data Analyst 채팅방</a>
-    </li>
-  </ul>
+    <ul>
+        <li>
+            #1. LLM 채팅방
+            <ul>
+                {% url 'chat_room' 1 as chat_room_url %}
+                <li><a href="{{ chat_room_url }}?protocol=ws">웹소켓 방식으로 채팅하기</a></li>
+                <li><a href="{{ chat_room_url }}?protocol=sse">SSE 방식으로 채팅하기</a></li>
+            </ul>
+        </li>
+        <li>
+            #2. Data Analyst 채팅방
+            <ul>
+                {% url 'analyst_room' 2 as analyst_room_url %}
+                <li><a href="{{ analyst_room_url }}?protocol=ws">웹소켓 방식으로 채팅하기</a></li>
+                <li><a href="{{ analyst_room_url }}?protocol=sse">SSE 방식으로 채팅하기</a></li>
+            </ul>
+        </li>
+    </ul>
 {% endblock %}

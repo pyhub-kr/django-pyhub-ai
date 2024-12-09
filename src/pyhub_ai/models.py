@@ -1,15 +1,14 @@
 import logging
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 from asgiref.sync import sync_to_async
 from django.conf import settings
-from django.contrib.auth.models import AnonymousUser, AbstractUser
+from django.contrib.auth.models import AbstractUser, AnonymousUser
 from django.db import models
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.runnables import AddableDict
 
-from .json import XJSONEncoder, XJSONDecoder
-
+from .json import XJSONDecoder, XJSONEncoder
 
 logger = logging.getLogger(__name__)
 

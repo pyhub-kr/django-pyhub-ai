@@ -4,11 +4,10 @@ from langchain_core.messages import AIMessage, HumanMessage
 
 from pyhub_ai.agents import DataAnalystChatAgent
 from pyhub_ai.mixins import DataAnalystMixin
+from pyhub_ai.views import AgentChatView
 
-from .agent import AgentChatConsumer
 
-
-class DataAnalystChatConsumer(DataAnalystMixin, AgentChatConsumer):
+class DataAnalystChatView(DataAnalystMixin, AgentChatView):
     """데이터 분석 채팅 컨슈머 클래스"""
 
     async def get_agent(
