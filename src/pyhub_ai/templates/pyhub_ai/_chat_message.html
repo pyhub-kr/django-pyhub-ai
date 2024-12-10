@@ -1,5 +1,3 @@
-{% load static %}
-
 <div id="{{ chat_messages_dom_id|default:"" }}" hx-swap-oob="beforeend">
     {% if mode == "thinking-start" %}
         <script>
@@ -109,7 +107,7 @@
                 <div class="text hidden">{{ content_block.as_markdown }}</div>
             {% elif content_block.role == "assistant" %}
                 <div class="flex flex-col gap-1 bg-gray-100 px-4 py-2 rounded-lg max-w-full break-words border border-gray-200">
-                    {# <img src="{% static 'pyhub_ai/icons/barista-1.png' %}" class="w-10 h-10" /> #}
+                    {# <img src="{% uncached_static 'pyhub_ai/icons/barista-1.png' %}" class="w-10 h-10" /> #}
                     <div class="markdown prose text-gray-800"></div>
                 </div>
                 <div class="text hidden">{{ content_block.as_markdown }}</div>
@@ -153,21 +151,7 @@
             (function () {
                 const sourceEl = document.currentScript.previousElementSibling;
                 const targetEl = document.querySelector('#{{ content_block.id }} .text');
-                if (targetEl) {
-                    const markdownEl = targetEl.parentElement.querySelector(".markdown");
-                    targetEl.textContent += sourceEl.textContent;
-                    markdownEl.innerHTML = window.markdownToHtml(targetEl.textContent);
-                    if (window.hljs?.highlightElement) {
-                        markdownEl.querySelectorAll("code").forEach((block) => {
-                            window.hljs.highlightElement(block);
-                        });
-                    }
-                    else {
-                        console.warn("hljs module not found");
-                    }
-                } else {
-                    console.warn("targetEl not found : #{{ content_block.id }} .text");
-                }
+                chat_message_append(sourceEl, targetEl);
                 sourceEl?.remove();
                 document.currentScript.remove();
             })();
