@@ -12,9 +12,6 @@ from .chat import ChatView
 class AgentChatView(AgentMixin, ChatView):
     llm_system_prompt_template = "You are a helpful assistant."
 
-    async def can_accept(self) -> bool:
-        return True
-
     async def chat_setup(self, send_func: Callable[[str], Coroutine]) -> None:
         await super().chat_setup(send_func)
 

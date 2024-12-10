@@ -20,6 +20,8 @@ class ChatView(ChatMixin, View):
     template_name = "pyhub_ai/_chat_message.html"
 
     async def get(self, request: HttpRequest, *args, **kwargs) -> StreamingHttpResponse:
+        is_accept = await self.can_accept()
+
         async def gen():
             # 마지막에 None 값을 추가해야만 Queue 소비가 종료됩니다.
             await self.chat_message_put(None)
@@ -27,16 +29,21 @@ class ChatView(ChatMixin, View):
         return StreamingHttpResponse(
             self.make_stream_response(gen()),
             content_type="text/event-stream; charset=utf-8",
+            # 401 Unauthorized : **인증되지 않은 상태**에서 권한이 없는 리소스에 접근
+            # 403 Forbidden : **인증된 상태**에서 권한이 없는 리소스에 접근
+            status=200 if is_accept else 401,
         )
 
     async def post(self, request: HttpRequest, *args, **kwargs) -> StreamingHttpResponse:  # noqa
+        is_accept = await self.can_accept()
+
         async def gen():
             user_text = request.POST.get(self.user_text_field_name, "").strip()
             if user_text:
                 # 유저 요청을 처리하기 전에, 유저 메시지를 화면에 먼저 빠르게 렌더링합니다.
                 await self.render_block(TextContentBlock(role="user", value=user_text))
 
-            if await self.can_accept():
+            if is_accept:
                 await self.form_handler(
                     data=request.POST,
                     files=request.FILES,
@@ -56,6 +63,7 @@ class ChatView(ChatMixin, View):
         return StreamingHttpResponse(
             self.make_stream_response(gen()),
             content_type="text/event-stream; charset=utf-8",
+            status=200 if is_accept else 401,
         )
 
     async def make_stream_response(self, coroutine_producer: Coroutine) -> AsyncGenerator[str, None]:
@@ -72,7 +80,7 @@ class ChatView(ChatMixin, View):
             producer_task = asyncio.create_task(coroutine_producer)
 
             async for text in self.make_queue_consumer(queue):
-                yield text
+                yield text + "\n\n"  # 각 메시지를 개행문자 2개로 분리
         finally:
             # 스트림이 클라이언트에 의해 중단된 경우
             if producer_task and not producer_task.done():
