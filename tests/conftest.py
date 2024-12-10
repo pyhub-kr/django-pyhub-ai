@@ -46,22 +46,32 @@ async def make_communicator(agent_application: ASGIApplication):
 
 
 @pytest.fixture
-async def auth_credentials(django_user_model) -> tuple[str, str]:
+async def create_user(django_user_model):
+    """테스트용 사용자를 생성합니다.
+
+    Returns:
+        User: 생성된 사용자 객체를 반환합니다.
+    """
+    username = f"testuser_{uuid4().hex[:8]}"  # 랜덤 사용자명 생성
+    user = await django_user_model.objects.acreate(username=username)
+    return user
+
+
+@pytest.fixture
+async def auth_credentials(create_user) -> tuple[str, str]:
     """인증된 사용자의 자격증명을 생성합니다.
 
     Returns:
         tuple[str, str]: (username, session_key) 튜플을 반환합니다.
     """
-    username = f"testuser_{uuid4().hex[:8]}"  # 랜덤 사용자명 생성
-    user = await django_user_model.objects.acreate(username=username)
 
     session = SessionStore()
-    session[SESSION_KEY] = str(user.pk)
+    session[SESSION_KEY] = str(create_user.pk)
     session[BACKEND_SESSION_KEY] = "django.contrib.auth.backends.ModelBackend"
-    session[HASH_SESSION_KEY] = user.get_session_auth_hash()
+    session[HASH_SESSION_KEY] = create_user.get_session_auth_hash()
     await sync_to_async(session.save)()
 
-    return username, session.session_key
+    return create_user.username, session.session_key
 
 
 @pytest.fixture
