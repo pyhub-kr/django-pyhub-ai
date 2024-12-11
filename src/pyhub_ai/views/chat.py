@@ -32,6 +32,7 @@ class ChatView(ChatMixin, View):
             # 401 Unauthorized : **인증되지 않은 상태**에서 권한이 없는 리소스에 접근
             # 403 Forbidden : **인증된 상태**에서 권한이 없는 리소스에 접근
             status=200 if is_accept else 401,
+            headers={"X-Accel-Buffering": "no"},
         )
 
     async def post(self, request: HttpRequest, *args, **kwargs) -> StreamingHttpResponse:  # noqa
@@ -64,6 +65,7 @@ class ChatView(ChatMixin, View):
             self.make_stream_response(gen()),
             content_type="text/event-stream; charset=utf-8",
             status=200 if is_accept else 401,
+            headers={"X-Accel-Buffering": "no"},
         )
 
     async def make_stream_response(self, coroutine_producer: Coroutine) -> AsyncGenerator[str, None]:
