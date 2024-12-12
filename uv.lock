@@ -715,7 +715,7 @@ wheels = [
 
 [[package]]
 name = "django-pyhub-ai"
-version = "0.6.3"
+version = "0.6.5"
 source = { editable = "." }
 dependencies = [
     { name = "channels" },
