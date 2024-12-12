@@ -19,6 +19,7 @@ dependencies = [
     "langchain-experimental",
     "langchain-openai",
     "langchain-anthropic",
+    "langchain-google-genai",
     "pandas",
     "numpy",
     "tabulate",

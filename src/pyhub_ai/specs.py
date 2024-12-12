@@ -14,6 +14,8 @@ class LLMModel(str, Enum):
     ANTHROPIC_CLAUDE_3_5_SONNET = "claude-3-5-sonnet-20241022"
     ANTHROPIC_CLAUDE_3_5_HAIKU = "claude-3-5-haiku-20241022"
     ANTHROPIC_CLAUDE_3_OPUS = "claude-3-opus-20240229"
+    GOOGLE_GEMINI_1_5_FLASH = "gemini-1.5-flash"
+    GOOGLE_GEMINI_1_5_PRO = "gemini-1.5-pro"
 
     @cached_property
     def spec(self) -> "LLMModelSpec":
@@ -78,7 +80,7 @@ LLM_MODEL_SPECS: Dict[LLMModel, LLMModelSpec] = {
     ),
     LLMModel.ANTHROPIC_CLAUDE_3_5_HAIKU: LLMModelSpec(
         max_output_tokens=4_096,
-        support_vision=True,
+        support_vision=False,
         cost_input_tokens_1m=Decimal("0.8"),
         cost_output_tokens_1m=Decimal("4"),
     ),
@@ -87,5 +89,18 @@ LLM_MODEL_SPECS: Dict[LLMModel, LLMModelSpec] = {
         support_vision=True,
         cost_input_tokens_1m=Decimal("15"),
         cost_output_tokens_1m=Decimal("75"),
+    ),
+    # https://cloud.google.com/vertex-ai/generative-ai/pricing
+    LLMModel.GOOGLE_GEMINI_1_5_FLASH: LLMModelSpec(
+        max_output_tokens=4_096,
+        support_vision=True,
+        cost_input_tokens_1m=Decimal("0.01875"),
+        cost_output_tokens_1m=Decimal("0.0375"),
+    ),
+    LLMModel.GOOGLE_GEMINI_1_5_PRO: LLMModelSpec(
+        max_output_tokens=4_096,
+        support_vision=True,
+        cost_input_tokens_1m=Decimal("0.3125"),
+        cost_output_tokens_1m=Decimal("1.25"),
     ),
 }

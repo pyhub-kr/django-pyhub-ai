@@ -16,6 +16,7 @@ from langchain_community.llms.fake import FakeStreamingListLLM
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import BasePromptTemplate
 from langchain_core.prompts.loading import load_prompt, load_prompt_from_config
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
@@ -29,6 +30,7 @@ from ..utils import find_file_in_apps
 class LLMMixin:
     llm_openai_api_key: SecretStr = ""
     llm_anthropic_api_key: SecretStr = ""
+    llm_google_api_key: SecretStr = ""
     llm_system_prompt_path: Optional[Union[str, Path]] = None
     llm_system_prompt_template: Union[str, BasePromptTemplate, DjangoTemplate] = ""
     llm_prompt_context_data: Optional[Dict] = None
@@ -56,6 +58,13 @@ class LLMMixin:
         api_key = getattr(settings, "ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY", ""))
         return SecretStr(api_key)
 
+    def get_llm_google_api_key(self) -> SecretStr:
+        if self.llm_google_api_key:
+            return self.llm_google_api_key
+
+        api_key = getattr(settings, "GOOGLE_API_KEY", os.environ.get("GOOGLE_API_KEY", ""))
+        return SecretStr(api_key)
+
     def get_llm(self) -> BaseChatModel:
         if self.llm_fake_responses is not None:
             return FakeStreamingListLLM(responses=self.llm_fake_responses)
@@ -77,6 +86,15 @@ class LLMMixin:
             elif llm_model_name.startswith("ANTHROPIC_"):
                 return ChatAnthropic(
                     anthropic_api_key=self.get_llm_anthropic_api_key(),
+                    model=self.get_llm_model().value,
+                    temperature=self.get_llm_temperature(),
+                    max_tokens=self.get_llm_max_tokens(),
+                    timeout=self.get_llm_timeout(),
+                    streaming=True,
+                )
+            elif llm_model_name.startswith("GOOGLE_"):
+                return ChatGoogleGenerativeAI(
+                    google_api_key=self.get_llm_google_api_key(),
                     model=self.get_llm_model().value,
                     temperature=self.get_llm_temperature(),
                     max_tokens=self.get_llm_max_tokens(),
