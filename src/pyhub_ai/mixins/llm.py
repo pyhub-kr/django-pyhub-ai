@@ -3,7 +3,7 @@ from collections import defaultdict
 from io import StringIO
 from os.path import exists
 from pathlib import Path
-from typing import Dict, Optional, Type, Union
+from typing import Dict, Optional, Tuple, Type, Union
 
 import httpx
 import yaml
@@ -27,6 +27,7 @@ class LLMMixin:
     llm_model: Type[LLMModel] = LLMModel.OPENAI_GPT_4O
     llm_temperature: float = 1
     llm_max_tokens: int = 4096
+    llm_timeout: Union[float, Tuple[float, float]] = 5  # seconds
 
     def get_llm_openai_api_key(self) -> SecretStr:
         if self.llm_openai_api_key:
@@ -43,6 +44,7 @@ class LLMMixin:
                 model_name=self.get_llm_model().value,
                 temperature=self.get_llm_temperature(),
                 max_tokens=self.get_llm_max_tokens(),
+                timeout=self.get_llm_timeout(),
                 streaming=True,
                 model_kwargs={"stream_options": {"include_usage": True}},
             )
@@ -94,3 +96,6 @@ class LLMMixin:
 
     def get_llm_max_tokens(self) -> int:
         return self.llm_max_tokens
+
+    def get_llm_timeout(self) -> Union[float, Tuple[float, float]]:
+        return self.llm_timeout
