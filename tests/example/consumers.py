@@ -8,6 +8,8 @@ class LanguageTutorChatConsumer(AgentChatConsumer):
     # get_llm_model 메서드 지원
     llm_model = LLMModel.OPENAI_GPT_4O
 
+    llm_timeout = 5
+
     # get_llm_temperature 메서드 지원
     llm_temperature = 1
 
@@ -32,6 +34,7 @@ You are a language tutor.
 
 class TitanicDataAnalystChatConsumer(DataAnalystChatConsumer):
     llm_model = LLMModel.OPENAI_GPT_4O
+    llm_timeout = 30
     llm_temperature = 0
     llm_system_prompt_path = "prompts/data-analyst-v02-en.yaml"
     dataframe_path = "data/titanic.csv"
