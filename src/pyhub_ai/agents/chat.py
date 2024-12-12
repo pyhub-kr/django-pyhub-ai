@@ -19,7 +19,7 @@ from langchain_core.tools import BaseTool
 
 from pyhub_ai.blocks import ContentBlock, ImageUrlContentBlock, TextContentBlock
 from pyhub_ai.parsers import XToolsAgentOutputParser
-from pyhub_ai.utils import encode_image_files
+from pyhub_ai.utils import encode_image_files, sum_and_merge_dicts
 
 logger = logging.getLogger(__name__)
 
@@ -141,13 +141,27 @@ class ChatAgent:
         """
         chunk_message: Union[AIMessageChunk, AddableDict]
 
+        # anthropic api 호출에서는 입력되자마자 입력 token 수가 생성되고,
+        # 출력 token 수는 출력이 완료되고 나서 따로 출력되기에
+        # 이를 합산해서 마지막에 출력합시다.
+        usage_chunk_message_list = []
+
         async for chunk_message in self.runnable.astream(
             input={
                 self.HISTORY_MESSAGES_KEY: self.messages_history,
                 self.INPUT_MESSAGES_KEY: [human_message],
             },
         ):
-            yield chunk_message
+            if not chunk_message.usage_metadata:
+                yield chunk_message
+            else:
+                usage_chunk_message_list.append(chunk_message)
+
+        if usage_chunk_message_list:
+            usage_chunk_message_list[-1].usage_metadata = sum_and_merge_dicts(
+                *(chunk_message.usage_metadata for chunk_message in usage_chunk_message_list)
+            )
+            yield usage_chunk_message_list[-1]
 
     async def think(
         self,

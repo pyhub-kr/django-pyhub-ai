@@ -190,3 +190,40 @@ def find_file_in_apps(*paths: Union[str, Path]) -> Path:
             return path
 
     raise FileNotFoundError(f"{paths} 경로의 파일을 찾을 수 없습니다.")
+
+
+def sum_and_merge_dicts(*dicts: Dict[str, Union[int, float, Dict]]) -> Dict[str, Union[int, float, Dict]]:
+    """
+    여러 사전을 병합하여 중첩된 구조를 재귀적으로 처리하고,
+    숫자 값은 합산하며, 중첩된 사전은 병합한다.
+    """
+    def merge_two_dicts(dict1: Dict[str, Union[int, float, Dict]],
+                        dict2: Dict[str, Union[int, float, Dict]]) -> Dict[str, Union[int, float, Dict]]:
+        """
+        두 사전을 병합하는 함수 (재귀적으로 처리)
+        """
+        result = {}
+        all_keys = set(dict1.keys()).union(dict2.keys())
+
+        for key in all_keys:
+            value1 = dict1.get(key)
+            value2 = dict2.get(key)
+
+            if isinstance(value1, dict) and isinstance(value2, dict):
+                # 둘 다 사전이면 재귀적으로 병합
+                result[key] = merge_two_dicts(value1, value2)
+            elif isinstance(value1, (int, float)) and isinstance(value2, (int, float)):
+                # 둘 다 숫자 값이면 합산
+                result[key] = value1 + value2
+            else:
+                # 둘 중 하나만 존재하거나 숫자가 아닌 경우 값 유지
+                result[key] = value1 if value2 is None else value2
+
+        return result
+
+    # 가변 인자로 받은 사전들을 순차적으로 병합
+    merged_result = {}
+    for dictionary in dicts:
+        merged_result = merge_two_dicts(merged_result, dictionary)
+
+    return merged_result
