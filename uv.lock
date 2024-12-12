@@ -632,7 +632,7 @@ wheels = [
 
 [[package]]
 name = "dataclasses-json"
-version = "0.6.7"
+version = "0.6.8"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "marshmallow" },
