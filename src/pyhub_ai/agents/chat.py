@@ -152,7 +152,8 @@ class ChatAgent:
                 self.INPUT_MESSAGES_KEY: [human_message],
             },
         ):
-            if not chunk_message.usage_metadata:
+            # fake llm 사용 시에는 chunk_message 타입이 AIMessageChunk가 아니라 문자열
+            if getattr(chunk_message, "usage_metadata", None) is None:
                 yield chunk_message
             else:
                 usage_chunk_message_list.append(chunk_message)
