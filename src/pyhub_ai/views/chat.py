@@ -83,6 +83,7 @@ class ChatView(ChatMixin, View):
 
             async for text in self.make_queue_consumer(queue):
                 yield text + "\n\n"  # 각 메시지를 개행문자 2개로 분리
+                await asyncio.sleep(0)
         finally:
             # 스트림이 클라이언트에 의해 중단된 경우
             if producer_task and not producer_task.done():

@@ -8,11 +8,15 @@
         <div class="bg-gray-100 flex flex-col h-screen">
             <div id="chat-room"
 
+                 hx-ext="streaming-html"
                  hx-get="{{ connect_url }}"
                  hx-swap="beforeend"
                  hx-trigger="load"
                  hx-target="#chat-messages"
-
+                 hx-on:chunk="
+                     const el = document.querySelector('#chat-messages');
+                     htmx.trigger(el, 'scroll-to-bottom');
+                 "
                  x-data="{ opened: true, thinking: false }"
                  @thinking-start="thinking = true"
                  @thinking-end="thinking = false"
@@ -22,6 +26,11 @@
                 <div class="flex-grow relative">
                     <div id="chat-messages"
                          class="bg-white rounded-lg shadow-md absolute inset-0 overflow-y-auto p-4 pb-20 m-4 mb-0"
+                         hx-on:scroll-to-bottom="
+                             setTimeout(() => {
+                                 this.scrollTo({ top: this.scrollHeight, behavior: 'smooth' });
+                             }, 0);
+                         "
                     >
                     </div>
                     <div class="absolute bottom-0 left-0 right-0 flex justify-center pb-4 pointer-events-none">
@@ -30,33 +39,27 @@
                     </div>
                 </div>
 
-                <form
+                <form id="chat-form" class="flex flex-col p-4 pt-0" novalidate="novalidate"
                       hx-ext="streaming-html"
                       hx-post="{{ connect_url }}"
                       hx-target="#chat-room"
                       hx-swap="beforeend"
                       hx-on:chunk="
                           if (event.detail.count === 0) { this.reset(); };
-                          setTimeout(() => {
-                              const listEl = document.querySelector('#chat-messages');
-                              listEl.scrollTo({
-                                  top: listEl.scrollHeight,
-                                  behavior: 'smooth'
-                              });
-                          }, 0);
-                      "
-
-                      id="chat-form" class="flex flex-col p-4 pt-0" novalidate="novalidate">
+                          const el = document.querySelector('#chat-messages');
+                          htmx.trigger(el, 'scroll-to-bottom');
+                      ">
                     <div class="mb-2">
                         <div id="image-preview" class="mt-2 flex flex-wrap gap-2"></div>
                     </div>
                     <div class="join">
                         {# pycharm 에서 Empty Tag 경고가 뜬다면? - 설정 => Editor => Inspections => HTML 항목의 Empty tag 항목을 해제 #}
                         <c-pyhub.widgets.image-preview-file
-                            class="join-item"
-                            name="images" multiple="multiple" icon_class="w-6 h-6" preview_display_selector="#image-preview"
-                            {# 이미지는 base64 인코딩해서 별도 필드로 전송 #}
-                            with_base64_field="true"></c-pyhub.widgets.image-preview-file>
+                                class="join-item"
+                                name="images" multiple="multiple" icon_class="w-6 h-6"
+                                preview_display_selector="#image-preview"
+                                {# 이미지는 base64 인코딩해서 별도 필드로 전송 #}
+                                with_base64_field="true"></c-pyhub.widgets.image-preview-file>
                         <input type="text" name="user_text" placeholder="메시지를 입력하세요" required="required"
                                class="join-item flex-1 input input-bordered input-md focus:outline-none"
                                autocomplete="off"
