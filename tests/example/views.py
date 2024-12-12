@@ -35,7 +35,8 @@ def chat_room(request, pk: int, type: Literal["chat", "analyst"] = "chat"):
 
 
 class LanguageTutorChatView(AgentChatView):
-    llm_model = LLMModel.OPENAI_GPT_4O
+    llm_model = LLMModel.ANTHROPIC_CLAUDE_3_5_HAIKU
+    # llm_model = LLMModel.OPENAI_GPT_4O
     llm_temperature = 1
     llm_system_prompt_template = """
 You are a language tutor.

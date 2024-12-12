@@ -8,6 +8,7 @@ from typing import Dict, Optional, Tuple, Type, Union
 import httpx
 import yaml
 from django.conf import settings
+from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import BasePromptTemplate
 from langchain_core.prompts.loading import load_prompt, load_prompt_from_config
@@ -20,6 +21,7 @@ from ..utils import find_file_in_apps
 
 class LLMMixin:
     llm_openai_api_key: SecretStr = ""
+    llm_anthropic_api_key: SecretStr = ""
     llm_system_prompt_path: Optional[Union[str, Path]] = None
     llm_system_prompt_template: Union[str, BasePromptTemplate] = ""
     llm_prompt_context_data: Optional[Dict] = None
@@ -36,6 +38,13 @@ class LLMMixin:
         api_key = getattr(settings, "OPENAI_API_KEY", os.environ.get("OPENAI_API_KEY", ""))
         return SecretStr(api_key)
 
+    def get_llm_anthropic_api_key(self) -> SecretStr:
+        if self.llm_anthropic_api_key:
+            return self.llm_anthropic_api_key
+
+        api_key = getattr(settings, "ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY", ""))
+        return SecretStr(api_key)
+
     def get_llm(self) -> BaseChatModel:
         llm_model_name = self.get_llm_model().name.upper()
         if llm_model_name.startswith("OPENAI_"):
@@ -47,6 +56,15 @@ class LLMMixin:
                 timeout=self.get_llm_timeout(),
                 streaming=True,
                 model_kwargs={"stream_options": {"include_usage": True}},
+            )
+        elif llm_model_name.startswith("ANTHROPIC_"):
+            return ChatAnthropic(
+                anthropic_api_key=self.get_llm_anthropic_api_key(),
+                model=self.get_llm_model().value,
+                temperature=self.get_llm_temperature(),
+                max_tokens=self.get_llm_max_tokens(),
+                timeout=self.get_llm_timeout(),
+                streaming=True,
             )
 
         raise NotImplementedError(f"OpenAI API 만 지원하며, {llm_model_name}는 현재 지원하지 않습니다.")

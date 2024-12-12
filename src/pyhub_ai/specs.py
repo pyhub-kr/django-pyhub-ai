@@ -10,6 +10,10 @@ class LLMModel(str, Enum):
     OPENAI_GPT_4O = "gpt-4o"
     OPENAI_GPT_4O_MINI = "gpt-4o-mini"
     OPENAI_GPT_4_TURBO = "gpt-4-turbo"
+    # https://docs.anthropic.com/en/docs/about-claude/models#model-comparison-table
+    ANTHROPIC_CLAUDE_3_5_SONNET = "claude-3-5-sonnet-20241022"
+    ANTHROPIC_CLAUDE_3_5_HAIKU = "claude-3-5-haiku-20241022"
+    ANTHROPIC_CLAUDE_3_OPUS = "claude-3-opus-20240229"
 
     @cached_property
     def spec(self) -> "LLMModelSpec":
@@ -63,5 +67,25 @@ LLM_MODEL_SPECS: Dict[LLMModel, LLMModelSpec] = {
         support_vision=False,
         cost_input_tokens_1m=Decimal("10"),
         cost_output_tokens_1m=Decimal("30"),
+    ),
+    # https://docs.anthropic.com/en/docs/about-claude/models#model-comparison-table
+    # https://www.anthropic.com/pricing#anthropic-api
+    LLMModel.ANTHROPIC_CLAUDE_3_5_SONNET: LLMModelSpec(
+        max_output_tokens=8_192,
+        support_vision=True,
+        cost_input_tokens_1m=Decimal("3"),
+        cost_output_tokens_1m=Decimal("15"),
+    ),
+    LLMModel.ANTHROPIC_CLAUDE_3_5_HAIKU: LLMModelSpec(
+        max_output_tokens=4_096,
+        support_vision=True,
+        cost_input_tokens_1m=Decimal("0.8"),
+        cost_output_tokens_1m=Decimal("4"),
+    ),
+    LLMModel.ANTHROPIC_CLAUDE_3_OPUS: LLMModelSpec(
+        max_output_tokens=4_096,
+        support_vision=True,
+        cost_input_tokens_1m=Decimal("15"),
+        cost_output_tokens_1m=Decimal("75"),
     ),
 }
