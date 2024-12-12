@@ -193,14 +193,14 @@ class ChatMixin:
             headers = dict(self.scope.get("headers", ()))
             if headers.get("hx-request") == "true":
                 return "htmx"
-            if headers.get("accept") == "application/json":
+            if "application/json" in headers.get("accept", ""):
                 return "json"
 
         # Django View 에서 요청을 처리할 경우, request.headers 확인
         elif hasattr(self, "request"):
             if self.request.headers.get("HX-Request") == "true":
                 return "htmx"
-            if self.request.headers.get("Accept") == "application/json":
+            if "application/json" in self.request.headers.get("Accept", ""):
                 return "json"
 
         return self.query_params.get("format", "htmx")
