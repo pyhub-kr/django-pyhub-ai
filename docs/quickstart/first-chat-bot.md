@@ -318,11 +318,13 @@ import os
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
 from django.core.asgi import get_asgi_application
-from example.routing import websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mysite.settings')
 
 django_asgi_app = get_asgi_application()
+
+# 장고 프로젝트 초기화 후에 routing 모듈을 임포트하셔야 합니다.
+from example.routing import websocket_urlpatterns  # noqa
 
 application = ProtocolTypeRouter({
     "http": django_asgi_app,
@@ -331,6 +333,12 @@ application = ProtocolTypeRouter({
 ```
 
 이제 HTML 페이지를 통해 웹소켓 요청을 보내면 챗봇 페이지를 사용할 수 있습니다.
+
+```{caution}
+장고 프로젝트 초기화 후 (`get_asgi_application()` 호출 후)에 각 장고 앱의 `routing` 모듈을 임포트하셔야 합니다.
+그렇지 않으면 실서비스에서 `gunicorn` 및 `uvicorn` 으로 서비스 구동 시에
+`django.core.exceptions.ImproperlyConfigured` 오류를 만나시게 됩니다. 
+```
 
 ## 챗봇 페이지 구현하기
 
