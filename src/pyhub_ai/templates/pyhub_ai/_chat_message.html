@@ -1,4 +1,5 @@
-<div id="{{ chat_messages_dom_id|default:"" }}" hx-swap-oob="beforeend">
+
+<div id="{{ chat_messages_dom_id }}" hx-swap-oob="beforeend">
     {% if mode == "thinking-start" %}
         <script>
             (function() {
@@ -31,8 +32,13 @@
 
     {% elif mode == "overwrite" %}
         {# 새로운 메시지를 UI에 추가하거나, 덮어쓰기 #}
-        <div id="{{ content_block.id|default:"" }}" class="mb-4"
-             {% if content_block.role %}data-role="{{ content_block.role }}"{% endif %}>
+        <div
+            id="{{ content_block.id }}"
+            class="mb-4 transition-opacity duration-500"
+            x-data="{ show: false }"
+            x-init="setTimeout(() => show = true, 50)"
+            :class="{ 'opacity-0': !show, 'opacity-100': show }"
+            {% if content_block.role %}data-role="{{ content_block.role }}"{% endif %}>
             {% if content_block.role == "alert" %}
                 <dialog class="modal">
                     <div class="modal-box">
@@ -134,10 +140,11 @@
             {% endif %}
             <script>
                 (function () {
-                    const targetEl = document.currentScript.parentElement.querySelector(".text");
-                    if (targetEl) {
-                        const markdownEl = targetEl.parentElement.querySelector(".markdown");
-                        if (markdownEl) markdownEl.innerHTML = window.markdownToHtml(targetEl.textContent);
+                    const wrapEl = document.currentScript.parentElement;
+                    const textEl = wrapEl.querySelector(".text");
+                    if (textEl && window.markdownToHtml) {
+                        const markdownEl = textEl.parentElement.querySelector(".markdown");
+                        if (markdownEl) markdownEl.innerHTML = window.markdownToHtml(textEl.textContent);
                     }
                     document.currentScript.remove();
                 })();
@@ -150,8 +157,8 @@
         <script>
             (function () {
                 const sourceEl = document.currentScript.previousElementSibling;
-                const targetEl = document.querySelector('#{{ content_block.id }} .text');
-                chat_message_append(sourceEl, targetEl);
+                const textEl = document.querySelector('#{{ content_block.id }} .text');
+                chat_message_append(sourceEl, textEl);
                 sourceEl?.remove();
                 document.currentScript.remove();
             })();
