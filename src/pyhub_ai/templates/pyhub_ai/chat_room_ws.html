@@ -7,18 +7,40 @@
     {% else %}
         <div class="bg-gray-100 flex flex-col h-screen">
             <div id="chat-room-ws"
+                 class="flex flex-col flex-grow overflow-hidden"
+
                  hx-ext="ws"
-                 x-data="{ opened: false, thinking: false }"
-                 @ws-open="opened = true"
+                 ws-connect="{{ connect_url }}{{ ws_url }}"
+
+                 x-data="{ opened: false, thinking: false, errored: false }"
+                 x-init="
+                     window.registerHtmxWsEventHandlers($el);
+                     $watch('opened', value => { if(!value) { $dispatch('render-alert', '웹소켓 연결이 끊어졌습니다.') } });
+                     $watch('errored', value => { if(value) { $dispatch('render-alert', '웹소켓 연결 중 오류가 발생했습니다.') } });
+                 "
+                 @ws-open="$refs.refChatMessages.innerHTML = ''; opened = true; errored = false;"
+                 @ws-before-send="$refs.ref_form.reset();"
+                 @ws-after-message="htmx.trigger($refs.refChatMessages, 'scroll-to-bottom');"
                  @ws-close="opened = false"
+                 @ws-error="errored = true"
                  @thinking-start="thinking = true"
                  @thinking-end="thinking = false"
-                 ws-connect="{{ connect_url }}{{ ws_url }}"
-                 class="flex flex-col flex-grow overflow-hidden">
+                 @render-alert="
+                    const message = event.detail;
+                    const alertMessage = $refs.refAlertTpl.textContent.replace('${message}', message);
+                    $refs.refChatMessages.insertAdjacentHTML('beforeend', alertMessage);
+                 ">
 
                 <div class="flex-grow relative">
                     <div id="chat-messages"
-                         class="bg-white rounded-lg shadow-md absolute inset-0 overflow-y-auto p-4 pb-20 m-4 mb-0">
+                         class="bg-white rounded-lg shadow-md absolute inset-0 overflow-y-auto p-4 pb-20 m-4 mb-0"
+                         x-ref="refChatMessages"
+                         @scroll-to-bottom="
+                             setTimeout(() => {
+                                 $el.scrollTo({ top: $el.scrollHeight, behavior: 'smooth' });
+                             }, 0);
+                         "
+                    >
                     </div>
                     <div class="absolute bottom-0 left-0 right-0 flex justify-center pb-4 pointer-events-none">
                         <span x-show="thinking"
@@ -26,7 +48,8 @@
                     </div>
                 </div>
 
-                <form ws-send id="chat-form" class="flex flex-col p-4 pt-0" novalidate="novalidate">
+                <form ws-send id="chat-form" class="flex flex-col p-4 pt-0" novalidate="novalidate"
+                      x-ref="ref_form">
                     <div class="mb-2">
                         <div id="image-preview" class="mt-2 flex flex-wrap gap-2"></div>
                     </div>
@@ -50,66 +73,22 @@
                         </button>
                     </div>
                 </form>
+                <script type="x-template" x-ref="refAlertTpl">
+                    <div
+                        class="text bg-red-100 text-red-800 px-4 py-2 rounded-lg max-w-full break-words border border-red-200 mb-4">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        ${message}
+                    </div>
+                </script>
             </div>
         </div>
     {% endif %}
 {% endblock %}
 
 {% block extra-script %}
-    <script type="x-template" id="alert-tpl">
-        <div
-            class="text bg-red-100 text-red-800 px-4 py-2 rounded-lg max-w-full break-words border border-red-200 mb-4">
-            <i class="fas fa-info-circle mr-1"></i>
-            ${message}
-        </div>
-    </script>
     <script>
         (function () {
-            const htmx = window.htmx;
-            htmx.config.wsReconnectDelay = (retryCount) => (3 * retryCount) * 1000;
-
-            const $el = document.querySelector("#chat-room-ws");
-            const alertTpl = document.querySelector('#alert-tpl').textContent;
-
-            const handlers = {
-                $el: $el,
-                alertTpl: alertTpl,
-                wsConnecting(event) {
-                },
-                wsOpen(event) {
-                    htmx.trigger($el, "ws-open");
-                },
-                wsBeforeSend(event) {
-                    const formEl = this.$el.querySelector('form');
-                    if (!!formEl.user_text.value) {
-                        formEl.reset();
-                    } else {
-                        event.preventDefault();
-                    }
-                },
-                wsAfterMessage(event) {
-                    setTimeout(() => {
-                        const listEl = this.$el.querySelector('#chat-messages');
-                        listEl.scrollTo({
-                            top: listEl.scrollHeight,
-                            behavior: 'smooth'
-                        });
-                    }, 0);
-                },
-                wsClose(event) {
-                    this.renderAlert('웹소켓 연결이 끊어졌습니다.');
-                    htmx.trigger($el, "ws-close");
-                },
-                wsError(event) {
-                    this.renderAlert('웹소켓 연결 중 오류가 발생했습니다.');
-                },
-                renderAlert(message) {
-                    const alertMessage = this.alertTpl.replace('${message}', message);
-                    const chatMessagesEl = this.$el.querySelector('#chat-messages');
-                    chatMessagesEl.insertAdjacentHTML('beforeend', alertMessage);
-                }
-            };
-            registerHtmxWsEventHandlers(handlers.$el, handlers);
+            window.htmx.config.wsReconnectDelay = (retryCount) => (3 * retryCount) * 1000;
         })();
     </script>
 {% endblock %}

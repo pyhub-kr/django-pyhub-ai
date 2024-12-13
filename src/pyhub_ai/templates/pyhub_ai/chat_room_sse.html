@@ -7,28 +7,26 @@
     {% else %}
         <div class="bg-gray-100 flex flex-col h-screen">
             <div id="chat-room"
+                 class="flex flex-col flex-grow overflow-hidden"
 
                  hx-ext="streaming-html"
                  hx-get="{{ connect_url }}"
                  hx-swap="beforeend"
                  hx-trigger="load"
                  hx-target="#chat-messages"
-                 hx-on:chunk="
-                     const el = document.querySelector('#chat-messages');
-                     htmx.trigger(el, 'scroll-to-bottom');
-                 "
-                 x-data="{ opened: true, thinking: false }"
-                 @thinking-start="thinking = true"
-                 @thinking-end="thinking = false"
 
-                 class="flex flex-col flex-grow overflow-hidden">
+                 x-data="{ opened: true, thinking: false }"
+                 @chunk="htmx.trigger($refs.refChatMessages, 'scroll-to-bottom');"
+                 @thinking-start="thinking = true"
+                 @thinking-end="thinking = false">
 
                 <div class="flex-grow relative">
                     <div id="chat-messages"
                          class="bg-white rounded-lg shadow-md absolute inset-0 overflow-y-auto p-4 pb-20 m-4 mb-0"
-                         hx-on:scroll-to-bottom="
+                         x-ref="refChatMessages"
+                         @scroll-to-bottom="
                              setTimeout(() => {
-                                 this.scrollTo({ top: this.scrollHeight, behavior: 'smooth' });
+                                 $el.scrollTo({ top: $el.scrollHeight, behavior: 'smooth' });
                              }, 0);
                          "
                     >
@@ -39,15 +37,15 @@
                     </div>
                 </div>
 
-                <form id="chat-form" class="flex flex-col p-4 pt-0" novalidate="novalidate"
+                <form id="chat-form"
+                      class="flex flex-col p-4 pt-0" novalidate="novalidate"
                       hx-ext="streaming-html"
                       hx-post="{{ connect_url }}"
                       hx-target="#chat-room"
                       hx-swap="beforeend"
-                      hx-on:chunk="
-                          if (event.detail.count === 0) { this.reset(); };
-                          const el = document.querySelector('#chat-messages');
-                          htmx.trigger(el, 'scroll-to-bottom');
+                      @chunk="
+                          if (event.detail.count === 0) { $el.reset(); };
+                          htmx.trigger($refs.refChatMessages, 'scroll-to-bottom');
                       ">
                     <div class="mb-2">
                         <div id="image-preview" class="mt-2 flex flex-wrap gap-2"></div>
