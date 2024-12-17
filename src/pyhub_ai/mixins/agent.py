@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.files.base import File
 from django.utils.html import format_html
 from django.utils.safestring import SafeString
+from langchain.tools import BaseTool
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.runnables import AddableDict
 
@@ -24,15 +25,17 @@ class AgentMixin(LLMMixin, ChatMixin):
     show_initial_prompt: bool = True
     verbose: Optional[bool] = False
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, tools: Optional[List[BaseTool]] = None, **kwargs):
         super().__init__(*args, **kwargs)
         self.agent: Optional[ChatAgent] = None
+        self.tools = tools
 
     async def get_agent(self, previous_messages: Optional[List[Union[HumanMessage, AIMessage]]] = None) -> ChatAgent:
         return ChatAgent(
             llm=self.get_llm(),
             system_prompt=self.get_llm_system_prompt(),
             previous_messages=previous_messages,
+            tools=self.tools,
             on_conversation_complete=self.on_conversation_complete,
             verbose=self.get_verbose(),
         )

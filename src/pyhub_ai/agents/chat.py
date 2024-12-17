@@ -15,10 +15,11 @@ from langchain_core.prompts import (
 )
 from langchain_core.prompts.chat import BaseMessagePromptTemplate
 from langchain_core.runnables import AddableDict, Runnable, RunnablePassthrough
-from langchain_core.tools import BaseTool
+from langchain_core.tools import BaseTool, StructuredTool
 
 from pyhub_ai.blocks import ContentBlock, ImageUrlContentBlock, TextContentBlock
 from pyhub_ai.parsers import XToolsAgentOutputParser
+from pyhub_ai.tools import tool_with_retry
 from pyhub_ai.utils import encode_image_files, sum_and_merge_dicts
 
 logger = logging.getLogger(__name__)
@@ -39,7 +40,7 @@ class ChatAgent:
         llm: BaseChatModel,
         system_prompt: Union[str, BasePromptTemplate],
         previous_messages: Optional[List[Union[HumanMessage, AIMessage]]] = None,
-        tools: Optional[List[BaseTool]] = None,
+        tools: Optional[List[Union[Callable, BaseTool]]] = None,
         on_conversation_complete: Optional[
             Callable[[HumanMessage, AIMessage, Optional[List[AddableDict]]], Awaitable[None]]
         ] = None,
@@ -54,7 +55,7 @@ class ChatAgent:
             llm (BaseChatModel): 대형 언어 모델.
             system_prompt (Union[str, BasePromptTemplate]): 시스템 프롬프트.
             previous_messages (Optional[List[Union[HumanMessage, AIMessage]]]): 초기 메시지 목록.
-            tools (Optional[List[BaseTool]]): 사용할 도구 목록.
+            tools (Optional[List[Union[Callable, BaseTool]]): 사용할 도구 목록.
             on_conversation_complete (Optional[Callable[[HumanMessage, AIMessage], None]]): 메시지가 완성되면 호출할 콜백 함수.
             max_iterations (int): 최대 반복 횟수. tools 옵션을 사용할 때만 사용됩니다.
             max_execution_time (int): 최대 실행 시간. tools 옵션을 사용할 때만 사용됩니다.
@@ -86,6 +87,10 @@ class ChatAgent:
             prompt = ChatPromptTemplate.from_messages(base_messages)
             runnable = (prompt | llm).with_config(verbose=verbose)
         else:
+            # 랭체인 툴 @tool 장식자로 래핑되지 않은 함수에 대해서는
+            # @tool_with_retry 장식자로 래핑시켜줍니다.
+            tools = [_tool if isinstance(_tool, StructuredTool) else tool_with_retry(_tool) for _tool in tools]
+
             # Agent를 통하기 때문에 stream 옵션을 지정하더라도 Agent를 경유하여 응답이 생성되기에,
             # 스트리밍 방식으로 응답 생성이 불가능하고 한 번에 모든 응답이 생성됩니다.
             # create_tool_calling_agent 에서는 ToolsAgentOutputParser 가 적용되어있고,
