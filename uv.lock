@@ -775,6 +775,7 @@ dependencies = [
     { name = "seaborn" },
     { name = "tabulate" },
     { name = "tenacity" },
+    { name = "typing-extensions" },
 ]
 
 [package.optional-dependencies]
@@ -831,6 +832,7 @@ requires-dist = [
     { name = "seaborn" },
     { name = "tabulate" },
     { name = "tenacity" },
+    { name = "typing-extensions" },
 ]
 
 [[package]]
