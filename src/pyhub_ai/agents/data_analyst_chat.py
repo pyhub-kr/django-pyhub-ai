@@ -8,7 +8,7 @@ from langchain.agents.output_parsers.tools import ToolAgentAction
 from langchain_core.agents import AgentAction, AgentStep
 from langchain_core.messages import AIMessage, AIMessageChunk, BaseMessage, HumanMessage
 from langchain_core.runnables.utils import AddableDict
-from langchain_core.tools import BaseTool, tool
+from langchain_core.tools import BaseTool
 from langchain_experimental.tools import PythonAstREPLTool
 from matplotlib import pyplot as plt
 from matplotlib import use as matplotlib_use
@@ -20,9 +20,11 @@ from pyhub_ai.blocks import (
     ImageDataContentBlock,
     TextContentBlock,
 )
+from pyhub_ai.tools import tool_with_retry
 from pyhub_ai.utils import get_image_mimetype
 
 from .chat import ChatAgent
+
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +78,7 @@ class DataAnalystChatAgent(ChatAgent):
             BaseTool: 생성된 파이썬 REPL 도구.
         """
 
-        @tool
+        @tool_with_retry()
         def python_repl_tool(code: Annotated[str, "실행할 파이썬 코드 (차트 생성용)"]):
             """파이썬, 판다스 쿼리, matplotlib, seaborn 코드를 실행하는 데 사용합니다."""
             return self.python_repl_tool.invoke(code)

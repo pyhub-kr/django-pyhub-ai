@@ -59,7 +59,6 @@ class AgentMixin(LLMMixin, ChatMixin):
 
         # 저장된 대화내역이 없고,
         if not previous_messages:
-            print("# self.llm_first_user_message_template :", repr(self.llm_first_user_message_template))
             # 설정된 첫 User 메시지가 있다면 LLM에게 전달하고 응답을 렌더링합니다.
             first_user_message = self.get_llm_first_user_message()
             if first_user_message:

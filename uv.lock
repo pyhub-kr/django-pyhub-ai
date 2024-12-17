@@ -774,6 +774,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "seaborn" },
     { name = "tabulate" },
+    { name = "tenacity" },
 ]
 
 [package.optional-dependencies]
@@ -829,6 +830,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'" },
     { name = "seaborn" },
     { name = "tabulate" },
+    { name = "tenacity" },
 ]
 
 [[package]]
