@@ -25,7 +25,6 @@ from pyhub_ai.utils import get_image_mimetype
 
 from .chat import ChatAgent
 
-
 logger = logging.getLogger(__name__)
 
 

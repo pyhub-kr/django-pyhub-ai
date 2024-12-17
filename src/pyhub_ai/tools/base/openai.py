@@ -14,7 +14,6 @@ from openai.types.chat import ChatCompletionMessageToolCall
 
 from .base import function_to_json
 
-
 P = ParamSpec("P")  # 함수의 파라미터를 캡처하기 위한 ParamSpec
 R = TypeVar("R")  # 함수의 반환 타입을 캡처하기 위한 TypeVar
 

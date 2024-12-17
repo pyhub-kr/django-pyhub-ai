@@ -197,8 +197,10 @@ def sum_and_merge_dicts(*dicts: Dict[str, Union[int, float, Dict]]) -> Dict[str,
     여러 사전을 병합하여 중첩된 구조를 재귀적으로 처리하고,
     숫자 값은 합산하며, 중첩된 사전은 병합한다.
     """
-    def merge_two_dicts(dict1: Dict[str, Union[int, float, Dict]],
-                        dict2: Dict[str, Union[int, float, Dict]]) -> Dict[str, Union[int, float, Dict]]:
+
+    def merge_two_dicts(
+        dict1: Dict[str, Union[int, float, Dict]], dict2: Dict[str, Union[int, float, Dict]]
+    ) -> Dict[str, Union[int, float, Dict]]:
         """
         두 사전을 병합하는 함수 (재귀적으로 처리)
         """

@@ -2,7 +2,7 @@ import re
 from typing import Optional
 
 import httpx
-from httpx._types import QueryParamTypes, HeaderTypes
+from httpx._types import HeaderTypes, QueryParamTypes
 
 
 async def get_response(

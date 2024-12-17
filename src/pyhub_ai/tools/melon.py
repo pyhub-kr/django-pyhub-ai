@@ -4,8 +4,7 @@ from typing import Dict, List, Optional
 
 from bs4 import BeautifulSoup
 
-from .utils import remove_quotes, get_response, get_number_from_string
-
+from .utils import get_number_from_string, get_response, remove_quotes
 
 MELON_HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36",

@@ -1,5 +1,5 @@
 import inspect
-from typing import Dict, Callable, get_type_hints, Literal, get_args
+from typing import Callable, Dict, Literal, get_args, get_type_hints
 
 
 def function_to_json(func: Callable) -> Dict:
