@@ -1,6 +1,5 @@
 import os
 from collections import defaultdict
-from dataclasses import dataclass
 from io import StringIO
 from os.path import exists
 from pathlib import Path
@@ -26,7 +25,6 @@ from ..specs import LLMModel
 from ..utils import find_file_in_apps
 
 
-@dataclass
 class LLMMixin:
     llm_openai_api_key: SecretStr = ""
     llm_anthropic_api_key: SecretStr = ""
@@ -41,8 +39,49 @@ class LLMMixin:
     llm_timeout: Union[float, Tuple[float, float]] = 5  # seconds
     llm_fake_responses: Optional[List[str]] = None
 
-    def __post_init__(self):
-        super().__init__()
+    def __init__(
+        self,
+        *args,
+        llm_openai_api_key: Optional[SecretStr] = None,
+        llm_anthropic_api_key: Optional[SecretStr] = None,
+        llm_google_api_key: Optional[SecretStr] = None,
+        llm_system_prompt_path: Optional[Union[str, Path]] = None,
+        llm_system_prompt_template: Optional[Union[str, BasePromptTemplate, DjangoTemplate]] = None,
+        llm_prompt_context_data: Optional[Dict] = None,
+        llm_first_user_message_template: Optional[Union[str, DjangoTemplate]] = None,
+        llm_model: Optional[LLMModel] = None,
+        llm_temperature: Optional[float] = None,
+        llm_max_tokens: Optional[int] = None,
+        llm_timeout: Optional[Union[float, Tuple[float, float]]] = None,  # seconds
+        llm_fake_responses: Optional[List[str]] = None,
+        **kwargs,
+    ):
+        if llm_openai_api_key is not None:
+            self.llm_openai_api_key = llm_openai_api_key
+        if llm_anthropic_api_key is not None:
+            self.llm_anthropic_api_key = llm_anthropic_api_key
+        if llm_google_api_key is not None:
+            self.llm_google_api_key = llm_google_api_key
+        if llm_system_prompt_path is not None:
+            self.llm_system_prompt_path = llm_system_prompt_path
+        if llm_system_prompt_template is not None:
+            self.llm_system_prompt_template = llm_system_prompt_template
+        if llm_prompt_context_data is not None:
+            self.llm_prompt_context_data = llm_prompt_context_data
+        if llm_first_user_message_template is not None:
+            self.llm_first_user_message_template = llm_first_user_message_template
+        if llm_model is not None:
+            self.llm_model = llm_model
+        if llm_temperature is not None:
+            self.llm_temperature = llm_temperature
+        if llm_max_tokens is not None:
+            self.llm_max_tokens = llm_max_tokens
+        if llm_timeout is not None:
+            self.llm_timeout = llm_timeout
+        if llm_fake_responses is not None:
+            self.llm_fake_responses = llm_fake_responses
+
+        super().__init__(*args, **kwargs)
 
     def get_llm_openai_api_key(self) -> SecretStr:
         if self.llm_openai_api_key:
