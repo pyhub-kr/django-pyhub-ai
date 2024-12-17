@@ -24,7 +24,7 @@
 4. 아래 명령으로 라이브러리 설치
 
 ```shell
-python -m pip install django-pyhub-ai
+python -m pip install --upgrade django-pyhub-ai
 ```
 
 이 라이브러리 하나만 설치하셔도 LLM 구동에 필요한 의존성이 걸린 라이브러리들이 자동으로 설치됩니다. 설치되는 라이브러리가 많으므로 설치에 시간이 조금 걸릴 수 있습니다.
