@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from typing import AsyncIterator, List, Optional, Union
+from typing import AsyncIterator, Callable, List, Optional, Union
 
 from django.conf import settings
 from django.core.files.base import File
@@ -25,7 +25,7 @@ class AgentMixin(LLMMixin, ChatMixin):
     show_initial_prompt: bool = True
     verbose: Optional[bool] = False
 
-    def __init__(self, *args, tools: Optional[List[BaseTool]] = None, **kwargs):
+    def __init__(self, *args, tools: Optional[List[Union[Callable, BaseTool]]] = None, **kwargs):
         super().__init__(*args, **kwargs)
         self.agent: Optional[ChatAgent] = None
         self.tools = tools
