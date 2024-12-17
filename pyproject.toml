@@ -21,6 +21,8 @@ dependencies = [
     "langchain-anthropic",
     "langchain-google-genai",
     "tenacity",
+    # langchain을 통해서 의존성이 추가되어있습니다.
+    "typing-extensions",
     "pandas",
     "numpy",
     "tabulate",

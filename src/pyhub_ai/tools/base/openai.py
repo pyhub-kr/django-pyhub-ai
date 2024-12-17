@@ -1,15 +1,14 @@
 import asyncio
 import inspect
 import json
-from typing import (
-    Any,
-    AsyncGenerator,
-    Callable,
-    List,
-    Optional,
-    TypeVar,
-    ParamSpec,
-)
+import sys
+from typing import Any, AsyncGenerator, Callable, List, Optional, TypeVar
+
+if sys.version_info[:2] < (3, 10):
+    from typing_extensions import ParamSpec
+else:
+    # ParamSpec은 Python 3.10부터 typing 모듈에 포함
+    from typing import ParamSpec
 
 from openai.types.chat import ChatCompletionMessageToolCall
 
