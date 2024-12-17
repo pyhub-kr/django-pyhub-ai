@@ -4,6 +4,7 @@ from typing import (
     AsyncIterator,
     Callable,
     Coroutine,
+    Dict,
     List,
     Literal,
     Optional,
@@ -68,15 +69,15 @@ class ChatMixin:
             return QueryDict(query_string)
         elif hasattr(self, "request"):
             return self.request.GET
-        raise ImproperlyConfigured("Can't query params.")
+        return QueryDict()
 
     @cached_property
-    def url_route_kwargs(self):
+    def url_route_kwargs(self) -> Dict[str, str]:
         if hasattr(self, "scope"):
             return self.scope["url_route"]["kwargs"]
         elif hasattr(self, "kwargs"):
             return self.kwargs
-        raise ImproperlyConfigured("Can't url route kwargs.")
+        return {}
 
     async def get_user(self) -> Optional[UserType]:
         if hasattr(self, "scope"):
@@ -93,7 +94,7 @@ class ChatMixin:
         elif hasattr(self, "request"):
             user = self.request.user
         else:
-            raise ImproperlyConfigured("Can't get user.")
+            return None
 
         is_authenticated = await sync_to_async(lambda: user.is_authenticated)()
         if is_authenticated:
