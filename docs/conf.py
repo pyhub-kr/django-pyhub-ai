@@ -65,10 +65,8 @@ html_context = {
 }
 html_theme_options = {
     "use_edit_page_button": True,
-
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
-    "announcement": "이 라이브러리는 현재 베타버전입니다. 기능이 자주 추가되고 변경될 수 있습니다. 다양한 <a href='mailto:me@pyhub.kr'>피드백</a>을 환영합니다.",
-
+    "announcement": "이 라이브러리의 최신버전은 <strong>0.7.1</strong> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
     "logo": {
         "text": "django-pyhub-ai 튜토리얼",
         "alt_text": "django-pyhub-ai 튜토리얼 - Home",
@@ -84,7 +82,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "GitHub",
-            "url": "https://github.com/pyhub-kr/django-pyhub-ai", 
+            "url": "https://github.com/pyhub-kr/django-pyhub-ai",
             "icon": "fa-brands fa-square-github",
             "type": "fontawesome",
         },
@@ -107,10 +105,8 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
-
-# https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/navigation.html#control-how-many-navigation-levels-are-shown-by-default
+    # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/navigation.html#control-how-many-navigation-levels-are-shown-by-default
     "show_nav_level": 2,
-
     # 지정 이름의 템플릿을 include
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/layout.html#layout-footer
     # layout.html 템플릿을 재정의하여 별도 템플릿 없이 layout.html 템플릿에서 직접 footer 정의
@@ -137,8 +133,8 @@ source_suffix = {
 
 templates_path = ["_templates", "templates"]
 
-html_static_path = ['_static']
-html_css_files = ['custom.css']
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", ".venv"]
 
