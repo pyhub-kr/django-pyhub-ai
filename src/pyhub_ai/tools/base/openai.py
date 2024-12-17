@@ -56,6 +56,6 @@ class OpenAITools(list):
         for tool_call, result in zip(tool_calls, results):
             yield {
                 "role": "tool",
-                "content": json.dumps(result),
+                "content": json.dumps(result, ensure_ascii=False),
                 "tool_call_id": tool_call.id,
             }
