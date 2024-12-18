@@ -2,6 +2,7 @@ import os
 from typing import Dict, Literal
 
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 from .utils import get_response
 
@@ -42,8 +43,18 @@ async def naver_map_router(
         - 설정: https://console.ncloud.com/naver-service/application
     """
 
-    ncp_map_client_id = getattr(settings, "NCP_MAP_CLIENT_ID", os.environ.get("NCP_MAP_CLIENT_ID", ""))
-    ncp_map_client_secret = getattr(settings, "NCP_MAP_CLIENT_SECRET", os.environ.get("NCP_MAP_CLIENT_SECRET", ""))
+    try:
+        ncp_map_client_id = getattr(settings, "NCP_MAP_CLIENT_ID", None)
+        ncp_map_client_secret = getattr(settings, "NCP_MAP_CLIENT_SECRET", None)
+    except ImproperlyConfigured:
+        ncp_map_client_id = None
+        ncp_map_client_secret = None
+
+    if ncp_map_client_id is None:
+        ncp_map_client_id = os.environ.get("NCP_MAP_CLIENT_ID", None)
+
+    if ncp_map_client_secret is None:
+        ncp_map_client_secret = os.environ.get("NCP_MAP_CLIENT_SECRET", "")
 
     if not ncp_map_client_id or not ncp_map_client_secret:
         raise ValueError("NCP_MAP_CLIENT_ID 또는 NCP_MAP_CLIENT_SECRET이 설정되어 있지 않습니다.")
