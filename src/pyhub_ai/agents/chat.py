@@ -1,10 +1,13 @@
 import logging
-from typing import AsyncIterator, Awaitable, Callable, List, Optional, Union
+import traceback
+from typing import Any, AsyncIterator, Awaitable, Callable, List, Optional, Union
 
 import openai
 from django.core.files import File
 from langchain.agents import AgentExecutor
 from langchain.agents.format_scratchpad import format_to_tool_messages
+from langchain.agents.output_parsers.tools import ToolAgentAction
+from langchain_core.agents import AgentAction
 from langchain_core.language_models import BaseChatModel
 from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
 from langchain_core.messages.ai import AIMessage, AIMessageChunk
@@ -17,10 +20,15 @@ from langchain_core.prompts.chat import BaseMessagePromptTemplate
 from langchain_core.runnables import AddableDict, Runnable, RunnablePassthrough
 from langchain_core.tools import BaseTool, StructuredTool
 
-from pyhub_ai.blocks import ContentBlock, ImageUrlContentBlock, TextContentBlock
+from pyhub_ai.blocks import (
+    ContentBlock,
+    ImageDataContentBlock,
+    ImageUrlContentBlock,
+    TextContentBlock,
+)
 from pyhub_ai.parsers import XToolsAgentOutputParser
-from pyhub_ai.tools import tool_with_retry
-from pyhub_ai.utils import encode_image_files, sum_and_merge_dicts
+from pyhub_ai.tools import PyhubStructuredTool, tool_with_retry
+from pyhub_ai.utils import encode_image_files, get_image_mimetype, sum_and_merge_dicts
 
 logger = logging.getLogger(__name__)
 
@@ -83,14 +91,21 @@ class ChatAgent:
             )
         )
 
-        if not tools:
+        # 랭체인 툴 @tool 장식자로 래핑되지 않은 함수에 대해서는
+        # @tool_with_retry 장식자로 래핑시켜줍니다.
+        self.tools = []
+        for _tool in tools or []:
+            if isinstance(_tool, StructuredTool):
+                self.tools.append(_tool)
+            else:
+                self.tools.append(tool_with_retry(_tool))
+
+        self.tools_dict = {tool.name: tool for tool in self.tools}
+
+        if not self.tools:
             prompt = ChatPromptTemplate.from_messages(base_messages)
             runnable = (prompt | llm).with_config(verbose=verbose)
         else:
-            # 랭체인 툴 @tool 장식자로 래핑되지 않은 함수에 대해서는
-            # @tool_with_retry 장식자로 래핑시켜줍니다.
-            tools = [_tool if isinstance(_tool, StructuredTool) else tool_with_retry(_tool) for _tool in tools]
-
             # Agent를 통하기 때문에 stream 옵션을 지정하더라도 Agent를 경유하여 응답이 생성되기에,
             # 스트리밍 방식으로 응답 생성이 불가능하고 한 번에 모든 응답이 생성됩니다.
             # create_tool_calling_agent 에서는 ToolsAgentOutputParser 가 적용되어있고,
@@ -108,13 +123,13 @@ class ChatAgent:
             agent = (
                 RunnablePassthrough.assign(agent_scratchpad=lambda x: format_to_tool_messages(x["intermediate_steps"]))
                 | prompt
-                | llm.bind_tools(tools)
+                | llm.bind_tools(self.tools)
                 | XToolsAgentOutputParser()
             )
 
             runnable = AgentExecutor(
                 agent=agent,
-                tools=tools,
+                tools=self.tools,
                 handle_parsing_errors=handle_parsing_errors,
                 max_iterations=max_iterations,
                 max_execution_time=max_execution_time,
@@ -159,15 +174,32 @@ class ChatAgent:
         ):
             # fake llm 사용 시에는 chunk_message 타입이 AIMessageChunk가 아니라 문자열
             if getattr(chunk_message, "usage_metadata", None) is None:
+                if isinstance(chunk_message, AddableDict):
+                    agent_output = chunk_message
+                    if "steps" in agent_output:
+                        agent_step_list: List[AgentStep] = agent_output["steps"]
+                        for agent_step in agent_step_list:
+                            action = agent_step.action
+
+                            # 등록된 Tool에서 aget_observation() 반환값이 있다면 호출하여
+                            if action.tool in self.tools_dict:
+                                tool = self.tools_dict[action.tool]
+                                if isinstance(tool, PyhubStructuredTool):
+                                    ob = await tool.aget_observation(action)
+                                    if ob is not None:
+                                        agent_step.observation = ob
+
                 yield chunk_message
+
             else:
                 usage_chunk_message_list.append(chunk_message)
 
         if usage_chunk_message_list:
-            usage_chunk_message_list[-1].usage_metadata = sum_and_merge_dicts(
+            last_chunk_message = usage_chunk_message_list[-1]
+            last_chunk_message.usage_metadata = sum_and_merge_dicts(
                 *(chunk_message.usage_metadata for chunk_message in usage_chunk_message_list)
             )
-            yield usage_chunk_message_list[-1]
+            yield last_chunk_message
 
     async def think(
         self,
@@ -273,6 +305,7 @@ class ChatAgent:
             yield TextContentBlock(role="error", value=e.message)
         except Exception as e:
             logger.error(f"Error: {e}")
+            logger.error(traceback.format_exc())
             yield TextContentBlock(role="error", value=str(e))
 
     async def translate_lc_message(
@@ -339,6 +372,93 @@ class ChatAgent:
                 value=lc_message.content,
                 usage_metadata=lc_message.usage_metadata,
             )
+        elif isinstance(lc_message, (AddableDict, dict)):
+            agent_output: AddableDict = lc_message
+
+            # Action 단계 : Tool 도구 실행 계획 (아직 도구 실행 전)
+            if "actions" in agent_output:
+                action_list: List[Union[AgentAction, ToolAgentAction]]
+                action_list = agent_output["actions"]
+                for action in action_list:
+                    usage_metadata = None
+
+                    if action.message_log:
+                        ai_message_chunk = action.message_log[0]
+                        if isinstance(ai_message_chunk, AIMessage):
+                            usage_metadata = ai_message_chunk.usage_metadata
+
+                    if agent_output["messages"]:
+                        ai_message_chunk = agent_output["messages"][0]
+                        if isinstance(ai_message_chunk, AIMessage):
+                            usage_metadata = ai_message_chunk.usage_metadata
+
+                    if isinstance(action, ToolAgentAction):
+                        if action.tool in self.tools_dict:
+                            tool: PyhubStructuredTool = self.tools_dict[action.tool]
+                            block = await tool.aget_content_block(
+                                action,
+                                None,
+                                usage_metadata=usage_metadata,
+                            )
+                            if block is not None:
+                                yield block
+                        else:
+                            logger.warning(f"[actions] {action.tool} Tool을 tools_dict에서 찾을 수 없습니다.")
+
+            # Observation 단계 : Tool 실행 반환값
+            if "steps" in agent_output:
+                agent_step_list: List[AgentStep] = agent_output["steps"]
+                for agent_step in agent_step_list:
+                    action: ToolAgentAction = agent_step.action
+                    observation = agent_step.observation
+                    block = await self.translate_observation(action, observation)
+                    if block is not None:
+                        yield block
+
+            # Final Answer 단계
+            if "output" in agent_output:
+                # output에는 응답 문자열만 있고 메타 데이터가 없습니다.
+                # messages 리스트 내의 AIMessage 객체를 활용하겠습니다.
+                ai_message: AIMessage
+                for ai_message in agent_output["messages"]:
+                    yield TextContentBlock(
+                        role="assistant",
+                        value=ai_message.content,
+                        usage_metadata=ai_message.usage_metadata,
+                    )
+
+            # 대화 기록이 업데이트될 때 : AIMessageChunk, FunctionMessage, AIMessage
+            # if "messages" in output:
+            #     pass
+
         else:
             # 관심사 이외 메시지는 그대로 yield
             yield lc_message
+
+    async def translate_observation(self, action: ToolAgentAction, observation: Any) -> Optional[ContentBlock]:
+
+        if action.tool in self.tools_dict:
+            tool = self.tools_dict[action.tool]
+            if isinstance(tool, PyhubStructuredTool):
+                return await tool.aget_content_block(action, observation)
+            else:
+                logger.warning(f"[observation] {action.tool}을 PyhubStructuredTool 기반으로 변경해주세요.")
+                return None
+        else:
+            logger.warning(f"[observation] {action.tool} Tool을 tools_dict에서 찾을 수 없습니다.")
+
+        # 에러 메시지일 경우에만 에러 메시지를 출력
+        if isinstance(observation, str) and "error" in observation.lower():
+            return TextContentBlock(role="error", value=observation)
+
+        elif not observation:
+            pass
+
+        elif isinstance(observation, bytes):
+            header = observation[:16]
+            # 이미지가 아니라면 None 반환
+            mimetype = get_image_mimetype(header)
+            if mimetype:
+                return ImageDataContentBlock(value=observation, mimetype=mimetype)
+
+        return None

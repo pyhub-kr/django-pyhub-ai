@@ -36,7 +36,6 @@ class OpenAITools(list):
         func_name = tool_call.function.name
         func = self.get_func(func_name)
         kwargs = json.loads(tool_call.function.arguments)
-        print(f"[Tool] {func_name}({kwargs})")
 
         if self.retry_strategy:
             func = self.retry_strategy(func)

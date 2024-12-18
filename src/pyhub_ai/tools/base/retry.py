@@ -1,7 +1,3 @@
-import inspect
-from functools import wraps
-
-from langchain.tools import tool as orig_tool
 from tenacity import RetryCallState, retry, stop_after_attempt, wait_random
 
 
@@ -17,51 +13,3 @@ default_retry_strategy = retry(
     wait=wait_random(1, 3),  # 재시도 대기 시간
     retry_error_callback=retry_error_callback_to_string,
 )
-
-
-def tool_with_retry(name_or_callable=None, *args, retry_strategy=None, **kwargs):
-    if callable(name_or_callable) and not args and not kwargs:
-        # @tool_with_retry 형식
-        func = name_or_callable
-        used_retry_strategy = retry_strategy or default_retry_strategy
-
-        if inspect.iscoroutinefunction(func):
-
-            @orig_tool()
-            @used_retry_strategy
-            @wraps(func)
-            async def inner(*iargs, **ikwargs):
-                return await func(*iargs, **ikwargs)
-
-        else:
-
-            @orig_tool()
-            @used_retry_strategy
-            @wraps(func)
-            def inner(*iargs, **ikwargs):
-                return func(*iargs, **ikwargs)
-
-        return inner
-
-    # @tool_with_retry(...) 형식
-    def decorator(func):
-        used_retry_strategy = retry_strategy or default_retry_strategy
-        if inspect.iscoroutinefunction(func):
-
-            @orig_tool(name_or_callable, *args, **kwargs)
-            @used_retry_strategy
-            @wraps(func)
-            async def inner(*iargs, **ikwargs):
-                return await func(*iargs, **ikwargs)
-
-        else:
-
-            @orig_tool(name_or_callable, *args, **kwargs)
-            @used_retry_strategy
-            @wraps(func)
-            def inner(*iargs, **ikwargs):
-                return func(*iargs, **ikwargs)
-
-        return inner
-
-    return decorator
