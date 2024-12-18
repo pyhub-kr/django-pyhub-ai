@@ -9,7 +9,7 @@ from .utils import get_response
 async def naver_map_router(
     start: str,
     goal: str,
-    option: Literal["trafast", "tracomfort", "traoptimal", "traavoidtoll", "traavoidcaronly"] = "trafast",
+    option: Literal["trafast", "tracomfort", "traoptimal", "traavoidtoll", "traavoidcaronly"],
 ) -> Dict:
     """네이버 지도 경로 검색 Direction 5 API를 사용하여 두 지점 간의 경로를 검색합니다.
 
@@ -20,7 +20,7 @@ async def naver_map_router(
         start: 출발지 좌표 (경도,위도)
         goal: 목적지 좌표 (경도,위도)
         option: 경로 탐색 옵션
-            - trafast: 실시간 빠른길
+            - trafast: 실시간 빠른길 (recommend)
             - tracomfort: 실시간 편한길
             - traoptimal: 실시간 최적
             - traavoidtoll: 무료 우선
