@@ -1,6 +1,6 @@
 import logging
 from collections import defaultdict
-from typing import AsyncIterator, Callable, List, Optional, Union
+from typing import AsyncIterator, Callable, List, Optional, Type, TypeVar, Union
 
 from django.conf import settings
 from django.core.files.base import File
@@ -20,22 +20,70 @@ from .llm import LLMMixin
 logger = logging.getLogger(__name__)
 
 
+T = TypeVar("T", bound="AgentMixin")
+
+
 class AgentMixin(LLMMixin, ChatMixin):
     welcome_message_template = "챗봇 서비스에 오신 것을 환영합니다. ;)"
     show_initial_prompt: bool = True
     verbose: Optional[bool] = False
+    tools: Optional[List[Union[Callable, BaseTool]]] = None
 
     def __init__(self, *args, tools: Optional[List[Union[Callable, BaseTool]]] = None, **kwargs):
         super().__init__(*args, **kwargs)
         self.agent: Optional[ChatAgent] = None
-        self.tools = tools
+        self.param_tools = tools
+
+    @classmethod
+    async def acreate(cls: Type[T], *args, tools: Optional[List[Union[Callable, BaseTool]]] = None, **kwargs) -> T:
+        """AgentMixin 클래스의 새 인스턴스를 비동기적으로 생성하고, 에이전트 생성을 초기화합니다.
+
+        Args:
+            *args: 클래스 생성자에 전달할 위치 인자들
+            tools: 에이전트가 사용할 도구 목록. 각 도구는 호출 가능한 함수나 BaseTool 인스턴스여야 함
+            **kwargs: 클래스 생성자에 전달할 키워드 인자들
+
+        Returns:
+            T: 초기화된 인스턴스
+
+        Example:
+            ```python
+            agent = await 클래스.acreate(tools=[my_tool1, my_tool2])
+            ```
+        """
+        instance = cls(*args, tools, **kwargs)
+        await instance.agent_setup()
+        return instance
+
+    async def get_tools(self) -> List[Union[Callable, BaseTool]]:
+        """에이전트가 사용할 도구 목록을 가져옵니다.
+
+        Returns:
+            List[Union[Callable, BaseTool]]: 클래스에 정의된 도구 목록. 정의되지 않은 경우 빈 리스트 반환
+
+        Note:
+            이 메서드는 클래스 레벨에서 정의된 tools 속성을 반환합니다.
+        """
+        return self.__class__.tools or []
 
     async def get_agent(self, previous_messages: Optional[List[Union[HumanMessage, AIMessage]]] = None) -> ChatAgent:
+        """ChatAgent 인스턴스를 생성하고 반환합니다.
+
+        Args:
+            previous_messages: 이전 대화 메시지 목록. HumanMessage와 AIMessage 인스턴스들의 리스트
+
+        Returns:
+            ChatAgent: 설정된 ChatAgent 인스턴스
+
+        Note:
+            생성된 ChatAgent는 LLM, 시스템 프롬프트, 이전 메시지 기록, 도구 등으로 초기화됩니다.
+        """
+        _tools = await self.get_tools() + (self.param_tools or [])
         return ChatAgent(
             llm=self.get_llm(),
             system_prompt=self.get_llm_system_prompt(),
             previous_messages=previous_messages,
-            tools=self.tools,
+            tools=_tools,
             on_conversation_complete=self.on_conversation_complete,
             verbose=self.get_verbose(),
         )
