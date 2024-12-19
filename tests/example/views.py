@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 from pyhub_ai.specs import LLMModel
 from pyhub_ai.views import AgentChatView
-from pyhub_ai.views.data_analyst import DataAnalystChatView
+from pyhub_ai.views.data_analyst import DataAnalysisChatView
 
 
 def index(request):
@@ -54,7 +54,7 @@ You are a language tutor.
     }
 
 
-class TitanicDataAnalystChatView(DataAnalystChatView):
+class TitanicDataAnalysisChatView(DataAnalysisChatView):
     llm_model = LLMModel.OPENAI_GPT_4O
     llm_temperature = 0
     llm_system_prompt_path = "prompts/data-analyst-v02-en.yaml"

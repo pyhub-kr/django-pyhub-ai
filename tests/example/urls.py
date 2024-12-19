@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import LanguageTutorChatView, TitanicDataAnalystChatView
+from .views import LanguageTutorChatView, TitanicDataAnalysisChatView
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -10,5 +10,5 @@ urlpatterns = [
     path("analyst/<int:pk>/", views.chat_room, name="analyst_room", kwargs={"type": "analyst"}),
     # agents
     path("agent/chat/<int:pk>/", LanguageTutorChatView.as_view(), name="language-tutor-chat"),
-    path("agent/analyst/<int:pk>/", TitanicDataAnalystChatView.as_view(), name="titanic-analyst-chat"),
+    path("agent/analysis/<int:pk>/", TitanicDataAnalysisChatView.as_view(), name="titanic-analysis-chat"),
 ]
