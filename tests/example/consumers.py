@@ -1,6 +1,6 @@
 # example 앱의 consumers.py 파일
 
-from pyhub_ai.consumers import AgentChatConsumer, DataAnalystChatConsumer
+from pyhub_ai.consumers import AgentChatConsumer, DataAnalysisChatConsumer
 from pyhub_ai.specs import LLMModel
 
 
@@ -32,7 +32,7 @@ You are a language tutor.
     }
 
 
-class TitanicDataAnalystChatConsumer(DataAnalystChatConsumer):
+class TitanicDataAnalysisChatConsumer(DataAnalysisChatConsumer):
     llm_model = LLMModel.OPENAI_GPT_4O
     llm_timeout = 30
     llm_temperature = 0

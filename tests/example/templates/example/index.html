@@ -5,19 +5,12 @@
 
     <ul>
         <li>
-            #1. LLM 채팅방
+            웹소켓 채팅방
             <ul>
-                {% url 'chat_room' 1 as chat_room_url %}
-                <li><a href="{{ chat_room_url }}?protocol=ws">웹소켓 방식으로 채팅하기</a></li>
-                <li><a href="{{ chat_room_url }}?protocol=sse">SSE 방식으로 채팅하기</a></li>
-            </ul>
-        </li>
-        <li>
-            #2. Data Analyst 채팅방
-            <ul>
-                {% url 'analyst_room' 2 as analyst_room_url %}
-                <li><a href="{{ analyst_room_url }}?protocol=ws">웹소켓 방식으로 채팅하기</a></li>
-                <li><a href="{{ analyst_room_url }}?protocol=sse">SSE 방식으로 채팅하기</a></li>
+                {% url 'chat_room' as chat_room_url %}
+                <li><a href="{{ chat_room_url }}">LLM 채팅</a></li>
+                {% url 'analysis_room' as analyst_room_url %}
+                <li><a href="{{ analyst_room_url }}">데이터분석 채팅</a></li>
             </ul>
         </li>
     </ul>
