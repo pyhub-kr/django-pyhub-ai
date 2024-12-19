@@ -10,19 +10,13 @@ import yaml
 from django.conf import settings
 from django.template.base import Template as DjangoTemplate
 from django.template.context import Context as DjangoTemplateContext
-from langchain_anthropic import ChatAnthropic
-from langchain_community.llms.fake import FakeStreamingListLLM
 from langchain_core.language_models import BaseChatModel
 from langchain_core.prompts import BasePromptTemplate
 from langchain_core.prompts.loading import load_prompt, load_prompt_from_config
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
 
-from ..agents import ChatAgent
-from ..blocks import TextContentBlock
-from ..specs import LLMModel
-from ..utils import find_file_in_apps
+from pyhub_ai.specs import LLMModel
+from pyhub_ai.utils import find_file_in_apps
 
 
 class LLMMixin:
@@ -106,6 +100,8 @@ class LLMMixin:
 
     def get_llm(self) -> BaseChatModel:
         if self.llm_fake_responses is not None:
+            from langchain_community.llms.fake import FakeStreamingListLLM
+
             return FakeStreamingListLLM(responses=self.llm_fake_responses)
 
         llm_model = self.get_llm_model()
@@ -113,6 +109,8 @@ class LLMMixin:
         if llm_model:
             llm_model_name = llm_model.name.upper()
             if llm_model_name.startswith("OPENAI_"):
+                from langchain_openai import ChatOpenAI
+
                 return ChatOpenAI(
                     openai_api_key=self.get_llm_openai_api_key(),
                     model_name=self.get_llm_model().value,
@@ -123,6 +121,8 @@ class LLMMixin:
                     model_kwargs={"stream_options": {"include_usage": True}},
                 )
             elif llm_model_name.startswith("ANTHROPIC_"):
+                from langchain_anthropic import ChatAnthropic
+
                 return ChatAnthropic(
                     anthropic_api_key=self.get_llm_anthropic_api_key(),
                     model=self.get_llm_model().value,
@@ -132,6 +132,8 @@ class LLMMixin:
                     streaming=True,
                 )
             elif llm_model_name.startswith("GOOGLE_"):
+                from langchain_google_genai import ChatGoogleGenerativeAI
+
                 return ChatGoogleGenerativeAI(
                     google_api_key=self.get_llm_google_api_key(),
                     model=self.get_llm_model().value,
