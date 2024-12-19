@@ -1,10 +1,45 @@
 from asyncio import iscoroutinefunction
 from functools import wraps
+from urllib.parse import urlparse
 
+from asgiref.sync import sync_to_async
+from django.conf import settings
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.http import HttpResponseNotAllowed
+from django.shortcuts import resolve_url
 from django.utils.log import log_response
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+
+
+def alogin_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+    def decorator(view_func):
+        @wraps(view_func)
+        async def wrapper(request, *args, **kwargs):
+            is_authenticated = await sync_to_async(lambda: request.user.is_authenticated)()
+
+            if is_authenticated:
+                return await view_func(request, *args, **kwargs)
+
+            path = request.build_absolute_uri()
+            resolved_login_url = resolve_url(login_url or settings.LOGIN_URL)
+            login_scheme, login_netloc = urlparse(resolved_login_url)[:2]
+            current_scheme, current_netloc = urlparse(path)[:2]
+
+            if (not login_scheme or login_scheme == current_scheme) and (
+                not login_netloc or login_netloc == current_netloc
+            ):
+                path = request.get_full_path()
+
+            from django.contrib.auth.views import redirect_to_login
+
+            return redirect_to_login(path, resolved_login_url, redirect_field_name)
+
+        return wrapper
+
+    if function:
+        return decorator(function)
+    return decorator
 
 
 def acsrf_exempt(view_func):
