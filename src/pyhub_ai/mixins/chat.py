@@ -80,26 +80,32 @@ class ChatMixin:
         return {}
 
     async def get_user(self) -> Optional[UserType]:
-        if hasattr(self, "scope"):
-            try:
-                user = self.scope["user"]
-            except KeyError:
-                raise ImproperlyConfigured(
-                    "scope['user']에 접근할 수 없습니다. "
-                    "channels.auth.AuthMiddlewareStack이 ASGI 애플리케이션에 올바르게 구성되어 있는지 확인하세요. "
-                    "\n예시: application = ProtocolTypeRouter({"
-                    "\n    'websocket': AuthMiddlewareStack(URLRouter(websocket_urlpatterns))"
-                    "\n})"
-                )
-        elif hasattr(self, "request"):
-            user = self.request.user
-        else:
-            return None
+        cache_key = "_cached_user"
+        if not hasattr(self, cache_key):
+            if hasattr(self, "scope"):
+                try:
+                    user = self.scope["user"]
+                except KeyError:
+                    raise ImproperlyConfigured(
+                        "scope['user']에 접근할 수 없습니다. "
+                        "channels.auth.AuthMiddlewareStack이 ASGI 애플리케이션에 올바르게 구성되어 있는지 확인하세요. "
+                        "\n예시: application = ProtocolTypeRouter({"
+                        "\n    'websocket': AuthMiddlewareStack(URLRouter(websocket_urlpatterns))"
+                        "\n})"
+                    )
+            elif hasattr(self, "request"):
+                user = self.request.user
+            else:
+                user = None
 
-        is_authenticated = await sync_to_async(lambda: user.is_authenticated)()
-        if is_authenticated:
-            return user
-        return None
+            if user is not None:
+                is_authenticated = await sync_to_async(lambda: user.is_authenticated)()
+                if not is_authenticated:
+                    user = None
+
+            setattr(self, cache_key, user)
+
+        return getattr(self, cache_key, None)
 
     def get_conversation_pk(self) -> Optional[str]:
         """웹소켓 요청 URL에서 추출한 대화방 식별자를 반환합니다.
@@ -120,11 +126,18 @@ class ChatMixin:
         return None
 
     async def get_conversation(self) -> Optional[Conversation]:
-        conversation_pk = self.get_conversation_pk()
-        if conversation_pk:
-            qs = Conversation.objects.filter(pk=conversation_pk)  # noqa
-            return await qs.afirst()
-        return None
+        cache_key = "_cached_conversation"
+        if not hasattr(self, cache_key):
+            conversation_pk = self.get_conversation_pk()
+            if conversation_pk:
+                qs = Conversation.objects.filter(pk=conversation_pk)  # noqa
+                conversation = await qs.afirst()
+            else:
+                conversation = None
+
+            setattr(self, cache_key, conversation)
+
+        return getattr(self, cache_key, None)
 
     async def can_accept(self) -> bool:
         """연결을 수락할 수 있는지 여부를 반환합니다.
