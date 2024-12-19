@@ -6,7 +6,11 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block page-title %}pyhub-ai{% endblock %}</title>
+{% if debug %}
+    <script src="//cdn.tailwindcss.com"></script>
+{% else %}
     <link rel="stylesheet" href="{% uncached_static "pyhub_ai/tailwind/styles.css" %}" />
+{% endif %}
     <link rel="stylesheet" href="{% uncached_static 'pyhub/fontawesome-free/6.7.0-web/css/all.min.css' %}"/>
     <script src="{% uncached_static "pyhub/htmx/2.0.4/htmx.min.js" %}"></script>
 
