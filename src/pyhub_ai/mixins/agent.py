@@ -1,6 +1,16 @@
 import logging
 from collections import defaultdict
-from typing import AsyncIterator, Callable, List, Optional, Type, TypeVar, Union
+from typing import (
+    Any,
+    AsyncIterator,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from django.conf import settings
 from django.core.files.base import File
@@ -24,7 +34,7 @@ T = TypeVar("T", bound="AgentMixin")
 
 
 class AgentMixin(LLMMixin, ChatMixin):
-    welcome_message_template = "챗봇 서비스에 오신 것을 환영합니다. ;)"
+    welcome_message_template = ""
     show_initial_prompt: bool = True
     verbose: Optional[bool] = False
     tools: Optional[List[Union[Callable, BaseTool]]] = None
@@ -33,27 +43,6 @@ class AgentMixin(LLMMixin, ChatMixin):
         super().__init__(*args, **kwargs)
         self.agent: Optional[ChatAgent] = None
         self.param_tools = tools
-
-    @classmethod
-    async def acreate(cls: Type[T], *args, tools: Optional[List[Union[Callable, BaseTool]]] = None, **kwargs) -> T:
-        """AgentMixin 클래스의 새 인스턴스를 비동기적으로 생성하고, 에이전트 생성을 초기화합니다.
-
-        Args:
-            *args: 클래스 생성자에 전달할 위치 인자들
-            tools: 에이전트가 사용할 도구 목록. 각 도구는 호출 가능한 함수나 BaseTool 인스턴스여야 함
-            **kwargs: 클래스 생성자에 전달할 키워드 인자들
-
-        Returns:
-            T: 초기화된 인스턴스
-
-        Example:
-            ```python
-            agent = await 클래스.acreate(tools=[my_tool1, my_tool2])
-            ```
-        """
-        instance = cls(*args, tools, **kwargs)
-        await instance.agent_setup()
-        return instance
 
     async def get_tools(self) -> List[Union[Callable, BaseTool]]:
         """에이전트가 사용할 도구 목록을 가져옵니다.
@@ -79,14 +68,20 @@ class AgentMixin(LLMMixin, ChatMixin):
             생성된 ChatAgent는 LLM, 시스템 프롬프트, 이전 메시지 기록, 도구 등으로 초기화됩니다.
         """
         _tools = await self.get_tools() + (self.param_tools or [])
+        params = await self.get_agent_params()
         return ChatAgent(
-            llm=self.get_llm(),
-            system_prompt=self.get_llm_system_prompt(),
             previous_messages=previous_messages,
             tools=_tools,
-            on_conversation_complete=self.on_conversation_complete,
-            verbose=self.get_verbose(),
+            **params,
         )
+
+    async def get_agent_params(self) -> Dict[str, Any]:
+        return {
+            "llm": self.get_llm(),
+            "system_prompt": self.get_llm_system_prompt(),
+            "on_conversation_complete": self.on_conversation_complete,
+            "verbose": self.get_verbose(),
+        }
 
     async def agent_setup(self, render_previous_messages: bool = True):
         previous_messages = await self.get_previous_messages()

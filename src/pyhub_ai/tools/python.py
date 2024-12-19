@@ -1,6 +1,7 @@
 from io import BytesIO
 from typing import Annotated, Any, Dict, Optional
 
+import pandas as pd
 from langchain.agents.output_parsers.tools import ToolAgentAction
 from langchain_experimental.tools import PythonAstREPLTool as OrigPythonAstREPLTool
 from matplotlib import pyplot as plt
@@ -90,7 +91,7 @@ class PythonAstREPLTool(PyhubToolMixin, OrigPythonAstREPLTool):
         return None
 
 
-def make_python_data_tool(locals: Optional[Dict] = None) -> PyhubStructuredTool:
+def make_python_data_tool(df: pd.DataFrame) -> PyhubStructuredTool:
     """파이썬 데이터 분석 REPL 도구를 생성합니다.
 
     Returns:
@@ -99,15 +100,13 @@ def make_python_data_tool(locals: Optional[Dict] = None) -> PyhubStructuredTool:
 
     # make_tool 내에서 매번 python repl tool이 생성되면, 각 tool이 독립적인 상태를 가지게 되어 값 공유가 되지 않습니다.
     # 현재 파이썬 프로세스에서 실행됩니다. 격리된 환경에서 실행할려면?
-    lc_python_ast_repl_tool = PythonAstREPLTool(locals=locals, with_sns=True, with_pyplot=True)
+    lc_python_ast_repl_tool = PythonAstREPLTool(locals={"df": df}, with_sns=True, with_pyplot=True)
 
     async def python_repl_tool_aget_content_block(
         action: ToolAgentAction,
         observation: Optional[Any],
         usage_metadata: Optional[Any] = None,
     ) -> ContentBlock:
-        import pandas as pd
-
         if isinstance(observation, (pd.Series, pd.DataFrame)):
             return DataFrameContentBlock(value=observation)
         elif isinstance(observation, bytes):
