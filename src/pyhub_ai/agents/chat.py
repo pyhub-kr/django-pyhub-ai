@@ -95,7 +95,7 @@ class ChatAgent:
         # @tool_with_retry 장식자로 래핑시켜줍니다.
         self.tools = []
         for _tool in tools or []:
-            if isinstance(_tool, StructuredTool):
+            if isinstance(_tool, BaseTool):
                 self.tools.append(_tool)
             else:
                 self.tools.append(tool_with_retry(_tool))
@@ -451,14 +451,21 @@ class ChatAgent:
         if isinstance(observation, str) and "error" in observation.lower():
             return TextContentBlock(role="error", value=observation)
 
-        elif not observation:
-            pass
-
         elif isinstance(observation, bytes):
             header = observation[:16]
             # 이미지가 아니라면 None 반환
             mimetype = get_image_mimetype(header)
             if mimetype:
                 return ImageDataContentBlock(value=observation, mimetype=mimetype)
+
+        elif observation is not None:
+            return TextContentBlock(
+                role="error",
+                value=(
+                    f"변환이 구현되지 않은 observation\n"
+                    f" - tool: `{action.tool}`\n"
+                    f" - observation type=`{observation.__class__.__name__}`)"
+                ),
+            )
 
         return None

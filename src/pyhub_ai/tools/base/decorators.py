@@ -1,6 +1,6 @@
 import inspect
 from functools import wraps
-from typing import Any, Awaitable, Callable, Optional
+from typing import Any, Awaitable, Callable, Optional, TypeVar
 
 from langchain.agents.output_parsers.tools import ToolAgentAction
 from langchain_core.messages.ai import UsageMetadata
@@ -9,6 +9,8 @@ from pyhub_ai.blocks import ContentBlock
 
 from .retry import default_retry_strategy
 from .tools import PyhubStructuredTool
+
+T = TypeVar("T", bound=Callable)
 
 
 def tool_with_retry(
@@ -26,11 +28,11 @@ def tool_with_retry(
 ):
     """재시도 기능이 있는 도구를 생성하는 데코레이터.
 
-    이 데코레이터는 함수를 PyhubStructuredTool로 변환하고 재시도 전략을 적용합니다.
+    이 장식자는 함수를 PyhubStructuredTool로 변환하고 재시도 전략을 적용합니다.
     동기 및 비동기 함수 모두 지원합니다.
 
     Args:
-        name_or_callable: 도구의 이름 또는 데코레이트할 함수. None이면 데코레이터 팩토리로 동작.
+        name_or_callable: 도구의 이름 또는 장식할 함수. None이면 데코레이터 팩토리로 동작.
         *args: PyhubStructuredTool.from_function에 전달할 추가 인자.
         retry_strategy: 사용할 재시도 전략. None이면 기본 전략 사용.
         aget_content_block: 도구의 실행 결과를 ContentBlock으로 변환하는 비동기 함수.
@@ -52,6 +54,7 @@ def tool_with_retry(
             def my_tool():
                 pass
     """
+
     used_retry_strategy = retry_strategy or default_retry_strategy
 
     if callable(name_or_callable) and not args and not kwargs:
