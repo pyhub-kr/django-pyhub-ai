@@ -1,6 +1,10 @@
 # example 앱의 consumers.py 파일
+from typing import Dict, Optional
+
+from example.models import ChatRoom
 
 from pyhub_ai.consumers import AgentChatConsumer, DataAnalysisChatConsumer
+from pyhub_ai.models import Conversation
 from pyhub_ai.specs import LLMModel
 from pyhub_ai.tools import tool_with_retry
 from pyhub_ai.tools.callbacks import make_tool_content_block_func
@@ -19,10 +23,13 @@ class LanguageTutorChatConsumer(AgentChatConsumer):
     # get_llm_system_prompt_template 메서드 지원
     llm_system_prompt_template = """
 You are a language tutor.
-{언어}로 대화를 나눕시다. 번역과 발음을 제공하지 않고 {언어}로만 답변해주세요.
-"{상황}"의 상황으로 상황극을 진행합니다.
-가능한한 {언어} {레벨}에 맞는 단어와 표현을 사용해주세요.
-    """
+[언어]로 대화를 나눕시다. 번역과 발음을 제공하지 않고 [언어]로만 답변해주세요.
+"[상황]"의 상황으로 상황극을 진행합니다.
+가능한한 [언어] [레벨]에 맞는 단어와 표현을 사용해주세요.
+
+언어: {언어}
+상황: {상황}
+레벨: {레벨}"""
 
     # get_llm_first_user_message_template 메서드 지원
     llm_first_user_message_template = "첫 문장으로 대화를 시작해주세요."
@@ -40,6 +47,19 @@ You are a language tutor.
             aget_content_block=make_tool_content_block_func(),
         ),
     ]
+
+    async def aget_llm_prompt_context_data(self, **kwargs) -> Dict:
+        room_pk = self.url_route_kwargs.get("room_pk", None)
+        if room_pk:
+            room = await ChatRoom.objects.filter(pk=room_pk).afirst()
+            if room is not None:
+                return {
+                    "언어": room.language,
+                    "상황": room.situation,
+                    "레벨": room.level,
+                }
+
+        return await super().aget_llm_prompt_context_data(**kwargs)
 
 
 class TitanicDataAnalysisChatConsumer(DataAnalysisChatConsumer):

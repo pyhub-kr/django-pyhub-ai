@@ -5,6 +5,7 @@ from django.http.response import StreamingHttpResponse
 from django.shortcuts import render
 from example.agents import BestsellerMakrerAgentManager
 from example.forms import BestsellerMakerForm
+from example.models import ChatRoom
 
 from pyhub_ai.blocks import TextContentBlock
 from pyhub_ai.decorators import alogin_required
@@ -17,11 +18,16 @@ def index(request):
 
 @login_required
 def chat_room(request, type: Literal["chat", "analysis"] = "chat"):
-    conv = Conversation.objects.filter(user=request.user).first()
-    if conv is None:
-        conv = Conversation.objects.create(user=request.user)
+    room, __ = ChatRoom.objects.get_or_create(owner=request.user)
 
-    agent_url = f"/example/agent/{type}/{conv.pk}/"
+    if room.conversation is None:
+        conv = Conversation.objects.create(user=request.user)
+        room.conversation = conv
+        room.save(update_fields=["conversation"])
+
+    conversation_pk = room.conversation.pk
+
+    agent_url = f"/example/agent/{type}/{room.pk}/{conversation_pk}/"
     connect_url = "/ws" + agent_url
     template_name = "pyhub_ai/chat_room_ws.html"
 
