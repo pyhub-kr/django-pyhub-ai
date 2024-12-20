@@ -8,6 +8,7 @@ from uuid import uuid4
 import pandas as pd
 from django.template.loader import render_to_string
 from django.utils.html import format_html
+from django.utils.safestring import SafeString
 from langchain_core.messages.ai import UsageMetadata
 
 from .utils import Mimetypes
@@ -43,6 +44,15 @@ class ContentBlock:
                 ),
             )
         return None
+
+    def render(self, template_name: str, **kwargs: Any) -> SafeString:
+        return render_to_string(
+            template_name,
+            {
+                "content_block": self,
+                **kwargs,
+            },
+        )
 
 
 @dataclass

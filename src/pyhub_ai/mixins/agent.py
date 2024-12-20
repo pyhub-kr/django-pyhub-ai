@@ -116,6 +116,8 @@ class AgentMixin(LLMMixin, ChatMixin):
             if render_previous_messages:
                 await self.render_messages(previous_messages)
 
+        return self
+
     async def think(self, input_query: str, files: Optional[List[File]] = None) -> AsyncIterator[ContentBlock]:
         async for chunk in self.agent.think(input_query=input_query, files=files):
             yield chunk
