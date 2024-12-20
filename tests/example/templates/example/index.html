@@ -4,14 +4,8 @@
     <h1>index</h1>
 
     <ul>
-        <li>
-            웹소켓 채팅방
-            <ul>
-                {% url 'chat_room' as chat_room_url %}
-                <li><a href="{{ chat_room_url }}">LLM 채팅</a></li>
-                {% url 'analysis_room' as analyst_room_url %}
-                <li><a href="{{ analyst_room_url }}">데이터분석 채팅</a></li>
-            </ul>
-        </li>
+        <li><a href="{% url 'chat_room' %}">LLM 채팅</a></li>
+        <li><a href="{% url 'analysis_room' %}">데이터분석 채팅</a></li>
+        <li><a href="{% url 'bestseller_maker' %}">베스트셀러 메이커</a></li>
     </ul>
 {% endblock %}
