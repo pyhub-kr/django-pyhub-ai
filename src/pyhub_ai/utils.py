@@ -2,6 +2,7 @@ import logging
 import mimetypes
 import re
 from base64 import b64decode, b64encode
+from collections import defaultdict
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
@@ -11,6 +12,8 @@ from django.apps import apps
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.utils.datastructures import MultiValueDict
+from django.utils.html import conditional_escape
+from django.utils.safestring import SafeString, mark_safe
 from PIL import Image
 
 logger = logging.getLogger(__name__)
@@ -229,3 +232,28 @@ def sum_and_merge_dicts(*dicts: Dict[str, Union[int, float, Dict]]) -> Dict[str,
         merged_result = merge_two_dicts(merged_result, dictionary)
 
     return merged_result
+
+
+def format_map_html(format_string: str, fallback: Optional[str] = "", **kwargs) -> SafeString:
+    """HTML 이스케이프된 값으로 문자열을 포맷팅합니다.
+
+    Args:
+        format_string: 포맷팅할 문자열. 파이썬의 str.format() 스타일 포맷팅을 사용합니다.
+        fallback: 키가 없을 때 사용할 기본값. 기본값은 빈 문자열입니다.
+        **kwargs: 포맷팅에 사용할 키워드 인자들.
+
+    Returns:
+        SafeString: HTML 이스케이프 처리된 값들로 포맷팅된 안전한 문자열.
+
+    Example:
+        >>> format_map_html("<p>{name}</p>", name="John")
+        SafeString('<p>John</p>')
+        >>> format_map_html("<p>{missing}</p>", fallback="N/A")
+        SafeString('<p>N/A</p>')
+
+    References:
+        django/utils/html.py
+    """
+    kwargs_safe = {k: conditional_escape(v) for (k, v) in kwargs.items()}
+    kwargs_safe = defaultdict(lambda: fallback, kwargs_safe)
+    return mark_safe(format_string.format_map(kwargs_safe))

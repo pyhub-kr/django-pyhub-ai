@@ -181,7 +181,7 @@ class LLMMixin:
         if isinstance(system_prompt_template, DjangoTemplate):
             return system_prompt_template.render(DjangoTemplateContext(safe_data))
         else:
-            return system_prompt_template.format(**safe_data).strip()
+            return system_prompt_template.format_map(safe_data).strip()
 
     async def aget_llm_first_user_message(self, **kwargs) -> Optional[str]:
         context_data = await self.aget_llm_prompt_context_data(**kwargs)

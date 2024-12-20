@@ -14,7 +14,6 @@ from typing import (
 
 from django.conf import settings
 from django.core.files.base import File
-from django.utils.html import format_html
 from django.utils.safestring import SafeString
 from langchain.tools import BaseTool
 from langchain_core.messages import AIMessage, HumanMessage
@@ -23,6 +22,7 @@ from langchain_core.runnables import AddableDict
 from pyhub_ai.agents.chat import ChatAgent
 from pyhub_ai.blocks import ContentBlock, TextContentBlock
 from pyhub_ai.models import ConversationMessage
+from pyhub_ai.utils import format_map_html
 
 from .chat import ChatMixin
 from .llm import LLMMixin
@@ -162,7 +162,7 @@ class AgentMixin(LLMMixin, ChatMixin):
         tpl = self.get_welcome_message_template().strip()
         context_data = await self.aget_llm_prompt_context_data()
         safe_data = defaultdict(lambda: "<키 지정 필요>", context_data)
-        return format_html(tpl, **safe_data)
+        return format_map_html(tpl, **safe_data)
 
     def get_show_initial_prompt(self) -> bool:
         return self.show_initial_prompt
