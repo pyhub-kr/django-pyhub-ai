@@ -762,9 +762,10 @@ wheels = [
 
 [[package]]
 name = "django-pyhub-ai"
-version = "0.8.5"
+version = "0.8.6"
 source = { editable = "." }
 dependencies = [
+    { name = "beautifulsoup4" },
     { name = "channels" },
     { name = "daphne" },
     { name = "django" },
@@ -799,7 +800,6 @@ dev = [
     { name = "ruff" },
 ]
 test = [
-    { name = "beautifulsoup4" },
     { name = "django-debug-toolbar" },
     { name = "django-environ" },
     { name = "django-lifecycle" },
@@ -811,7 +811,7 @@ test = [
 
 [package.metadata]
 requires-dist = [
-    { name = "beautifulsoup4", marker = "extra == 'test'" },
+    { name = "beautifulsoup4" },
     { name = "black", marker = "extra == 'dev'" },
     { name = "channels" },
     { name = "daphne" },
