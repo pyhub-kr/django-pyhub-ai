@@ -2,16 +2,18 @@ import re
 from typing import Optional
 
 import httpx
-from httpx._types import HeaderTypes, QueryParamTypes
+from httpx._config import Timeout
+from httpx._types import HeaderTypes, QueryParamTypes, TimeoutTypes
 
 
 async def get_response(
     url: str,
     params: Optional[QueryParamTypes] = None,
     headers: Optional[HeaderTypes] = None,
+    timeout: Optional[TimeoutTypes] = Timeout(timeout=10.0),  # default: 5 seconds
 ) -> httpx.Response:
     async with httpx.AsyncClient() as client:
-        res = await client.get(url, params=params, headers=headers)
+        res = await client.get(url, params=params, headers=headers, timeout=timeout)
         res.raise_for_status()
         return res
 
