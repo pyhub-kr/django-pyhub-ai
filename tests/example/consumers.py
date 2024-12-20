@@ -2,6 +2,9 @@
 
 from pyhub_ai.consumers import AgentChatConsumer, DataAnalysisChatConsumer
 from pyhub_ai.specs import LLMModel
+from pyhub_ai.tools import tool_with_retry
+from pyhub_ai.tools.callbacks import make_tool_content_block_func
+from pyhub_ai.tools.melon import search_melon_songs
 
 
 class LanguageTutorChatConsumer(AgentChatConsumer):
@@ -30,6 +33,13 @@ You are a language tutor.
         "상황": "친구와 식당에서 식사하는 상황",
         "레벨": "초급",
     }
+
+    tools = [
+        tool_with_retry(
+            search_melon_songs,
+            aget_content_block=make_tool_content_block_func(),
+        ),
+    ]
 
 
 class TitanicDataAnalysisChatConsumer(DataAnalysisChatConsumer):
