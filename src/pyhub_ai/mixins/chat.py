@@ -125,7 +125,7 @@ class ChatMixin:
                 return str(self.url_route_kwargs[candidate_key])
         return None
 
-    async def get_conversation(self) -> Optional[Conversation]:
+    async def aget_conversation(self) -> Optional[Conversation]:
         cache_key = "_cached_conversation"
         if not hasattr(self, cache_key):
             conversation_pk = self.get_conversation_pk()

@@ -78,7 +78,7 @@ class AgentMixin(LLMMixin, ChatMixin):
     async def get_agent_params(self) -> Dict[str, Any]:
         return {
             "llm": self.get_llm(),
-            "system_prompt": self.get_llm_system_prompt(),
+            "system_prompt": await self.aget_llm_system_prompt(),
             "on_conversation_complete": self.on_conversation_complete,
             "verbose": self.get_verbose(),
         }
@@ -99,14 +99,14 @@ class AgentMixin(LLMMixin, ChatMixin):
 
             # 시스템 프롬프트 노출 플래그가 설정되어있다면 시스템 프롬프트를 노출합니다.
             if self.get_show_initial_prompt():
-                system_prompt = self.get_llm_system_prompt()
+                system_prompt = await self.aget_llm_system_prompt()
                 if system_prompt:
                     await self.render_block(TextContentBlock(role="system", value=system_prompt))
 
         # 저장된 대화내역이 없고,
         if not previous_messages:
             # 설정된 첫 User 메시지가 있다면 LLM에게 전달하고 응답을 렌더링합니다.
-            first_user_message = self.get_llm_first_user_message()
+            first_user_message = await self.aget_llm_first_user_message()
             if first_user_message:
                 if self.get_show_initial_prompt():
                     await self.render_block(TextContentBlock(role="user", value=first_user_message))
@@ -128,7 +128,7 @@ class AgentMixin(LLMMixin, ChatMixin):
         ai_message: AIMessage,
         tools_output_list: Optional[List[AddableDict]] = None,
     ) -> None:
-        conversation = await self.get_conversation()
+        conversation = await self.aget_conversation()
         user = await self.get_user()
 
         if conversation is not None:
@@ -139,7 +139,7 @@ class AgentMixin(LLMMixin, ChatMixin):
             )
 
     async def get_previous_messages(self) -> List[Union[HumanMessage, AIMessage]]:
-        conversation = await self.get_conversation()
+        conversation = await self.aget_conversation()
 
         current_user = await self.get_user()
         if current_user and not current_user.is_authenticated:
@@ -158,9 +158,9 @@ class AgentMixin(LLMMixin, ChatMixin):
     def get_welcome_message_template(self) -> str:
         return self.welcome_message_template
 
-    def get_welcome_message(self) -> SafeString:
+    async def get_welcome_message(self) -> SafeString:
         tpl = self.get_welcome_message_template().strip()
-        context_data = self.get_llm_prompt_context_data()
+        context_data = await self.aget_llm_prompt_context_data()
         safe_data = defaultdict(lambda: "<키 지정 필요>", context_data)
         return format_html(tpl, **safe_data)
 

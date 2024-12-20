@@ -148,11 +148,12 @@ class LLMMixin:
     def get_llm_system_prompt_path(self) -> Optional[Union[str, Path]]:
         return self.llm_system_prompt_path
 
-    def get_llm_system_prompt_template(self) -> Union[str, BasePromptTemplate, DjangoTemplate]:
+    async def aget_llm_system_prompt_template(self) -> Union[str, BasePromptTemplate, DjangoTemplate]:
         system_prompt_path = self.get_llm_system_prompt_path()
         if system_prompt_path:
             if isinstance(system_prompt_path, str) and system_prompt_path.startswith(("http://", "https:/")):
-                res = httpx.get(system_prompt_path)
+                async with httpx.AsyncClient() as client:
+                    res = await client.get(system_prompt_path)
                 config = yaml.safe_load(StringIO(res.text))
                 system_prompt_template = load_prompt_from_config(config)
             else:
@@ -164,7 +165,7 @@ class LLMMixin:
             return system_prompt_template
         return self.llm_system_prompt_template
 
-    def get_llm_prompt_context_data(self, **kwargs) -> Dict:
+    async def aget_llm_prompt_context_data(self, **kwargs) -> Dict:
         if self.llm_prompt_context_data:
             # enum 타입 값에 대해 .value 속성으로 변환
             context_data = {k: v.value if hasattr(v, "value") else v for k, v in self.llm_prompt_context_data.items()}
@@ -172,9 +173,9 @@ class LLMMixin:
             context_data = {}
         return dict(context_data, **kwargs)
 
-    def get_llm_system_prompt(self, **kwargs) -> str:
-        system_prompt_template = self.get_llm_system_prompt_template()
-        context_data = self.get_llm_prompt_context_data(**kwargs)
+    async def aget_llm_system_prompt(self, **kwargs) -> str:
+        system_prompt_template = await self.aget_llm_system_prompt_template()
+        context_data = await self.aget_llm_prompt_context_data(**kwargs)
         safe_data = defaultdict(lambda: "<키 누락>", context_data)
 
         if isinstance(system_prompt_template, DjangoTemplate):
@@ -182,8 +183,8 @@ class LLMMixin:
         else:
             return system_prompt_template.format(**safe_data).strip()
 
-    def get_llm_first_user_message(self, **kwargs) -> Optional[str]:
-        context_data = self.get_llm_prompt_context_data(**kwargs)
+    async def aget_llm_first_user_message(self, **kwargs) -> Optional[str]:
+        context_data = await self.aget_llm_prompt_context_data(**kwargs)
         if self.llm_first_user_message_template:
             safe_data = defaultdict(lambda: "<키 누락>", context_data)
 
