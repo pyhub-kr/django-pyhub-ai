@@ -122,21 +122,24 @@
                 <div class="text hidden">{{ content_block.as_markdown }}</div>
             {% else %}
                 <label for="{{ content_block.id }}_my_modal_7" class="btn btn-sm">
-                    {{ content_block.tool_name|default:"Tool" }} 도구 수행
+                    {{ content_block.tool_name|default:"Tool" }} 도구
+                    {% if not content_block.value %}수행 지시{% else %}수행 완료{% endif %}
                 </label>
-                <input type="checkbox" id="{{ content_block.id }}_my_modal_7" class="modal-toggle"/>
-                <div class="modal" role="dialog">
-                    <div class="modal-box">
-                        <h3 class="text-lg font-bold">
-                            {{ content_block.tool_name|default:"Tool" }}
-                        </h3>
-                        <p class="py-4">
-                            <div class="markdown prose"></div>
-                        </p>
+                {% if content_block.value %}
+                    <input type="checkbox" id="{{ content_block.id }}_my_modal_7" class="modal-toggle"/>
+                    <div class="modal" role="dialog">
+                        <div class="modal-box">
+                            <h3 class="text-lg font-bold">
+                                {{ content_block.tool_name|default:"Tool" }}
+                            </h3>
+                            <p class="py-4">
+                                <div class="markdown prose"></div>
+                            </p>
+                        </div>
+                        <label class="modal-backdrop" for="{{ content_block.id }}_my_modal_7">Close</label>
                     </div>
-                    <label class="modal-backdrop" for="{{ content_block.id }}_my_modal_7">Close</label>
-                </div>
-                <div class="text hidden">{{ content_block.as_markdown }}</div>
+                    <div class="text hidden">{{ content_block.as_markdown }}</div>
+                {% endif %}
             {% endif %}
             <script>
                 (function () {

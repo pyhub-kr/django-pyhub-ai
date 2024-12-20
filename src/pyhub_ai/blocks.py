@@ -22,6 +22,7 @@ class ContentBlock:
     usage_metadata: Optional[UsageMetadata] = None  # 사용 메타데이터
     template_name: Optional[str] = None
     send_func: Optional[Callable[[str], Any]] = None
+    tool_name: Optional[str] = None
 
     def __post_init__(self):
         if self.id is None:
@@ -68,7 +69,7 @@ class TextContentBlock(ContentBlock):
         value (str): 텍스트 값.
     """
 
-    value: str
+    value: str = ""
 
     def as_markdown(self) -> str:
         return self.value
@@ -86,7 +87,6 @@ class CodeContentBlock(ContentBlock):
     value: str = ""
     lang: Literal["python"] = "python"
     role: Literal["tool"] = "tool"
-    tool_name: Optional[str] = None
 
     def as_markdown(self) -> str:
         return f"\n```{self.lang}\n{self.value}\n```\n"
