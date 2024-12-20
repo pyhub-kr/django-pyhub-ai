@@ -12,6 +12,7 @@ dependencies = [
     "django-ninja-extra",
     "pillow",
     "httpx",
+    "beautifulsoup4",
     "pydantic",
     "pyyaml",
     "langchain-core",
@@ -55,7 +56,6 @@ test = [
     "pytest-asyncio",
     "django-debug-toolbar",
     "django-environ",
-    "beautifulsoup4",
     "django-lifecycle",
 ]
 dev = ["django-debug-toolbar", "black", "isort", "ruff", "djlint"]
