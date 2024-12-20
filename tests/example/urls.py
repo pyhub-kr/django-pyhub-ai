@@ -7,4 +7,5 @@ urlpatterns = [
     # chat room
     path("chat/", views.chat_room, name="chat_room"),
     path("analysis/", views.chat_room, name="analysis_room", kwargs={"type": "analysis"}),
+    path("bestseller-maker/", views.bestseller_maker, name="bestseller_maker"),
 ]

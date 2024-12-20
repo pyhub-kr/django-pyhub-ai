@@ -1,0 +1,26 @@
+{# example/templates/example/_text_content_block.html #}
+
+<div
+        id="{{ content_block.id }}"
+        class="mb-4 transition-opacity duration-500"
+        x-data="{ show: false }"
+        x-init="setTimeout(() => show = true, 50)"
+        :class="{ 'opacity-0': !show, 'opacity-100': show }"
+        {% if content_block.role %}data-role="{{ content_block.role }}"{% endif %}
+>
+    <div class="flex flex-col gap-1 bg-gray-100 px-4 py-2 rounded-lg max-w-full break-words border border-gray-200">
+        <div class="markdown prose text-gray-800"></div>
+    </div>
+    <div class="text hidden">{{ content_block.as_markdown }}</div>
+    <script>
+      (function () {
+        const wrapEl = document.currentScript.parentElement;
+        const textEl = wrapEl.querySelector(".text");
+        if (textEl && window.markdownToHtml) {
+          const markdownEl = textEl.parentElement.querySelector(".markdown");
+          if (markdownEl) markdownEl.innerHTML = window.markdownToHtml(textEl.textContent);
+        }
+        document.currentScript.remove();
+      })();
+    </script>
+</div>
