@@ -165,13 +165,16 @@ class LLMMixin:
             return system_prompt_template
         return self.llm_system_prompt_template
 
-    async def aget_llm_prompt_context_data(self, **kwargs) -> Dict:
+    def get_llm_prompt_context_data(self, **kwargs) -> Dict:
         if self.llm_prompt_context_data:
             # enum 타입 값에 대해 .value 속성으로 변환
             context_data = {k: v.value if hasattr(v, "value") else v for k, v in self.llm_prompt_context_data.items()}
         else:
             context_data = {}
         return dict(context_data, **kwargs)
+
+    async def aget_llm_prompt_context_data(self, **kwargs) -> Dict:
+        return self.get_llm_prompt_context_data(**kwargs)
 
     async def aget_llm_system_prompt(self, **kwargs) -> str:
         system_prompt_template = await self.aget_llm_system_prompt_template()
