@@ -93,7 +93,7 @@ class AgentMixin(LLMMixin, ChatMixin):
 
         if render_previous_messages:
             # 대화내역 존재유무에 상관없이, 환영메시지가 있다면 노출합니다.
-            welcome_message = self.get_welcome_message()
+            welcome_message = await self.aget_welcome_message()
             if welcome_message:
                 await self.render_block(TextContentBlock(role="notice", value=welcome_message))
 
@@ -158,7 +158,7 @@ class AgentMixin(LLMMixin, ChatMixin):
     def get_welcome_message_template(self) -> str:
         return self.welcome_message_template
 
-    async def get_welcome_message(self) -> SafeString:
+    async def aget_welcome_message(self) -> SafeString:
         tpl = self.get_welcome_message_template().strip()
         context_data = await self.aget_llm_prompt_context_data()
         safe_data = defaultdict(lambda: "<키 지정 필요>", context_data)
