@@ -179,22 +179,12 @@ class LLMMixin:
     async def aget_llm_system_prompt(self, **kwargs) -> str:
         system_prompt_template = await self.aget_llm_system_prompt_template()
         context_data = await self.aget_llm_prompt_context_data(**kwargs)
-        safe_data = defaultdict(lambda: "<키 누락>", context_data)
-
-        if isinstance(system_prompt_template, DjangoTemplate):
-            return system_prompt_template.render(DjangoTemplateContext(safe_data))
-        else:
-            return system_prompt_template.format_map(safe_data).strip()
+        return self.render_template(system_prompt_template, context_data)
 
     async def aget_llm_first_user_message(self, **kwargs) -> Optional[str]:
         context_data = await self.aget_llm_prompt_context_data(**kwargs)
         if self.llm_first_user_message_template:
-            safe_data = defaultdict(lambda: "<키 누락>", context_data)
-
-            if isinstance(self.llm_first_user_message_template, DjangoTemplate):
-                return self.llm_first_user_message_template.render(DjangoTemplateContext(safe_data))
-            else:
-                return self.llm_first_user_message_template.format_map(safe_data)
+            return self.render_template(self.llm_first_user_message_template, context_data)
         return None
 
     def get_llm_model(self) -> LLMModel:
@@ -208,3 +198,17 @@ class LLMMixin:
 
     def get_llm_timeout(self) -> Union[float, Tuple[float, float]]:
         return self.llm_timeout
+
+    def render_template(self, template: Union[str, BasePromptTemplate, DjangoTemplate], context_data: Dict) -> str:
+        safe_data = defaultdict(lambda: "<키 누락>", context_data)
+
+        if isinstance(template, DjangoTemplate):
+            return template.render(DjangoTemplateContext(safe_data))
+        elif isinstance(template, BasePromptTemplate):
+            for var_name in template.input_variables:
+                safe_data[var_name]  # 없는 key 값을 미리 생성합니다.
+            return template.format(**safe_data)
+        elif isinstance(template, str):
+            return template.format_map(safe_data)
+        else:
+            raise TypeError(f"지원되지 않는 타입 : {type(system_prompt_template)}")
