@@ -125,7 +125,9 @@
                     {{ content_block.tool_name|default:"Tool" }} 도구
                     {% if not content_block.value %}수행 지시{% else %}수행 완료{% endif %}
                 </label>
-                {% if content_block.value %}
+                {# Pandas DataFrame/Series 값은 truth 값 판단이 되지 않기에 .bool 메서드를 활용토록 합니다. #}
+                {# ValueError: The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all(). #}
+                {% if content_block.value.bool or content_block.value %}
                     <input type="checkbox" id="{{ content_block.id }}_my_modal_7" class="modal-toggle"/>
                     <div class="modal" role="dialog">
                         <div class="modal-box">
