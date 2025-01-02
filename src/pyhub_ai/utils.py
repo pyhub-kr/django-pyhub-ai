@@ -8,7 +8,8 @@ from io import BytesIO
 from pathlib import Path
 from typing import IO, Dict, List, Optional, Tuple, Union
 
-from django.apps import apps
+from django.apps import AppConfig, apps
+from django.core.exceptions import ImproperlyConfigured
 from django.core.files import File
 from django.core.files.base import ContentFile
 from django.utils.datastructures import MultiValueDict
@@ -172,27 +173,69 @@ def get_image_mimetype(header: bytes) -> Optional[Mimetypes]:
     return None
 
 
-def find_file_in_apps(*paths: Union[str, Path]) -> Path:
-    """주어진 경로에서 파일을 찾아 반환합니다.
-
-    먼저 PYHUB_AI_APP_DIR에서 파일을 찾고, 없으면 설치된 모든 Django 앱에서 순차적으로 검색합니다.
+def find_file_in_app(
+    app_label: str,
+    *paths: Union[str, Path],
+    raise_exception: bool = True,
+) -> Optional[Path]:
+    """지정된 Django 앱에서 파일을 찾습니다.
 
     Args:
-        *paths: 찾고자 하는 파일의 경로 구성요소들. str 또는 Path 객체.
+        app_label: 검색할 Django 앱의 레이블
+        *paths: 찾고자 하는 파일의 경로 구성요소들. str 또는 Path 객체
+        raise_exception: 파일을 찾지 못했을 때 예외를 발생시킬지 여부. 기본값은 True
 
     Returns:
-        Path: 찾은 파일의 전체 경로
+        찾은 파일의 Path 객체. 파일을 찾지 못하고 raise_exception이 False인 경우 None 반환
 
     Raises:
-        FileNotFoundError: 주어진 경로에서 파일을 찾을 수 없는 경우
+        ImproperlyConfigured: 지정된 앱을 찾을 수 없는 경우 (raise_exception이 True일 때)
+        FileNotFoundError: 지정된 경로에서 파일을 찾을 수 없는 경우 (raise_exception이 True일 때)
     """
+    try:
+        app_config: AppConfig = apps.get_app_config(app_label)
+    except (KeyError, LookupError):
+        if raise_exception:
+            raise ImproperlyConfigured(f"{app_label} 앱을 찾을 수 없습니다.")
+    else:
+        path = Path(app_config.path).joinpath(*paths)
+        if path.exists():
+            return path
 
+        if raise_exception:
+            raise FileNotFoundError(f"{paths} 경로의 파일을 찾을 수 없습니다.")
+
+    return None
+
+
+def find_file_in_apps(
+    *paths: Union[str, Path],
+    raise_exception: bool = True,
+) -> Optional[Path]:
+    """설치된 모든 Django 앱에서 순차적으로 파일을 검색합니다.
+
+    설치된 모든 Django 앱을 순회하면서 지정된 경로의 파일을 찾습니다.
+    첫 번째로 발견된 파일의 경로를 반환합니다.
+
+    Args:
+        *paths: 찾고자 하는 파일의 경로 구성요소들. str 또는 Path 객체
+        raise_exception: 파일을 찾지 못했을 때 예외를 발생시킬지 여부. 기본값은 True
+
+    Returns:
+        찾은 파일의 Path 객체. 파일을 찾지 못하고 raise_exception이 False인 경우 None 반환
+
+    Raises:
+        FileNotFoundError: 모든 앱에서 파일을 찾을 수 없는 경우 (raise_exception이 True일 때)
+    """
     for app_config in apps.get_app_configs():
         path = Path(app_config.path).joinpath(*paths)
         if path.exists():
             return path
 
-    raise FileNotFoundError(f"{paths} 경로의 파일을 찾을 수 없습니다.")
+    if raise_exception:
+        raise FileNotFoundError(f"{paths} 경로의 파일을 찾을 수 없습니다.")
+
+    return None
 
 
 def sum_and_merge_dicts(*dicts: Dict[str, Union[int, float, Dict]]) -> Dict[str, Union[int, float, Dict]]:

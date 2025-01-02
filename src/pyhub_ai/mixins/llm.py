@@ -159,7 +159,7 @@ class LLMMixin:
             else:
                 if isinstance(system_prompt_path, str):
                     if not exists(system_prompt_path):
-                        system_prompt_path = find_file_in_apps(system_prompt_path)
+                        system_prompt_path = find_file_in_apps(system_prompt_path, raise_exception=True)
 
                 system_prompt_template: BasePromptTemplate = load_prompt(system_prompt_path, encoding="utf-8")
             return system_prompt_template
