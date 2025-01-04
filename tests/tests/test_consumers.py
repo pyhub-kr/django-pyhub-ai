@@ -29,7 +29,7 @@ class TestAgentChatConsumer:
                     messages.append(message)
                     if message["type"] == "websocket.close":
                         break
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(0.5)
                 except TimeoutError:
                     break
 
@@ -62,5 +62,9 @@ class TestAgentChatConsumer:
     @pytest.mark.it("인증된 사용자는 유효한 세션 쿠키로 연결이 유지되어야 합니다.")
     async def test_connect_authenticated(self, auth_communicator):
         async with auth_communicator as communicator:
-            message = await communicator.receive_output(timeout=1)
-            assert message["type"] == "websocket.send"
+            # ping 메시지 전송
+            await communicator.send_json_to({"type": "ping"})
+
+            # pong 메시지 수신 확인
+            response = await communicator.receive_json_from(timeout=1)
+            assert response["type"] == "pong", "Response to ping message should be pong"

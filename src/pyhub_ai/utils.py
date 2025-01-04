@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import mimetypes
 import re
@@ -6,7 +7,7 @@ from collections import defaultdict
 from enum import Enum
 from io import BytesIO
 from pathlib import Path
-from typing import IO, Dict, List, Optional, Tuple, Union
+from typing import IO, AsyncIterator, Dict, List, Optional, Tuple, TypeVar, Union
 
 from django.apps import AppConfig, apps
 from django.core.exceptions import ImproperlyConfigured
@@ -18,6 +19,9 @@ from django.utils.safestring import SafeString, mark_safe
 from PIL import Image
 
 logger = logging.getLogger(__name__)
+
+
+T = TypeVar("T")
 
 
 def encode_image_files(
@@ -329,3 +333,51 @@ def parse_bool_string(value: Optional[str]) -> bool:
         return int(value) != 0
     except ValueError:
         return bool(re.match(r"^\s*[toy1]", value.strip(), re.IGNORECASE))
+
+
+async def amerge(**streams: AsyncIterator[T]) -> AsyncIterator[Tuple[str, T]]:
+    """여러 비동기 스트림을 병합하여 순차적으로 처리합니다.
+
+    각 스트림에서 데이터가 준비되는 대로 해당 스트림의 키와 함께 결과를 반환합니다.
+    모든 스트림이 종료될 때까지 실행됩니다.
+
+    Args:
+        **streams: 키-스트림 쌍으로 구성된 비동기 이터레이터들.
+            각 스트림은 키로 식별됩니다.
+
+    Yields:
+        Tuple[str, T]: 스트림의 키와 해당 스트림에서 생성된 다음 값의 튜플.
+
+    Raises:
+        Exception: 스트림 처리 중 발생한 모든 예외.
+            예외 발생 시 실행 중인 모든 태스크가 취소됩니다.
+
+    Example:
+        >>> async for key, value in amerge(
+        ...     stream1=aiter([1, 2, 3]),
+        ...     stream2=aiter(['a', 'b', 'c'])
+        ... ):
+        ...     print(f"{key}: {value}")
+        stream1: 1
+        stream2: a
+        stream1: 2
+        stream2: b
+        stream1: 3
+        stream2: c
+    """
+    nexts: Dict[asyncio.Task, str] = {asyncio.create_task(anext(stream)): key for key, stream in streams.items()}
+
+    while nexts:
+        done, __ = await asyncio.wait(nexts, return_when=asyncio.FIRST_COMPLETED)
+        for task in done:
+            key = nexts.pop(task)
+            stream = streams[key]
+            try:
+                yield key, task.result()
+                nexts[asyncio.create_task(anext(stream))] = key
+            except StopAsyncIteration:
+                pass
+            except Exception as e:
+                for task in nexts:
+                    task.cancel()
+                raise e

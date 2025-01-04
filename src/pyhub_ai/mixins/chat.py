@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from functools import cached_property
 from typing import (
     AsyncIterator,
@@ -9,7 +10,6 @@ from typing import (
     Literal,
     Optional,
     Type,
-    Union,
 )
 
 from asgiref.sync import sync_to_async
@@ -28,6 +28,9 @@ from pyhub_ai.blocks import (
 )
 from pyhub_ai.forms import MessageForm
 from pyhub_ai.models import Conversation, UserType
+from pyhub_ai.utils import amerge
+
+logger = logging.getLogger(__name__)
 
 
 class ChatMixin:
@@ -42,19 +45,61 @@ class ChatMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.response_queue_manager: Optional[ResponseQueueManager] = None
+
+        self.send_func: Optional[Callable[[str], Coroutine]] = None
+        self.llm_response_queue = asyncio.Queue()
+        self.llm_response_task: Optional[asyncio.Task] = None
 
     async def chat_setup(self, send_func: Callable[[str], Coroutine]):
-        self.response_queue_manager = ResponseQueueManager(send_func)
-        await self.response_queue_manager.start_polling()
+        self.send_func = send_func
+        self.llm_response_task = asyncio.create_task(self.run_llm_response_task())
+        self.llm_response_task.add_done_callback(self.handle_llm_response_task_result)
 
     async def chat_message_put(self, text: Optional[str]) -> None:
-        if self.response_queue_manager:
-            await self.response_queue_manager.put(text)
+        await self.llm_response_queue.put(text)
 
     async def chat_shutdown(self):
-        if self.response_queue_manager:
-            await self.response_queue_manager.shutdown()
+        # sub task, llm_response_stream task가 종료될 수 있도록 None을 Queue에 추가합니다.
+        await self.llm_response_queue.put(None)
+
+        # main task, llm_response_task를 취소 요청합니다.
+        if self.llm_response_task and not self.llm_response_task.done():
+            self.llm_response_task.cancel()
+            try:
+                await self.llm_response_task
+            except asyncio.CancelledError:
+                pass
+
+    async def llm_response_stream(self) -> AsyncIterator[str]:
+        """
+        LLM response stream
+
+        Returns:
+            AsyncIterator[str]: 유저 음성 데이터 스트림
+        """
+        while True:
+            item = await self.llm_response_queue.get()
+            yield item
+            if item is None:
+                break
+
+    async def run_llm_response_task(self) -> None:
+        async for stream_key, data_raw in amerge(
+            llm_response_stream=self.llm_response_stream(),
+        ):
+            if stream_key == "llm_response_stream":
+                await self.send_func(data_raw)
+            else:
+                raise NotImplementedError(f"[run_llm_response_task] Not Implemented stream_key : {stream_key}")
+
+    @staticmethod
+    async def handle_llm_response_task_result(task: asyncio.Task) -> None:
+        try:
+            task.result()
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            logger.error(f"LLM Response Task failed with exception: %s", e)
 
     def get_template_name(self) -> str:
         return self.template_name
@@ -269,40 +314,3 @@ class ChatMixin:
         # 모든 응답 생성이 완료되면, "생각 중" 메시지를 삭제합니다.
         if thinking_block is not None:
             await thinking_block.thinking_end()
-
-
-class ResponseQueueManager:
-    def __init__(
-        self,
-        send_func: Callable[[Optional[str]], Coroutine[None, None, None]],
-    ):
-        self.queue = asyncio.Queue()
-        self.send_func = send_func
-        self.task: Optional[asyncio.Task] = None
-
-    async def start_polling(self) -> None:
-        async def polling():
-            try:
-                while True:
-                    item: Optional[str] = await self.queue.get()
-                    self.queue.task_done()
-
-                    await self.send_func(item)
-                    if item is None:
-                        break
-            except asyncio.CancelledError:
-                # 큐를 비우고 종료
-                while not self.queue.empty():
-                    self.queue.get_nowait()
-                    self.queue.task_done()
-                raise  # 취소 시그널을 상위로 전파
-
-        self.task = asyncio.create_task(polling())
-
-    async def put(self, response: Union[str]) -> None:
-        await self.queue.put(response)
-
-    async def shutdown(self) -> None:
-        if self.task and not self.task.done():
-            await self.queue.put(None)
-            await self.task

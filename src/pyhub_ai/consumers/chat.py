@@ -110,14 +110,17 @@ class ChatConsumer(ChatMixin, AsyncJsonWebsocketConsumer):
             **kwargs: 추가 인자.
         """
 
-        user_text = data.get(self.user_text_field_name, "").strip()
-        if user_text:
-            # 유저 요청을 처리하기 전에, 유저 메시지를 화면에 먼저 빠르게 렌더링합니다.
-            await self.render_block(TextContentBlock(role="user", value=user_text))
+        if data.get("type") == "ping":
+            await self.send_json({"type": "pong"})
+        else:
+            user_text = data.get(self.user_text_field_name, "").strip()
+            if user_text:
+                # 유저 요청을 처리하기 전에, 유저 메시지를 화면에 먼저 빠르게 렌더링합니다.
+                await self.render_block(TextContentBlock(role="user", value=user_text))
 
-        files: MultiValueDict = extract_base64_files(data, self.base64_field_name_postfix)
+            files: MultiValueDict = extract_base64_files(data, self.base64_field_name_postfix)
 
-        query_dict = QueryDict(mutable=True)
-        query_dict.update(data)
+            query_dict = QueryDict(mutable=True)
+            query_dict.update(data)
 
-        await self.form_handler(data=query_dict, files=files)
+            await self.form_handler(data=query_dict, files=files)
