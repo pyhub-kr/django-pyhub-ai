@@ -1,4 +1,7 @@
-from typing import Dict, Type
+import asyncio
+import sys
+import traceback
+from typing import Dict, Optional, Type
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from django.forms import Form
@@ -35,17 +38,41 @@ class ChatConsumer(ChatMixin, AsyncJsonWebsocketConsumer):
 
         await self.accept()
 
+        error_message: Optional[str] = None
+
         if await self.can_accept():
-            await self.on_accept()
+            try:
+                await self.on_accept()
+            except Exception as e:
+                # 에러 메시지가 없다면, 호출스택을 노출시킵니다.
+                error_message = str(e)  # or ("```\n" + traceback.format_exc() + "\n```")
+                if not error_message:
+                    tb = traceback.extract_tb(sys.exc_info()[2])
+                    if tb:
+                        last_frame = tb[-1]
+                        # 전체 경로에서 site-packages 이후 경로만 추출
+                        file_path = last_frame.filename
+                        if "site-packages/" in file_path:
+                            file_path = file_path.split("site-packages/")[-1]
+                        elif "src/" in file_path:
+                            file_path = file_path.split("src/")[-1]
+                        error_message = (
+                            "```\n" + f"Error in {file_path}, line {last_frame.lineno}: {type(e).__name__}" + "\n```"
+                        )
         else:
             user = await self.get_user()
             username = user.username if user is not None else "미인증 사용자"
+            error_message = f"{self.__class__.__module__}.{self.__class__.__name__}에서 웹소켓 연결을 거부했습니다. (username: {username})"
+
+        if error_message is not None:
             await self.render_block(
                 TextContentBlock(
                     role="error",
-                    value=f"{self.__class__.__module__}.{self.__class__.__name__}에서 웹소켓 연결을 거부했습니다. (username: {username})",
+                    value=error_message,
                 )
             )
+            # 즉시 close하면 websocket send 전에 닫히므로, close를 1초 지연시킵니다.
+            await asyncio.sleep(1)
             await self.close(code=4000)
 
     async def send_unless_none(self, text: str) -> None:
