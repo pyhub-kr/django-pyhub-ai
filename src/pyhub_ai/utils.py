@@ -329,6 +329,10 @@ def parse_bool_string(value: Optional[str]) -> bool:
         >>> parse_bool_string("false")
         False
     """
+
+    if value is None:
+        return False
+
     try:
         return int(value) != 0
     except ValueError:
