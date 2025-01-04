@@ -46,7 +46,9 @@ class ChatConsumer(ChatMixin, AsyncJsonWebsocketConsumer):
             except Exception as e:
                 # 에러 메시지가 없다면, 호출스택을 노출시킵니다.
                 error_message = str(e)  # or ("```\n" + traceback.format_exc() + "\n```")
-                if not error_message:
+                if error_message:
+                    error_message = "```\n" + error_message + "\n```"
+                else:
                     tb = traceback.extract_tb(sys.exc_info()[2])
                     if tb:
                         last_frame = tb[-1]

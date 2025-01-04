@@ -78,6 +78,7 @@ class AgentMixin(LLMMixin, ChatMixin):
     async def get_agent_params(self) -> Dict[str, Any]:
         return {
             "llm": self.get_llm(),
+            "spec": self.get_llm_spec(),
             "system_prompt": await self.aget_llm_system_prompt(),
             "on_conversation_complete": self.on_conversation_complete,
             "verbose": self.get_verbose(),

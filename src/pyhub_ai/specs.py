@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 from enum import Enum
-from typing import Dict
+from typing import Dict, Optional
 
 from django.utils.functional import cached_property
 
@@ -26,15 +26,20 @@ class LLMModel(str, Enum):
     def spec(self) -> "LLMModelSpec":
         """Returns the LLMModelSpec for this model."""
         try:
-            return LLM_MODEL_SPECS[self]
+            spec = LLM_MODEL_SPECS[self]
+            spec.name = self.name
+            return spec
         except KeyError:
             raise ValueError(f"Unsupported LLM model: {self}")
 
 
 @dataclass
 class LLMModelSpec:
-    max_output_tokens: int
-    support_vision: bool = False
+    name: Optional[str] = None
+    max_output_tokens: Optional[int] = None
+    # https://python.langchain.com/docs/integrations/chat/#featured-providers
+    support_multimodal: bool = False
+    support_tool_calling: bool = False
 
 
 # 모델별 설정 정보 (2024.11.15 기준) : https://openai.com/api/pricing/
@@ -42,38 +47,46 @@ LLM_MODEL_SPECS: Dict[LLMModel, LLMModelSpec] = {
     # https://platform.openai.com/docs/models#gpt-4o
     LLMModel.OPENAI_GPT_4O: LLMModelSpec(
         max_output_tokens=16_384,
-        support_vision=True,
+        support_multimodal=True,
+        support_tool_calling=True,
     ),
     # https://platform.openai.com/docs/models#gpt-4o-mini
     LLMModel.OPENAI_GPT_4O_MINI: LLMModelSpec(
         max_output_tokens=16_384,
-        support_vision=True,
+        support_multimodal=True,
+        support_tool_calling=True,
     ),
     # https://platform.openai.com/docs/models#gpt-4-turbo-and-gpt-4
     LLMModel.OPENAI_GPT_4_TURBO: LLMModelSpec(
         max_output_tokens=4_096,
+        support_tool_calling=True,
     ),
     # https://docs.anthropic.com/en/docs/about-claude/models#model-comparison-table
     # https://www.anthropic.com/pricing#anthropic-api
     LLMModel.ANTHROPIC_CLAUDE_3_5_SONNET: LLMModelSpec(
         max_output_tokens=8_192,
-        support_vision=True,
+        support_multimodal=True,
+        support_tool_calling=True,
     ),
     LLMModel.ANTHROPIC_CLAUDE_3_5_HAIKU: LLMModelSpec(
         max_output_tokens=4_096,
+        support_tool_calling=True,
     ),
     LLMModel.ANTHROPIC_CLAUDE_3_OPUS: LLMModelSpec(
         max_output_tokens=4_096,
-        support_vision=True,
+        support_multimodal=True,
+        support_tool_calling=True,
     ),
     # https://cloud.google.com/vertex-ai/generative-ai/pricing
     LLMModel.GOOGLE_GEMINI_1_5_FLASH: LLMModelSpec(
         max_output_tokens=4_096,
-        support_vision=True,
+        support_multimodal=True,
+        support_tool_calling=True,
     ),
     LLMModel.GOOGLE_GEMINI_1_5_PRO: LLMModelSpec(
         max_output_tokens=4_096,
-        support_vision=True,
+        support_multimodal=True,
+        support_tool_calling=True,
     ),
     # https://www.ncloud.com/product/aiService/clovaStudio#pricing
     LLMModel.CLOVASTUDIO_HCX_DASH_001: LLMModelSpec(

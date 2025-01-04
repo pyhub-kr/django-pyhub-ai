@@ -16,7 +16,7 @@ from langchain_core.prompts import BasePromptTemplate
 from langchain_core.prompts.loading import load_prompt, load_prompt_from_config
 from pydantic import SecretStr
 
-from pyhub_ai.specs import LLMModel
+from pyhub_ai.specs import LLMModel, LLMModelSpec
 from pyhub_ai.utils import find_file_in_apps
 
 logger = logging.getLogger(__name__)
@@ -128,6 +128,10 @@ class LLMMixin:
         if is_service_app is None:
             return False
         return is_service_app
+
+    def get_llm_spec(self) -> LLMModelSpec:
+        llm_model = self.get_llm_model()
+        return llm_model.spec
 
     def get_llm(self) -> BaseChatModel:
         if self.llm_fake_responses is not None:

@@ -27,6 +27,7 @@ from pyhub_ai.blocks import (
     TextContentBlock,
 )
 from pyhub_ai.parsers import XToolsAgentOutputParser
+from pyhub_ai.specs import LLMModelSpec
 from pyhub_ai.tools import PyhubStructuredTool, tool_with_retry
 from pyhub_ai.utils import encode_image_files, get_image_mimetype, sum_and_merge_dicts
 
@@ -46,6 +47,7 @@ class ChatAgent:
     def __init__(
         self,
         llm: BaseChatModel,
+        spec: LLMModelSpec,
         system_prompt: Union[str, BasePromptTemplate],
         previous_messages: Optional[List[Union[HumanMessage, AIMessage]]] = None,
         tools: Optional[List[Union[Callable, BaseTool]]] = None,
@@ -61,6 +63,7 @@ class ChatAgent:
 
         Args:
             llm (BaseChatModel): 대형 언어 모델.
+            spec (LLMModelSpec) : LLM Spec
             system_prompt (Union[str, BasePromptTemplate]): 시스템 프롬프트.
             previous_messages (Optional[List[Union[HumanMessage, AIMessage]]]): 초기 메시지 목록.
             tools (Optional[List[Union[Callable, BaseTool]]): 사용할 도구 목록.
@@ -70,6 +73,8 @@ class ChatAgent:
             handle_parsing_errors (bool): 파싱 오류 처리 여부. tools 옵션을 사용할 때만 사용됩니다.
             verbose (bool): 상세 로그 출력 여부.
         """
+
+        self.spec = spec
 
         base_messages: List[Union[BaseMessage, BaseMessagePromptTemplate]] = []
 
@@ -106,6 +111,9 @@ class ChatAgent:
             prompt = ChatPromptTemplate.from_messages(base_messages)
             runnable = (prompt | llm).with_config(verbose=verbose)
         else:
+            if not self.spec.support_tool_calling:
+                raise NotImplementedError(f"The LLM model '{self.spec.name}' does not support tool calling feature")
+
             # Agent를 통하기 때문에 stream 옵션을 지정하더라도 Agent를 경유하여 응답이 생성되기에,
             # 스트리밍 방식으로 응답 생성이 불가능하고 한 번에 모든 응답이 생성됩니다.
             # create_tool_calling_agent 에서는 ToolsAgentOutputParser 가 적용되어있고,

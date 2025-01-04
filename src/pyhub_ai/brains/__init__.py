@@ -27,10 +27,12 @@ class Brain(LLMMixin):
         )
 
         llm = self.get_llm()
+        spec = self.get_llm_spec()
         system_prompt = await self.aget_llm_system_prompt()
 
         agent = ChatAgent(
             llm=llm,
+            spec=spec,
             system_prompt=system_prompt,
             verbose=verbose,
         )
