@@ -1,3 +1,4 @@
+import logging
 import os
 from collections import defaultdict
 from io import StringIO
@@ -17,6 +18,8 @@ from pydantic import SecretStr
 
 from pyhub_ai.specs import LLMModel
 from pyhub_ai.utils import find_file_in_apps
+
+logger = logging.getLogger(__name__)
 
 
 class LLMMixin:
@@ -234,6 +237,15 @@ class LLMMixin:
         return self.llm_temperature
 
     def get_llm_max_tokens(self) -> int:
+        spec = self.get_llm_model().spec
+        if self.llm_max_tokens > spec.max_output_tokens:
+            model_name = self.get_llm_model().name
+            logger.warn(
+                f"{model_name} LLM에 설정된 max tokens 설정({self.llm_max_tokens})이 허용범위({spec.max_output_tokens})를 "
+                f"넘어서기에 {spec.max_output_tokens} 값으로 강제 조정합니다."
+            )
+            return spec.max_output_tokens
+
         return self.llm_max_tokens
 
     def get_llm_timeout(self) -> Union[float, Tuple[float, float]]:
