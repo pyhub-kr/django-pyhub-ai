@@ -5,6 +5,8 @@ from typing import Dict
 
 from django.utils.functional import cached_property
 
+from pyhub_ai.backends.langchain import patch  # noqa
+
 
 class LLMModel(str, Enum):
     OPENAI_GPT_4O = "gpt-4o"
