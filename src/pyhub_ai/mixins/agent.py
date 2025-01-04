@@ -36,7 +36,7 @@ T = TypeVar("T", bound="AgentMixin")
 class AgentMixin(LLMMixin, ChatMixin):
     welcome_message_template = ""
     show_initial_prompt: bool = True
-    verbose: Optional[bool] = False
+    verbose: Optional[bool] = None
     tools: Optional[List[Union[Callable, BaseTool]]] = None
 
     def __init__(self, *args, tools: Optional[List[Union[Callable, BaseTool]]] = None, **kwargs):
