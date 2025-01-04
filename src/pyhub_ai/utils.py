@@ -300,3 +300,32 @@ def format_map_html(format_string: str, fallback: Optional[str] = "", **kwargs) 
     kwargs_safe = {k: conditional_escape(v) for (k, v) in kwargs.items()}
     kwargs_safe = defaultdict(lambda: fallback, kwargs_safe)
     return mark_safe(format_string.format_map(kwargs_safe))
+
+
+def parse_bool_string(value: Optional[str]) -> bool:
+    """문자열을 불리언 값으로 변환합니다.
+
+    Args:
+        value: 변환할 문자열. 숫자 또는 'true', 'on', 'yes', '1' 등의 문자열을 허용합니다.
+
+    Returns:
+        bool: 변환된 불리언 값.
+            - 숫자인 경우: 0이 아닌 값은 True, 0은 False
+            - 문자열인 경우: 't', 'o', 'y', '1'로 시작하는 문자열(대소문자 무관)은 True, 그 외는 False
+
+    Examples:
+        >>> parse_bool_string("1")
+        True
+        >>> parse_bool_string("0")
+        False
+        >>> parse_bool_string("true")
+        True
+        >>> parse_bool_string("yes")
+        True
+        >>> parse_bool_string("false")
+        False
+    """
+    try:
+        return int(value) != 0
+    except ValueError:
+        return bool(re.match(r"^\s*[toy1]", value.strip(), re.IGNORECASE))

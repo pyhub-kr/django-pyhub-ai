@@ -17,7 +17,7 @@ from langchain_core.prompts.loading import load_prompt, load_prompt_from_config
 from pydantic import SecretStr
 
 from pyhub_ai.specs import LLMModel, LLMModelSpec
-from pyhub_ai.utils import find_file_in_apps
+from pyhub_ai.utils import find_file_in_apps, parse_bool_string
 
 logger = logging.getLogger(__name__)
 
@@ -125,17 +125,7 @@ class LLMMixin:
             return self.llm_ncp_service_app
 
         is_service_app = getattr(settings, "NCP_SERVICE_APP", os.environ.get("NCP_SERVICE_APP", None))
-        if is_service_app is None:
-            return False
-
-        try:
-            is_service_app = int(is_service_app) != 0
-        except ValueError:
-            # refs: django-environ
-            BOOLEAN_TRUE_STRINGS = ("true", "on", "ok", "y", "yes", "1")
-            is_service_app = is_service_app.lower().strip() in BOOLEAN_TRUE_STRINGS
-
-        return is_service_app
+        return parse_bool_string(is_service_app)
 
     def get_llm_spec(self) -> LLMModelSpec:
         llm_model = self.get_llm_model()
