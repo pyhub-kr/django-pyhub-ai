@@ -6,6 +6,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = Env()
 
+env_path = BASE_DIR / ".." / "django-test.env"
+if env_path.is_file():
+    print("loading", env_path)
+    env.read_env(env_path, overwrite=True)
+
 SECRET_KEY = "django-insecure-test-key-do-not-use-in-production"
 
 DEBUG = env.bool("DEBUG", default=True)

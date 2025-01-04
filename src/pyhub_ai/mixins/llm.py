@@ -23,6 +23,11 @@ class LLMMixin:
     llm_openai_api_key: SecretStr = ""
     llm_anthropic_api_key: SecretStr = ""
     llm_google_api_key: SecretStr = ""
+
+    llm_ncp_apigw_api_key: SecretStr = ""
+    llm_ncp_clovastudio_api_key: SecretStr = ""
+    llm_ncp_service_app: Optional[bool] = None  # False: test app, True: service app in NCP
+
     llm_system_prompt_path: Optional[Union[str, Path]] = None
     llm_system_prompt_template: Union[str, BasePromptTemplate, DjangoTemplate] = ""
     llm_prompt_context_data: Optional[Dict] = None
@@ -98,6 +103,29 @@ class LLMMixin:
         api_key = getattr(settings, "GOOGLE_API_KEY", os.environ.get("GOOGLE_API_KEY", ""))
         return SecretStr(api_key)
 
+    def get_llm_ncp_apigw_api_key(self) -> SecretStr:
+        if self.llm_ncp_apigw_api_key:
+            return self.llm_ncp_apigw_api_key
+
+        api_key = getattr(settings, "NCP_APIGW_API_KEY", os.environ.get("NCP_APIGW_API_KEY", ""))
+        return SecretStr(api_key)
+
+    def get_llm_ncp_clovastudio_api_key(self) -> SecretStr:
+        if self.llm_ncp_clovastudio_api_key:
+            return self.llm_ncp_clovastudio_api_key
+
+        api_key = getattr(settings, "NCP_CLOVASTUDIO_API_KEY", os.environ.get("NCP_CLOVASTUDIO_API_KEY", ""))
+        return SecretStr(api_key)
+
+    def get_llm_ncp_service_app(self) -> bool:
+        if self.llm_ncp_service_app is not None:
+            return self.llm_ncp_service_app
+
+        is_service_app = getattr(settings, "NCP_SERVICE_APP", os.environ.get("NCP_SERVICE_APP", None))
+        if is_service_app is None:
+            return False
+        return is_service_app
+
     def get_llm(self) -> BaseChatModel:
         if self.llm_fake_responses is not None:
             from langchain_community.llms.fake import FakeStreamingListLLM
@@ -141,6 +169,18 @@ class LLMMixin:
                     max_tokens=self.get_llm_max_tokens(),
                     timeout=self.get_llm_timeout(),
                     streaming=True,
+                )
+            elif llm_model_name.startswith("CLOVASTUDIO_"):
+                from langchain_community.chat_models import ChatClovaX
+
+                return ChatClovaX(
+                    service_app=self.get_llm_ncp_service_app(),
+                    ncp_apigw_api_key=self.get_llm_ncp_apigw_api_key(),
+                    ncp_clovastudio_api_key=self.get_llm_ncp_clovastudio_api_key(),
+                    model=self.get_llm_model().value,
+                    temperature=self.get_llm_temperature(),
+                    max_tokens=self.get_llm_max_tokens(),
+                    timeout=self.get_llm_timeout(),
                 )
 
         raise NotImplementedError(f"OpenAI API 만 지원하며, {llm_model}는 지원하지 않습니다.")

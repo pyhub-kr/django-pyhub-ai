@@ -35,7 +35,15 @@ class Example:
 
 @pytest.mark.asyncio
 @pytest.mark.it("LLM을 활용한 단건 응답을 생성하고, Fake LLM을 사용했기에 지정한 답변을 받게 됩니다.")
-async def test_brain():
+@pytest.mark.parametrize(
+    "model",
+    [
+        LLMModel.OPENAI_GPT_4O_MINI,
+        LLMModel.ANTHROPIC_CLAUDE_3_5_HAIKU,
+        LLMModel.CLOVASTUDIO_HCX_DASH_001,
+    ],
+)
+async def test_brain(model):
     system_prompt_template = Template(
         """
 당신은 전문적인 고객 리뷰 답변 작성자입니다.
@@ -87,7 +95,7 @@ EXAMPLES (few-shot learning)
 
     text = await Brain.aquery(
         user_text="산미가 있어서 좋아하는 맛이에요.",
-        model=LLMModel.ANTHROPIC_CLAUDE_3_5_HAIKU,
+        model=model,
         system_prompt_template=system_prompt_template,
         prompt_context_data=prompt_context_data,
         # Fake LLM 을 활용합니다.
