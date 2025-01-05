@@ -32,7 +32,7 @@ class LLMMixin:
     llm_ncp_service_app: Optional[bool] = None
 
     llm_system_prompt_path: Optional[Union[str, Path]] = None
-    llm_system_prompt_template: Union[str, BasePromptTemplate, DjangoTemplate] = ""
+    llm_system_prompt_template: Optional[Union[str, BasePromptTemplate, DjangoTemplate]] = None
     llm_prompt_context_data: Optional[Dict] = None
     llm_first_user_message_template: Optional[Union[str, DjangoTemplate]] = None
     llm_model: LLMModel = LLMModel.OPENAI_GPT_4O
@@ -194,6 +194,9 @@ class LLMMixin:
         return self.llm_system_prompt_path
 
     async def aget_llm_system_prompt_template(self) -> Union[str, BasePromptTemplate, DjangoTemplate]:
+        if self.llm_system_prompt_template is not None:
+            return self.llm_system_prompt_template
+
         system_prompt_path = self.get_llm_system_prompt_path()
         if system_prompt_path:
             if isinstance(system_prompt_path, str) and system_prompt_path.startswith(("http://", "https:/")):
@@ -224,7 +227,8 @@ class LLMMixin:
 
                 system_prompt_template: BasePromptTemplate = load_prompt(system_prompt_path, encoding="utf-8")
             return system_prompt_template
-        return self.llm_system_prompt_template
+
+        return ""
 
     def get_llm_prompt_context_data(self, **kwargs) -> Dict:
         if self.llm_prompt_context_data:
