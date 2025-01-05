@@ -13,6 +13,7 @@ django-pyhub-ai는 Django 프로젝트에 자연스럽게 통합되며, OpenAI A
 :caption: 목차
 
 quickstart/index
+consumers/index
 courses/index
 ```
 

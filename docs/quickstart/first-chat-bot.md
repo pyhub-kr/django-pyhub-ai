@@ -123,7 +123,9 @@ urlpatterns = [
 
 ## OpenAI API Key 얻기
 
-현재 `django-pyhub-ai` 라이브러리에서는 OpenAI API 만을 지원합니다. OpenAI 대시보드의 [API Keys 페이지](https://platform.openai.com/api-keys)에서 "Create new secret key"를 클릭해 API Key를 생성해주세요. API KEY 생성 시에 권한을 세부 설정하실 수 있는 데요. 본 실습을 위해서는 API KEY 권한(Permissions)은 최소한 `Model capabilities`는 있어야 합니다.
+현재 `django-pyhub-ai` 라이브러리에서는 OpenAI API, Anthropic API, Google Gemini API, NCP Clova Studio API를 지원합니다. 이 중 가장 대중적인 OpenAI API를 활용해보겠습니다.
+
+OpenAI 대시보드의 [API Keys 페이지](https://platform.openai.com/api-keys)에서 "Create new secret key"를 클릭해 API Key를 생성해주세요. API KEY 생성 시에 권한을 세부 설정하실 수 있는 데요. 본 실습을 위해서는 API KEY 권한(Permissions)은 최소한 `Model capabilities`는 있어야 합니다.
 
 ![OpenAI API Keys 생성](./assets/openai-api-key.png)
 
