@@ -56,16 +56,22 @@ jobs:
         run: |
           uv pip install -e ".[test]"
 
+      - name: Run tests on Linux
+        if: runner.os != 'Windows'
+        run: |
+          uv run python -m pytest tests/
+
       # uv run python 명령을 사용하니
       # 윈도우 3.13 실행 시에 저버전(1.26.4)의 numpy 설치를 시도하고
       # 1.26.4 버전의 3.13 윈도우 바이너리가 없어서 빌드 오류가 발생
       # 그래서 python 명령으로 직접 실행토록 변경
-      - name: Run tests
+      - name: Run tests on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          python -m pytest tests/
+          .venv\Scripts\python -m pytest tests/
 
       - name: Test build
-        if: matrix.python-version == '3.12'
         run: |
           pip install build
           python -m build
