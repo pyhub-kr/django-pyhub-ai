@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
         architecture: [x64]
       # 일부 작업이 실패하더라도 다른 모든 matrix 작업이 완료될 때까지 계속 실행됩니다.
       fail-fast: false
