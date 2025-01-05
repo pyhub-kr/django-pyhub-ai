@@ -4,6 +4,7 @@ from collections import defaultdict
 from io import StringIO
 from os.path import exists
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 from typing import Any, Dict, List, Optional, Tuple, Type, Union
 
 import httpx
@@ -23,13 +24,12 @@ logger = logging.getLogger(__name__)
 
 
 class LLMMixin:
-    llm_openai_api_key: SecretStr = ""
-    llm_anthropic_api_key: SecretStr = ""
-    llm_google_api_key: SecretStr = ""
-
-    llm_ncp_apigw_api_key: SecretStr = ""
-    llm_ncp_clovastudio_api_key: SecretStr = ""
-    llm_ncp_service_app: Optional[bool] = None  # False: test app, True: service app in NCP
+    llm_openai_api_key: Optional[SecretStr] = None
+    llm_anthropic_api_key: Optional[SecretStr] = None
+    llm_google_api_key: Optional[SecretStr] = None
+    llm_ncp_apigw_api_key: Optional[SecretStr] = None
+    llm_ncp_clovastudio_api_key: Optional[SecretStr] = None
+    llm_ncp_service_app: Optional[bool] = None
 
     llm_system_prompt_path: Optional[Union[str, Path]] = None
     llm_system_prompt_template: Union[str, BasePromptTemplate, DjangoTemplate] = ""
@@ -38,7 +38,7 @@ class LLMMixin:
     llm_model: LLMModel = LLMModel.OPENAI_GPT_4O
     llm_temperature: float = 1
     llm_max_tokens: int = 4096
-    llm_timeout: Union[float, Tuple[float, float]] = 5  # seconds
+    llm_timeout: Union[float, Tuple[float, float]] = 5
     llm_fake_responses: Optional[List[str]] = None
 
     def __init__(
@@ -199,8 +199,24 @@ class LLMMixin:
             if isinstance(system_prompt_path, str) and system_prompt_path.startswith(("http://", "https:/")):
                 async with httpx.AsyncClient() as client:
                     res = await client.get(system_prompt_path)
-                config = yaml.safe_load(StringIO(res.text))
-                system_prompt_template = load_prompt_from_config(config)
+
+                try:
+                    # Get file extension from system_prompt_path
+                    ext = Path(system_prompt_path).suffix or ".yaml"
+
+                    # Create temp file with same extension
+                    with NamedTemporaryFile(mode="wt", encoding="utf-8", suffix=ext, delete=False) as tmp_file:
+                        tmp_file.write(res.text)
+                        tmp_path = tmp_file.name
+
+                    try:
+                        system_prompt_template = load_prompt(tmp_path, encoding="utf-8")
+                    finally:
+                        # Clean up temp file
+                        os.unlink(tmp_path)
+
+                except ValueError:
+                    system_prompt_template = res.text
             else:
                 if isinstance(system_prompt_path, str):
                     if not exists(system_prompt_path):
