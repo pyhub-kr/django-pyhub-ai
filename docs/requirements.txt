@@ -9,3 +9,12 @@ sphinx-design~=0.6.1
 sphinx-togglebutton~=0.3.2
 pydata-sphinx-theme~=0.16.0
 
+langchain-core
+langchain-community
+langchain-experimental
+langchain-openai
+langchain-anthropic
+langchain-google-genai
+
+pandas
+
