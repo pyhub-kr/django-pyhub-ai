@@ -1,3 +1,3 @@
-__version__ = "0.8.16"
+__version__ = "0.8.17"
 
 default_app_config = "pyhub_ai.apps.PyHubAIConfig"
