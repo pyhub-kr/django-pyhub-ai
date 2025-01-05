@@ -73,8 +73,8 @@ class DataAnalysisAgentMixin(DataAnalysisMixin, AgentMixin):
         python_data_tool = make_python_data_tool(df)
         return python_data_tool
 
-    async def aget_llm_prompt_context_data(self) -> Dict[str, Any]:
-        context_data = await super().aget_llm_prompt_context_data()
+    async def aget_llm_prompt_context_data(self, **kwargs) -> Dict[str, Any]:
+        context_data = await super().aget_llm_prompt_context_data(**kwargs)
         context_data["dataframe_head"] = self.get_dataframe().head().to_markdown()
         context_data["column_guideline"] = self.get_column_guideline()
         return context_data
