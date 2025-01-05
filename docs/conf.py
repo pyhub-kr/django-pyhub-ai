@@ -1,9 +1,21 @@
-import os
 import sys
 from pathlib import Path
 
+import django
+from django.conf import settings
+
 # Add project source directory to Python path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+sys.path.insert(0, str((Path(__file__).parent.parent / "src").resolve()))
+
+# 문서 내에서 장고 코드 로딩을 위한 장고 프로젝트 로딩
+settings.configure(
+    INSTALLED_APPS=[
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "pyhub_ai",
+    ],
+)
+django.setup()
 
 # Project information
 project = "django-pyhub-ai"
