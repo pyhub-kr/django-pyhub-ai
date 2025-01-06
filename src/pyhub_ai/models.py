@@ -53,13 +53,33 @@ class ConversationMessageManager(models.Manager):
 
 
 class Conversation(models.Model):
-    """대화방"""
+    """대화방 모델.
+
+    대화 내용을 저장하고 관리하는 모델입니다.
+
+    Attributes:
+        user: 대화방을 소유한 사용자. settings.AUTH_USER_MODEL을 참조하는 외래키입니다.
+            null=True이므로 사용자가 없는 대화방도 가능합니다.
+    """
 
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
 
 class ConversationMessage(models.Model):
-    """메시지"""
+    """대화 메시지를 저장하는 모델.
+
+    Attributes:
+        MESSAGE_CLASS_MAP: 메시지 타입별 클래스 매핑 딕셔너리
+            - system: SystemMessage 클래스
+            - human: HumanMessage 클래스
+            - ai: AIMessage 클래스
+        conversation: 메시지가 속한 대화방 ForeignKey
+        user: 메시지를 작성한 사용자 ForeignKey (null 가능)
+        content: 메시지 내용을 저장하는 JSONField
+            - XJSONEncoder로 인코딩
+            - XJSONDecoder로 디코딩
+        objects: ConversationMessageManager 커스텀 매니저
+    """
 
     MESSAGE_CLASS_MAP = {
         "system": SystemMessage,
