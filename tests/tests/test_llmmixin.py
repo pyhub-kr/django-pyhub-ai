@@ -1,5 +1,5 @@
+import httpx
 import pytest
-from langchain_core.prompts import BasePromptTemplate
 
 from pyhub_ai.mixins import LLMMixin
 
@@ -42,6 +42,7 @@ template: |
     )
     async def test_llm_system_prompt_path(
         self,
+        monkeypatch,
         llm_system_prompt_path,
         response_text,
         llm_prompt_context_data,
@@ -57,9 +58,7 @@ template: |
 
             return MockResponse()
 
-        import httpx
-
-        httpx.AsyncClient.get = mock_get
-
-        actual_system_prompt = await a.aget_llm_system_prompt()
-        assert actual_system_prompt.strip() == expected_system_prompt.strip()
+        with monkeypatch.context() as patch:
+            patch.setattr(httpx.AsyncClient, "get", mock_get)
+            actual_system_prompt = await a.aget_llm_system_prompt()
+            assert actual_system_prompt.strip() == expected_system_prompt.strip()
