@@ -1,0 +1,27 @@
+FROM python:3.13-slim AS builder
+
+WORKDIR /proj
+
+COPY ./docs/requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir uv && \
+    uv venv && \
+    uv pip install -r requirements.txt
+
+# Copy documentation source and package source
+COPY ./docs ./docs
+COPY ./src ./src
+
+# Build documentation
+RUN cd docs && uv run sphinx-build -b html -d _build/doctrees -W --keep-going . _build/html
+
+# Deploy stage
+FROM nginx:alpine
+
+# Copy built docs from builder stage
+COPY --from=builder /proj/docs/_build/html /usr/share/nginx/html
+
+# Expose port 
+EXPOSE 80
+
+# Nginx runs automatically as CMD
