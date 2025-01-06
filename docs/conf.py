@@ -1,5 +1,6 @@
 import sys
 from pathlib import Path
+from datetime import date
 
 import django
 from django.conf import settings
@@ -19,6 +20,7 @@ django.setup()
 
 # Project information
 project = "django-pyhub-ai"
+copyright = f"{date.today().year}, 파이썬사랑방"
 author = "Chinseok Lee"
 
 # Extensions
@@ -66,6 +68,8 @@ if is_enable_comments:
 # Theme settings
 # https://pydata-sphinx-theme.readthedocs.io
 html_theme = "furo"
+# https://pradyunsg.me/furo/customisation/sidebar-title/
+html_title = "django-pyhub-ai"
 html_favicon = "./assets/favicon-128.png"
 html_context = {
     "github_user": "pyhub-kr",
@@ -77,51 +81,55 @@ html_context = {
 }
 html_theme_options = {
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
-    "announcement": "이 라이브러리의 최신버전은 <strong>0.8.18</strong> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
-    #
-    # pydata-sphinx-theme 에서만 지원
-    # "use_edit_page_button": True,
-    # "logo": {
-    #     "text": "django-pyhub-ai",
-    #     "alt_text": "django-pyhub-ai 튜토리얼 - Home",
-    #     "image_light": "./assets/favicon-128.png",
-    #     "image_dark": "./assets/favicon-128.png",
-    # },
-    # "icon_links_label": "Quick Links",
-    # "icon_links": [
-    #     {
-    #         "name": "GitHub",
-    #         "url": "https://github.com/pyhub-kr/django-pyhub-ai",
-    #         "icon": "fa-brands fa-square-github",
-    #         "type": "fontawesome",
-    #     },
-    #     {
-    #         "name": "Facebook 그룹",
-    #         "url": "https://facebook.com/groups/askdjango",
-    #         "icon": "fa-brands fa-square-facebook",
-    #         "type": "fontawesome",
-    #     },
-    #     {
-    #         "name": "유튜브 채널",
-    #         "url": "https://www.youtube.com/@pyhub-kr",
-    #         "icon": "fa-brands fa-youtube",
-    #         "type": "fontawesome",
-    #     },
-    #     {
-    #         "name": "인프런 장고 강의",
-    #         "url": "https://inf.run/Fcn6n",
-    #         "icon": "fa-solid fa-chalkboard-teacher",
-    #         "type": "fontawesome",
-    #     },
-    # ],
-    #
-    # 상단 nav 중앙 링크
-    # "external_links": [
-    #     {"name": "link-one-name", "url": "https://<link-one>"},
-    #     {"name": "link-two-name", "url": "https://<link-two>"}
-    # ],
-    # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/navigation.html#control-how-many-navigation-levels-are-shown-by-default
-    # "show_nav_level": 2,
+    "announcement": "이 라이브러리의 최신버전은 <em>0.8.18</em> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
+    "light_logo": "favicon-128.png",  # _static 경로
+    "dark_logo": "favicon-128.png",
+    # https://pradyunsg.me/furo/customisation/colors/
+    "light_css_variables": {
+        "color-brand-primary": "#7C4DFF",
+        "color-brand-content": "#7C4DFF",
+    },
+    # https://pradyunsg.me/furo/customisation/top-of-page-buttons/#with-popular-vcs-hosts
+    "source_repository": "https://github.com/pyhub-kr/django-pyhub-ai",
+    "source_branch": "main",
+    "source_directory": "docs/",
+    # https://pradyunsg.me/furo/customisation/footer/
+    "footer_icons": [
+        {
+            "name": "GitHub",
+            "url": "https://github.com/pyhub-kr/django-pyhub-ai",
+            # 커스텀 css 적용을 위해 HTML 사용
+            "html": """
+                <span class='fa-brands fa-github fa-solid' style='margin-right: 0.5rem;'
+                      title='GitHub 저장소'></span>
+            """,
+            # "class": "fa-brands fa-github fa-solid fa-2x",
+        },
+        {
+            "name": "Facebook 그룹",
+            "url": "https://facebook.com/groups/askdjango",
+            "html": """
+                <span class='fa-brands fa-facebook fa-solid' style='margin-right: 0.5rem;'
+                      title='Facebook 그룹'></span>
+            """,
+        },
+        {
+            "name": "유튜브 채널",
+            "url": "https://www.youtube.com/@pyhub-kr",
+            "html": """
+                <span class='fa-brands fa-youtube fa-solid' style='margin-right: 0.5rem;'
+                      title='유튜브 채널'></span>
+            """,
+        },
+        {
+            "name": "인프런 장고 강의",
+            "url": "https://inf.run/Fcn6n",
+            "html": """
+                <span class='fa-chalkboard-teacher fa-solid' style='margin-right: 0.5rem;'
+                      title='인프런 장고 강의'></span>
+            """,
+        },
+    ],
     # 지정 이름의 템플릿을 include
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/layout.html#layout-footer
     # layout.html 템플릿을 재정의하여 별도 템플릿 없이 layout.html 템플릿에서 직접 footer 정의
@@ -149,7 +157,12 @@ source_suffix = {
 templates_path = ["_templates", "templates"]
 
 html_static_path = ["_static"]
-html_css_files = ["custom.css"]
+html_css_files = [
+    "custom.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/fontawesome.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/solid.min.css",
+    "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/brands.min.css",
+]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", ".venv"]
 
@@ -157,3 +170,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", ".venv"]
 #     'toc.excluded',
 #     'myst.xref_missing',
 # ]
+
+# furo 설정
+# https://pradyunsg.me/furo/customisation/colors/#code-block-styling
+pygments_style = "sphinx"
+pygments_dark_style = "monokai"
