@@ -76,11 +76,11 @@ html_context = {
     "GTM_ID": "GTM-57JDH7NG",
 }
 html_theme_options = {
-    "use_edit_page_button": True,
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
     "announcement": "이 라이브러리의 최신버전은 <strong>0.8.18</strong> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
     #
     # pydata-sphinx-theme 에서만 지원
+    # "use_edit_page_button": True,
     # "logo": {
     #     "text": "django-pyhub-ai",
     #     "alt_text": "django-pyhub-ai 튜토리얼 - Home",
