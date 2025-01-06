@@ -13,3 +13,7 @@
     width: 100%;
     height: 100%;
 }
+
+section img {
+    border: 1px solid #e0e0e0;
+}

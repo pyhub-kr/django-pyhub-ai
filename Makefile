@@ -18,7 +18,7 @@ tailwind-dev:
 	cd src/pyhub_ai/static_src && npm run dev
 
 doc-server:
-	cd docs && rm -rf _build/html && uv run sphinx-autobuild . _build/html
+	cd docs && rm -rf _build/html && uv run sphinx-autobuild --port 8080 . _build/html
 
 doc-build:
 	cd docs && rm -rf _build/html && uv run sphinx-build -b html -d _build/doctrees --keep-going . _build/html
