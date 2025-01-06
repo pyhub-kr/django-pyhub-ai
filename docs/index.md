@@ -14,6 +14,7 @@ django-pyhub-ai는 Django 프로젝트에 자연스럽게 통합되며, OpenAI A
 
 quickstart/index
 consumers/index
+tools/index
 courses/index
 ```
 

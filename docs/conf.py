@@ -65,7 +65,7 @@ if is_enable_comments:
 
 # Theme settings
 # https://pydata-sphinx-theme.readthedocs.io
-html_theme = "pydata_sphinx_theme"
+html_theme = "furo"
 html_favicon = "./assets/favicon-128.png"
 html_context = {
     "github_user": "pyhub-kr",

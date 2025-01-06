@@ -8,6 +8,7 @@ sphinx-comments2 @ https://github.com/allieus/sphinx-comments2/archive/refs/head
 sphinx-design~=0.6.1
 sphinx-togglebutton~=0.3.2
 pydata-sphinx-theme~=0.16.0
+furo~=2024.8.6
 
 langchain-core
 langchain-community
@@ -17,4 +18,3 @@ langchain-anthropic
 langchain-google-genai
 
 pandas
-

@@ -20,8 +20,11 @@ API Keys 설정법은 [](index) 문서를 참고해주세요.
     - 타입 : `int`
     - 디폴트 값 : `4096`
     - 관련 메서드 : `get_llm_max_tokens`
-+ 클래스 변수 `llm_timeout`
-    - 타입 : `float` 이거나 `Tuple[float, float]`
++ 클래스 변수 `llm_timeout` : connect/read/write/pool 타임아웃
+    - `langchain`, `langchain_openai` 등의 라이브러리에서는 `httpx` 라이브러리를 통해서 API 요청을 하구요. 이때 타임아웃을 적용합니다.
+    - 타입 : `float` 이거나 `Tuple`
+        - `float` 타입으로 지정되면 이 값으로 `connect`, `read`, `write`, `pool` 타임아웃 값으로 동일하게 적용됩니다.
+        - 튜플 타입으로 2개 이상 4개 이하의 `float` 값을 지정하면 `connect`, `read`, `write`, `pool` 순서대로 할당됩니다.
     - 디폴트 값 : `5`
     - 관련 메서드 : `get_llm_timeout`
 
@@ -115,6 +118,7 @@ class LanguageTutorChatConsumer(AgentChatConsumer):
     - 랭체인 `verbose` 여부입니다. 디폴트 `None`이며 `settings.DEBUG` 값으로 자동 적용됩니다. `True`로 지정되면 랭체인 내부 메시지가 표준 출력으로 출력됩니다.
 + `tools`
     - LLM Tool Calling에 사용될 함수 리스트
+    - `pyhub_ai.consumers.DataAnalystChatConsumer` 내부에서 파이썬 실행 도구가 자동으로 추가됩니다.
     - 랭체인의 `@tool` 장식자를 적용하지 않은 파이썬 함수를 지정하시면 내부적으로 `@tool` 장식자가 자동 적용되고, 함수 description도 자동 생성됩니다. **함수의 인자 타입과 docstring은 세심히 잘 작성해주시고, 그냥 함수 리스트만 넘겨주시면 알아서 처리해줍니다.**
 
 ```{code-block} python
@@ -125,6 +129,8 @@ from pyhub_ai.consumers import DataAnalystChatConsumer
 class TitanicDataAnalystChatConsumer(DataAnalystChatConsumer):
     # ...
     welcome_message_template = "<span class='font-bold'>타이타닉 데이터 분석</span>을 시작합니다."
+    show_initial_prompt = True
+    tools = []
 ```
 
 ## 데이터 분석 에이전트
