@@ -14,7 +14,7 @@
 
 #### (무료) 장고 설계철학으로 시작하는 파이썬/장고 입문
 
-[![](./assets/django-for-beginner.png)](https://inf.run/7J1S)
+[![](./assets/django-for-beginner.jpg)](https://inf.run/7J1S)
 
 - (무료강의) (인프런) [장고 설계철학으로 시작하는 파이썬 장고 입문](https://inf.run/7J1S)
 - 29개 영상 (4시간 10분)
@@ -27,7 +27,7 @@
 
 #### 파이썬/장고로 결제 시작하기 (Feat. 아임포트) - 기본편
 
-[![](./assets/django-payment-01.png)](https://inf.run/A8Hm)
+[![](./assets/django-payment-01.jpg)](https://inf.run/A8Hm)
 
 - (인프런) [파이썬/장고로 결제 시작하기 (Feat. 아임포트) - 기본편](https://inf.run/A8Hm)
 - 56개 영상 (5시간 28분)
@@ -37,7 +37,7 @@
 
 #### 파이썬/장고로 웹채팅 서비스 만들기 (Feat. Channels) - 기본편
 
-[![](./assets/django-channels-01.png)](https://inf.run/iMQ9)
+[![](./assets/django-channels-01.jpg)](https://inf.run/iMQ9)
 
 - (인프런) [파이썬/장고로 웹채팅 서비스 만들기 (Feat. Channels) - 기본편](https://inf.run/iMQ9)
 - 23개 영상 (2시간 24분)
@@ -45,7 +45,7 @@
 
 #### ChatGPT 영어 상황극 채팅 서비스 만들기 (Feat. 파이썬/장고채널스)
 
-[![](./assets/django-chatgpt-01.png)](https://inf.run/ySNr)
+[![](./assets/django-chatgpt-01.jpg)](https://inf.run/ySNr)
 
 - (인프런) [ChatGPT 영어 상황극 채팅 서비스 만들기 (Feat. 파이썬/장고채널스)](https://inf.run/ySNr)
 - 40개 영상 (2시간 22분)
@@ -59,7 +59,7 @@
 
 ### 장고 완벽 가이드
 
-[![](./assets/django-complete-guide-03.png)](https://inf.run/Fcn6n)
+[![](./assets/django-complete-guide-03.jpg)](https://inf.run/Fcn6n)
 
 - (인프런) [파이썬/장고 웹서비스 개발 완벽 가이드 with 리액트 (장고 4.2 기준)](https://inf.run/Fcn6n)
 - 295개 영상 (35시간 56분)
