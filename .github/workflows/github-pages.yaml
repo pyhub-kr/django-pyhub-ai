@@ -10,13 +10,15 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.13"
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
@@ -29,12 +31,12 @@ jobs:
         run: |
           make doc-build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Deploy to GitHub Pages Repository
+        uses: JamesIves/github-pages-deploy-action@v4
+        # https://github.com/settings/tokens 에서 발급
+        # 다른 저장소에 배포하기 위해 repo 권한 필요
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/_build/html
-          publish_branch: main
-          external_repository: pyhub-kr/pyhub-kr.github.io
-          user_name: "github-actions[bot]"
-          user_email: "github-actions[bot]@users.noreply.github.com"
+          folder: docs/_build/html
+          repository-name: pyhub-kr/pyhub-kr.github.io
+          token: ${{ secrets.DEPLOY_TOKEN }}
+          branch: main
