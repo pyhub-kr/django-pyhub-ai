@@ -86,8 +86,8 @@ html_theme_options = {
     "dark_logo": "favicon-128.png",
     # https://pradyunsg.me/furo/customisation/colors/
     "light_css_variables": {
-        "color-brand-primary": "#7C4DFF",
-        "color-brand-content": "#7C4DFF",
+        "color-brand-primary": "#216DB2",
+        "color-brand-content": "#216DB2",
     },
     # https://pradyunsg.me/furo/customisation/top-of-page-buttons/#with-popular-vcs-hosts
     "source_repository": "https://github.com/pyhub-kr/django-pyhub-ai",
