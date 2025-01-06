@@ -1,0 +1,15 @@
+{% extends "!base.html" %}
+
+{%- block site_meta %}
+    {% include "_google_tag_manager_script.html" %}
+    {{ super() }}
+{%- endblock site_meta %}
+
+{%- block body %}
+    {% include "_google_tag_manager_body.html" %}
+    {{ super() }}
+{%- endblock body %}
+
+{% block extrahead %}
+    {{ super() }}
+{% endblock %}

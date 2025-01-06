@@ -175,3 +175,13 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", ".venv"]
 # https://pradyunsg.me/furo/customisation/colors/#code-block-styling
 pygments_style = "sphinx"
 pygments_dark_style = "monokai"
+
+# -- Options for autodoc ----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
+
+# Automatically extract typehints when specified and place them in
+# descriptions of the relevant function/method.
+autodoc_typehints = "description"
+
+# Don't show class signature with the class' name.
+autodoc_class_signature = "separated"
