@@ -18,3 +18,4 @@ langchain-anthropic
 langchain-google-genai
 
 pandas
+pillow
