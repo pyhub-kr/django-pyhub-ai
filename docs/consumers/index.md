@@ -7,4 +7,5 @@
 
 api-keys
 examples
+tools/index
 ```
