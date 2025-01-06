@@ -40,4 +40,4 @@ jobs:
           folder: docs/_build/html
           repository-name: pyhub-kr/pyhub-kr.github.io
           token: ${{ secrets.DEPLOY_TOKEN }}
-          branch: main
+          branch: gh-pages
