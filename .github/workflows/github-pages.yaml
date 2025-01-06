@@ -32,6 +32,11 @@ jobs:
         run: |
           make doc-build
 
+      # .nojekyll 파일 생성하여 GitHub Pages의 Jekyll 처리 비활성화
+      #  _static, _images 등의 폴더 서빙을 하기 위함.
+      - name: Create .nojekyll file
+        run: touch docs/_build/html/.nojekyll
+
       - name: Deploy to GitHub Pages Repository
         uses: JamesIves/github-pages-deploy-action@v4
         # https://github.com/settings/tokens 에서 발급
