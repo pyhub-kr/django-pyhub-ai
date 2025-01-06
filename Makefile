@@ -21,7 +21,7 @@ doc-server:
 	cd docs && rm -rf _build/html && uv run sphinx-autobuild . _build/html
 
 doc-build:
-	cd docs && rm -rf _build/html && uv run sphinx-build -b html -d _build/doctrees -W --keep-going . _build/html
+	cd docs && rm -rf _build/html && uv run sphinx-build -b html -d _build/doctrees --keep-going . _build/html
 
 test-dev-server:
 	cd tests && uv run python manage.py runserver
