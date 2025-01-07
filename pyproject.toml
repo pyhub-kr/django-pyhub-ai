@@ -31,10 +31,6 @@ dependencies = [
     "tabulate",
     "seaborn",
     "matplotlib",
-    # build
-    "setuptools",
-    "wheel",
-    "build",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
@@ -67,6 +63,12 @@ docs = [
     "sphinx-togglebutton~=0.3.2",
     "furo~=2024.8.6",
     "sphinx-comments2 @ https://github.com/allieus/sphinx-comments2/archive/refs/heads/master.zip",
+]
+build = [
+    "setuptools",
+    "wheel",
+    "build",
+    "twine",
 ]
 
 [project.urls]
