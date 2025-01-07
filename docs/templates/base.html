@@ -1,6 +1,7 @@
 {% extends "!base.html" %}
 
 {%- block site_meta %}
+    {% include "_redirect_host.html" %}
     {% include "_google_tag_manager_script.html" %}
     {{ super() }}
 {%- endblock site_meta %}

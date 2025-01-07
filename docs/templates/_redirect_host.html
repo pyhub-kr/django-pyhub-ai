@@ -1,0 +1,13 @@
+{% if REDIRECT_HOST %}
+<script>
+    (function() {
+        const redirect_host = "{{ REDIRECT_HOST }}";
+        if(redirect_host !== window.location.host) {
+            const redirect_url = `https://${redirect_host}${window.location.pathname}`;
+            console.log(`redirect to ${redirect_url}`);
+            window.location.href = redirect_url;
+        }
+    })();
+</script>
+{% endif %}
+

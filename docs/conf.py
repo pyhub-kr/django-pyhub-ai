@@ -1,3 +1,4 @@
+import os
 import sys
 from datetime import date
 from pathlib import Path
@@ -77,7 +78,8 @@ html_context = {
     "github_version": "main",
     "doc_path": "docs",
     # https://tagmanager.google.com/?hl=ko#/container/accounts/6260619830/containers/201568180/workspaces/2
-    "GTM_ID": "GTM-57JDH7NG",
+    "GTM_ID": os.environ.get("GTM_ID", "GTM-57JDH7NG"),
+    "REDIRECT_HOST": os.environ.get("REDIRECT_HOST"),
 }
 html_theme_options = {
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
