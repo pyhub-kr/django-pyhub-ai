@@ -71,7 +71,7 @@ docs = [
 
 [project.urls]
 Homepage = "https://github.com/pyhub-kr/django-pyhub-ai"
-Documentation = "https://django-pyhub-ai.readthedocs.io/"
+Documentation = "https://ai.pyhub.kr"
 Repository = "https://github.com/pyhub-kr/django-pyhub-ai"
 Issues = "https://github.com/pyhub-kr/django-pyhub-ai/issues"
 # Changelog = "https://github.com/pyhub-kr/django-pyhub-ai/blob/main/CHANGELOG.md"

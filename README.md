@@ -2,7 +2,7 @@
 
 > **Note**: 이 라이브러리는 현재 베타버전입니다. 기능이 변경될 수 있으며, 피드백을 환영합니다.
 
-[django-pyhub-ai 튜토리얼](https://django-pyhub-ai.readthedocs.io)을 참고하여, 빠르게 장고 기반의 LLM 에이전트 챗봇 서비스를 구축해보세요.
+[django-pyhub-ai 튜토리얼](https://ai.pyhub.kr)을 참고하여, 빠르게 장고 기반의 LLM 에이전트 챗봇 서비스를 구축해보세요.
 
 장고의 핵심 철학 중 DRY(Don't Repeat Yourself) 철학을 기반으로 반복적이고 번거로운 작업을 제거하고, 효율적인 에이전트 기반 채팅 서비스를 손쉽게 구축할 수 있도록 돕는 라이브러리입니다.
 
