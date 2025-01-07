@@ -1,6 +1,6 @@
 [project]
 name = "django-pyhub-ai"
-version = "0.8.21"
+version = "0.8.22"
 description = "Django app library for AI integration"
 authors = [{ name = "Chinseok Lee", email = "me@pyhub.kr" }]
 dependencies = [
