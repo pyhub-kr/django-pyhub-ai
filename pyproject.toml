@@ -86,7 +86,7 @@ env = ["DATABASE_URL=sqlite://:memory:"]
 
 [tool.black]
 line-length = 120
-target-version = ["py39", "py310", "py311", "py312"]
+target-version = ["py310", "py311", "py312"]
 include = '\.pyi?$'
 
 [tool.isort]
@@ -95,7 +95,7 @@ multi_line_output = 3
 
 [tool.ruff]
 line-length = 120
-target-version = "py39"
+target-version = "py310"
 
 # https://www.djlint.com/docs/configuration/
 [tool.djlint]
