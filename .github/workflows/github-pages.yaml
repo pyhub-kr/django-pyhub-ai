@@ -30,7 +30,7 @@ jobs:
 
       - name: Build documentation
         run: |
-          make doc-build
+          make docs-build
 
       # .nojekyll 파일 생성하여 GitHub Pages의 Jekyll 처리 비활성화
       #  _static, _images 등의 폴더 서빙을 하기 위함.
