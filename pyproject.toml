@@ -8,6 +8,8 @@ dependencies = [
     "channels",
     "daphne",
     "django-cotton",
+    "django-environ",
+    "django-lifecycle",
     "django-ninja",
     "django-ninja-extra",
     "pillow",
@@ -29,6 +31,10 @@ dependencies = [
     "tabulate",
     "seaborn",
     "matplotlib",
+    # build
+    "setuptools",
+    "wheel",
+    "build",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
@@ -49,16 +55,19 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = [
-    "pytest",
-    "pytest-django",
-    "pytest-testdox",
-    "pytest-asyncio",
-    "django-debug-toolbar",
-    "django-environ",
-    "django-lifecycle",
+dev = ["pre_commit", "django-debug-toolbar", "black", "isort", "ruff", "djlint"]
+test = ["pytest", "pytest-django", "pytest-testdox", "pytest-asyncio", "django-debug-toolbar"]
+docs = [
+    "sphinx~=8.1.0",
+    "myst-parser~=4.0.0",
+    "sphinx-autobuild~=2024.10.3",
+    "sphinx-rtd-theme~=3.0.0",
+    "sphinx-copybutton~=0.5.2",
+    "sphinx-design~=0.6.1",
+    "sphinx-togglebutton~=0.3.2",
+    "furo~=2024.8.6",
+    "sphinx-comments2 @ https://github.com/allieus/sphinx-comments2/archive/refs/heads/master.zip",
 ]
-dev = ["django-debug-toolbar", "black", "isort", "ruff", "djlint"]
 
 [project.urls]
 Homepage = "https://github.com/pyhub-kr/django-pyhub-ai"
@@ -74,6 +83,9 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["src/pyhub_ai"]
 exclude = ["src/pyhub_ai/static_src/**/*", "**/__pycache__", "**/.DS_Store"]
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
@@ -101,22 +113,3 @@ target-version = "py310"
 [tool.djlint]
 profile = "django"
 indent = 2
-# blank_line_after_tag = "load,extends,include"
-# blank_line_before_tag = "load,extends,include"
-# line_break_after_multiline_tag = true
-# close_void_tags = true
-# custom_html = "mjml,simple-greeting,c-\\w+"
-# exclude = ".venv,venv,.tox,.eggs,..."
-# format_attribute_template_tags = true
-# format_css = true
-# format_js = true
-# ignore = "H014,H015"
-# ignore_blocks = "raw,example"
-# ignore_case = true
-# linter_output_format = "{filename}:{line}: {code} {message} {match}"
-# max_attribute_length = 10
-# max_blank_lines = 2
-# max_line_length = 120
-# no_function_formatting = true
-# preserve_blank_lines = true
-# preserve_leading_space = true
