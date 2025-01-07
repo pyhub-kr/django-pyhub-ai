@@ -41,4 +41,4 @@ jobs:
         env:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
-          twine upload --verbose dist/*.whl
+          uv run twine upload --verbose dist/*.whl
