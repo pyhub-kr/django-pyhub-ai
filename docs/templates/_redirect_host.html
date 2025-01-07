@@ -7,13 +7,16 @@
             console.log(`redirect to ${redirect_url}`);
             window.location.href = redirect_url;
         }
-        else {
-            {# readthedocs 사이트에서만 지원하는 주소로 이동했을 때에는 최상위 주소로 이동 #}
-            if ( window.location.pathname === "/ko/latest/" ) {
-                window.location.href = window.location.origin;
-            }
-        }
     })();
 </script>
 {% endif %}
+
+{# readthedocs 사이트에서만 지원하는 주소로 이동했을 때에는 최상위 주소로 이동 #}
+<script>
+    if ( ! /.*readthedocs.*/.test(window.location.host) ) {
+        if ( window.location.pathname === "/ko/latest/" ) {
+            window.location.href = window.location.origin;
+        }
+    }
+</script>
 
