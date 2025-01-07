@@ -85,7 +85,7 @@ class AgentMixin(LLMMixin, ChatMixin):
         }
 
     async def agent_setup(self, render_previous_messages: bool = True):
-        previous_messages = await self.get_previous_messages()
+        previous_messages = await self.aget_previous_messages()
 
         # LLM history에는 Human/AI 메시지만 전달하고, Tools output은 전달하지 않습니다.
         self.agent = await self.get_agent(
@@ -139,7 +139,7 @@ class AgentMixin(LLMMixin, ChatMixin):
                 messages=[human_message] + (tools_output_list or []) + [ai_message],
             )
 
-    async def get_previous_messages(self) -> List[Union[HumanMessage, AIMessage]]:
+    async def aget_previous_messages(self) -> List[Union[HumanMessage, AIMessage]]:
         conversation = await self.aget_conversation()
 
         current_user = await self.get_user()
