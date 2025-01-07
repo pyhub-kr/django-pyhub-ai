@@ -761,7 +761,7 @@ wheels = [
 
 [[package]]
 name = "django-pyhub-ai"
-version = "0.8.22"
+version = "0.8.23"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
@@ -812,7 +812,6 @@ docs = [
     { name = "myst-parser" },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
-    { name = "sphinx-comments2" },
     { name = "sphinx-copybutton" },
     { name = "sphinx-design" },
     { name = "sphinx-rtd-theme" },
@@ -868,7 +867,6 @@ requires-dist = [
     { name = "setuptools", marker = "extra == 'build'" },
     { name = "sphinx", marker = "extra == 'docs'", specifier = "~=8.1.0" },
     { name = "sphinx-autobuild", marker = "extra == 'docs'", specifier = "~=2024.10.3" },
-    { name = "sphinx-comments2", marker = "extra == 'docs'", url = "https://github.com/allieus/sphinx-comments2/archive/refs/heads/master.zip" },
     { name = "sphinx-copybutton", marker = "extra == 'docs'", specifier = "~=0.5.2" },
     { name = "sphinx-design", marker = "extra == 'docs'", specifier = "~=0.6.1" },
     { name = "sphinx-rtd-theme", marker = "extra == 'docs'", specifier = "~=3.0.0" },
@@ -3151,32 +3149,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/98/0b/a866924ded68efec7a1759587a4e478aec7559d8165fac8b2ad1c0e774d6/sphinx_basic_ng-1.0.0b2.tar.gz", hash = "sha256:9ec55a47c90c8c002b5960c57492ec3021f5193cb26cebc2dc4ea226848651c9", size = 20736 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3c/dd/018ce05c532a22007ac58d4f45232514cd9d6dd0ee1dc374e309db830983/sphinx_basic_ng-1.0.0b2-py3-none-any.whl", hash = "sha256:eb09aedbabfb650607e9b4b68c9d240b90b1e1be221d6ad71d61c52e29f7932b", size = 22496 },
-]
-
-[[package]]
-name = "sphinx-comments2"
-version = "0.1.0"
-source = { url = "https://github.com/allieus/sphinx-comments2/archive/refs/heads/master.zip" }
-dependencies = [
-    { name = "sphinx" },
-]
-sdist = { hash = "sha256:baff85663c4b56641e846820a9bd181178654ed9bee8290717f5af24c3192c44" }
-
-[package.metadata]
-requires-dist = [
-    { name = "beautifulsoup4", marker = "extra == 'testing'" },
-    { name = "black", marker = "extra == 'code-style'" },
-    { name = "flake8", marker = "extra == 'code-style'", specifier = ">=3.7.0,<3.8.0" },
-    { name = "myst-parser", marker = "extra == 'sphinx'" },
-    { name = "myst-parser", marker = "extra == 'testing'" },
-    { name = "pre-commit", marker = "extra == 'code-style'", specifier = "==1.17.0" },
-    { name = "pytest", marker = "extra == 'testing'" },
-    { name = "pytest-regressions", marker = "extra == 'testing'" },
-    { name = "sphinx", specifier = ">=1.8" },
-    { name = "sphinx", marker = "extra == 'sphinx'", specifier = ">=2" },
-    { name = "sphinx", marker = "extra == 'testing'", specifier = ">=2" },
-    { name = "sphinx-book-theme", marker = "extra == 'sphinx'" },
-    { name = "sphinx-book-theme", marker = "extra == 'testing'" },
 ]
 
 [[package]]

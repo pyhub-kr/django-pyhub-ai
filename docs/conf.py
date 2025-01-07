@@ -83,7 +83,7 @@ html_context = {
 }
 html_theme_options = {
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
-    "announcement": "이 라이브러리의 최신버전은 <em>0.8.22</em> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
+    "announcement": "이 라이브러리의 최신버전은 <em>0.8.23</em> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
     "light_logo": "favicon-128.png",  # _static 경로
     "dark_logo": "favicon-128.png",
     # https://pradyunsg.me/furo/customisation/colors/
