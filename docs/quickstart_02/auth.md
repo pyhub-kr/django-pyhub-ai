@@ -343,6 +343,18 @@ urlpatterns = [
 
 ![프로필 페이지 ko](./assets/profile-page.png)
 
+```{admonition} accounts/profile.html 템플릿을 못 찾는 TemplateDoesNotExist 오류가 발생하시나요?
+:class: warning
+
+장고에서는 템플릿을 찾아주는 Template Loader가 있습니다. 이 Template Loader는 템플릿 파일들이 저장된 경로를 장고 서버가 시작될 때 딱 1번 확인합니다. `python manage.py runserver` 서버는 파이썬 소스코드가 변경될 때마자 자동 재시작되고 있습니다. 현재 `TemplateDoesNotExist` 오류가 발생하신다면 장고 개발서버를 `Ctrl-C` 키를 눌러 수동으로 정지시키신 후에 다시 재구동하셔서 웹페이지 새로고침을 해보세요. 템플릿 경로를 재인식시켜주는 과정입니다.
+
+혹시 여전히 `TemplateDoesNotExist` 오류가 발생하신다면, 다음을 확인해보세요.
+
+1. `settings.INSTALLED_APPS` 리스트 설정에 `'accounts',` 앱이 포함되어있는지 확인해보세요.
+    - 프로젝트에 등록된 장고 앱 내의 `templates` 폴더는 Template Loader에 의해 자동으로 경로가 인식되므로, 굳이 `settings.TEMPLATES` 설정의 `DIRS` 항목에 명시적으로 경로를 지정해주지 않아도 됩니다.
+2. `accounts/templates/accounts/profile.html` 템플릿 파일이 존재하는지 확인해보세요. 경로명에 오타가 있을 수도 있습니다. 오타는 눈에 잘 띄지 않으니 주의해주세요. 옆 사람에게 오타를 확인해봐달라고 요청해보시는 것도 한 방법입니다. 바둑에서도 훈수를 둘 때 길이 더 잘 보이잖아요.
+```
+
 ## 로그아웃 구현하기
 
 인증 기능 구현의 마지막 단계로 로그아웃을 구현해보겠습니다. 이 역시 `django.contrib.auth` 앱을 통해 `LogoutView`가 직접적으로 지원되고 있습니다.
