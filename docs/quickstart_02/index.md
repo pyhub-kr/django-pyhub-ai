@@ -16,5 +16,5 @@
 :maxdepth: 2
 
 auth
-conversation-message
+conversation-messages
 ```
