@@ -78,8 +78,8 @@ html_context = {
     "github_version": "main",
     "doc_path": "docs",
     # https://tagmanager.google.com/?hl=ko#/container/accounts/6260619830/containers/201568180/workspaces/2
-    "GTM_CONTAINER_ID": os.environ.get("GTM_CONTAINER_ID", "GTM-57JDH7NG"),
-    "GA4_TRACKING_ID": os.environ.get("GA4_TRACKING_ID", "G-RJ6B2YKGQ2"),
+    "GTM_CONTAINER_ID": os.environ.get("GTM_CONTAINER_ID"),  # , "GTM-57JDH7NG"),
+    "GA4_TRACKING_ID": os.environ.get("GA4_TRACKING_ID"),  # , "G-RJ6B2YKGQ2"),
     "REDIRECT_HOST": os.environ.get("REDIRECT_HOST"),
 }
 html_theme_options = {
