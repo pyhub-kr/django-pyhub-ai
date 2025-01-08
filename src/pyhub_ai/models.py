@@ -65,6 +65,10 @@ class Conversation(models.Model):
 
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
 
+    def clear(self):
+        """소속된 모든 ConversationMessage를 데이터베이스에서 제거합니다."""
+        self.conversationmessage_set.all().delete()
+
 
 class ConversationMessage(models.Model):
     """대화 메시지를 저장하는 모델.
