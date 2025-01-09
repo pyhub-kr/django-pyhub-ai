@@ -13,6 +13,7 @@
         - `conversation` 외래키 필드
         - `user` 외래키 필드
         - `content` 필드 : 메시지 내용을 저장하는 `JSONField`
+            - Human/AI 메시지 및 Tool calling 결과 (이미지, Pandas Dataframe 등)도 저장
 
 ## `AgentChatConsumer` 클래스
 
