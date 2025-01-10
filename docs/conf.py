@@ -34,6 +34,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx_togglebutton",
+    "sphinxcontrib.mermaid",
     "myst_parser",
 ]
 
@@ -188,3 +189,6 @@ autodoc_typehints = "description"
 
 # Don't show class signature with the class' name.
 autodoc_class_signature = "separated"
+
+# https://github.com/mgaitan/sphinxcontrib-mermaid?tab=readme-ov-file#config-values
+# mermaid_output_format = "svg"  # mmdc 명령어가 필요

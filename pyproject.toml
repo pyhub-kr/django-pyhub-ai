@@ -52,7 +52,13 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = ["pre_commit", "django-debug-toolbar", "black", "isort", "ruff", "djlint"]
-test = ["pytest", "pytest-django", "pytest-testdox", "pytest-asyncio", "django-debug-toolbar"]
+test = [
+    "pytest",
+    "pytest-django",
+    "pytest-testdox",
+    "pytest-asyncio",
+    "django-debug-toolbar",
+]
 docs = [
     "sphinx~=8.1.0",
     "myst-parser~=4.0.0",
@@ -62,16 +68,12 @@ docs = [
     "sphinx-design~=0.6.1",
     "sphinx-togglebutton~=0.3.2",
     "furo~=2024.8.6",
+    "sphinxcontrib-mermaid",
     # zip 직접 설치 부분을 빼고, /src/ 에 추가
     # sphinx-comments 라이브러리는 더 이상 관리되지 않고 있어서, 이를 가져와서 패치했습니다.
     # "sphinx-comments2 @ https://github.com/allieus/sphinx-comments2/archive/refs/heads/master.zip",
 ]
-build = [
-    "setuptools",
-    "wheel",
-    "build",
-    "twine",
-]
+build = ["setuptools", "wheel", "build", "twine"]
 
 [project.urls]
 Homepage = "https://github.com/pyhub-kr/django-pyhub-ai"
