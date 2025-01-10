@@ -1,5 +1,17 @@
 # 채팅 기록 자동 저장하기
 
+7분 39초부터 시작합니다.
+
+```{raw} html
+<div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/2huieuCugek?start=459"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>
+```
+
 ## 채팅 기록은 어떤 모델을 통해 관리될까?
 
 `django-pyhub-ai` 라이브러리는 채팅 기록을 효율적이고 확장 가능한 방식으로 관리합니다. 주요 특징은 다음과 같습니다.

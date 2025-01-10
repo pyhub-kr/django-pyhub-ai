@@ -15,6 +15,16 @@
 
 본 튜토리얼 #02에서는 인증 기능을 먼저 구현하고, 이어서 채팅 기록 자동 저장 기능을 활성화하는 방법을 살펴보겠습니다.
 
+```{raw} html
+<div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/2huieuCugek"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>
+```
+
 ---
 
 준비되셨나요? Let's go!
