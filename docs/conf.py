@@ -177,8 +177,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "venv", ".venv"]
 
 # furo 설정
 # https://pradyunsg.me/furo/customisation/colors/#code-block-styling
-pygments_style = "sphinx"
-pygments_dark_style = "inkpot"
+# pygments_style = "sphinx"
+# pygments_dark_style = "inkpot"
 
 # -- Options for autodoc ----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#configuration
