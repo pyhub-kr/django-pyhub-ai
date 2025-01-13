@@ -30,6 +30,18 @@ courses/index
 </div>
 ```
 
+---
+
+```{raw} html
+<div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/2huieuCugek"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+</div>
+```
+
 ## 스크린샷
 
 ::::{grid} 2
