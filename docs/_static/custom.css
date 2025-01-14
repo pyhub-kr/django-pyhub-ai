@@ -1,19 +1,38 @@
+.sd-tab-set {
+  border: 1px solid #e0e0e0;
+  padding: 0 0.3rem;
+}
+
 .video-container {
-    position: relative;
-    padding-bottom: 56.25%;
-    height: 0;
-    overflow: hidden;
-    max-width: 100%;
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  max-width: 100%;
 }
 
 .video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 section img {
-    border: 1px solid #e0e0e0;
+  border: 1px solid #e0e0e0;
+}
+
+figure {
+  display: flex !important;
+  flex-direction: column; /* 세로 정렬 */
+  align-items: flex-start; /* 왼쪽 정렬 */
+  gap: 0px; /* 간격을 없앰 */
+}
+
+figcaption {
+  margin: 0;
+  padding: 0;
+  line-height: 1; /* 캡션과 이미지 간 간격 최소화 */
+  font-size: 0.8rem;
 }
