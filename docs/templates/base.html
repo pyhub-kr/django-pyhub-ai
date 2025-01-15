@@ -1,16 +1,19 @@
 {% extends "!base.html" %}
-
 {%- block site_meta %}
     {% include "_redirect_host.html" %}
     {% include "_google_tag_manager_script.html" %}
     {{ super() }}
 {%- endblock site_meta %}
 
+{%- block extra_styles %}
+{# https://fonts.google.com/selection/embed #}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+{%- endblock %}
+
 {%- block body %}
     {% include "_google_tag_manager_body.html" %}
     {{ super() }}
 {%- endblock body %}
-
-{% block extrahead %}
-    {{ super() }}
-{% endblock %}
+{% block extrahead %}{{ super() }}{% endblock %}

@@ -71,7 +71,7 @@ if is_enable_comments:
 # https://pydata-sphinx-theme.readthedocs.io
 html_theme = "furo"
 # https://pradyunsg.me/furo/customisation/sidebar-title/
-html_title = "django-pyhub-ai"
+html_title = "파이썬사랑방 튜토리얼"
 html_favicon = "./assets/favicon-128.png"
 html_context = {
     "github_user": "pyhub-kr",
@@ -90,8 +90,17 @@ html_theme_options = {
     "dark_logo": "favicon-128.png",
     # https://pradyunsg.me/furo/customisation/colors/
     "light_css_variables": {
-        "color-brand-primary": "#216DB2",
-        "color-brand-content": "#216DB2",
+        # "color-brand-primary": "#216DB2",
+        # "color-brand-content": "#216DB2",
+        "font-stack--monospace": "Ubuntu Mono",
+
+        # "font-size--normal": "100%",  # default: 100%
+        "font-size--small": "100%",  # default: 87.5%
+        "font-size--small--2": "100%",  # default: 81.25%
+        "font-size--small--3": "81.25%",  # default: 75%
+        "font-size--small--4": "75%",  # 62.5%
+
+        # "code-font-size": "100%",
     },
     # https://pradyunsg.me/furo/customisation/top-of-page-buttons/#with-popular-vcs-hosts
     "source_repository": "https://github.com/pyhub-kr/django-pyhub-ai",

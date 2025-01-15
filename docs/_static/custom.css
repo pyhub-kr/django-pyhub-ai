@@ -36,3 +36,11 @@ figcaption {
   line-height: 1; /* 캡션과 이미지 간 간격 최소화 */
   font-size: 0.8rem;
 }
+
+.sidebar-brand {
+  text-align: center;
+}
+
+.sidebar-brand-text {
+  font-size: 1.2rem;
+}
