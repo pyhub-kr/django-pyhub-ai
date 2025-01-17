@@ -15,5 +15,11 @@
 {%- block body %}
     {% include "_google_tag_manager_body.html" %}
     {{ super() }}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const elements = document.querySelectorAll(".view-this-page, .edit-this-page");
+            elements.forEach(el => el.remove());
+        });
+    </script>
 {%- endblock body %}
 {% block extrahead %}{{ super() }}{% endblock %}

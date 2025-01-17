@@ -28,6 +28,7 @@ figure {
   flex-direction: column; /* 세로 정렬 */
   align-items: flex-start; /* 왼쪽 정렬 */
   gap: 0px; /* 간격을 없앰 */
+  margin: 1rem 0 !important;
 }
 
 figcaption {
@@ -43,4 +44,9 @@ figcaption {
 
 .sidebar-brand-text {
   font-size: 1.2rem;
+}
+
+.price-table td:nth-child(2),
+.price-table td:nth-child(3) {
+    text-align: right;
 }
