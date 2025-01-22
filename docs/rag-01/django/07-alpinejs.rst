@@ -2,14 +2,14 @@ alpine.js를 활용한 채팅폼 enable/focus 상탯값 처리
 ======================================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/0767682d31ec57c063276428cb277a8022731986>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/62e083731c222d848166db42d1ebffca12387180>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 현재 프로젝트 루트 경로에서 명령어 실행
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/0767682d31ec57c063276428cb277a8022731986
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/62e083731c222d848166db42d1ebffca12387180
 
 
 미리보기
@@ -30,7 +30,7 @@ alpine.js 라이브러리는 경량 자바스크립트 라이브러리로서 HTM
 리액트와 달리 별도의 JSX 문법을 배우지 않아도 되며, HTML 속성을 통해 상태 관리와 이벤트 핸들러를 쉽게 구현할 수 있습니다.
 그래서 별도의 빌드도 필요없습니다.
 
-아래는 카운터 컴포넌트 예시입니다.
+아래는 `카운터 컴포넌트 예시 <https://codesandbox.io/p/sandbox/xt9n2s>`_ 입니다.
 
 * ``x-data`` 속성으로 상탯값 및 관련 메서드를 정의할 수 있습니다.
 * ``@`` 접두사로 이벤트 핸들러를 정의할 수 있습니다.
@@ -105,12 +105,6 @@ alpine.js 라이브러리 추가
 * ``hx-on::after-settle`` 이벤트 핸들러는 요소가 HTMX를 통한 변경에서 완전히 렌더링된 후에 호출됩니다.
 
   - 즉 메시지 내용의 변화가 있다면 자동으로 화면 스크롤이 부드럽게 아래로 이동하고, 입력 필드를 다시 활성화시킵니다.
-
-
-.. attention::
-
-   `커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/0767682d31ec57c063276428cb277a8022731986#diff-60554de2960d4190acc3d1131a23dd032fe93f784da789837f3f2789b02e3383R24>`_ 에서는 ``hx-on::after-request`` 이벤트 핸들러에 ``htmx.trigger(this, 'disable');`` 가 적용되어있습니다.
-   입력 필드 비활성화는 ``hx-on::before-request`` 이벤트 핸들러에서 처리하는 것이 맞을 듯 하여 변경했습니다.
 
 
 .. code-block:: text

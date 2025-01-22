@@ -2,14 +2,14 @@ AI 응답 메시지에 markdown 변환 지원
 =====================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/960a10fda142331d361562c89995369e01a3a360>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/fd4d9109910c979e9fadc16b30ebc1518edbc9e1>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 현재 프로젝트 루트 경로에서 명령어 실행
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/960a10fda142331d361562c89995369e01a3a360
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/fd4d9109910c979e9fadc16b30ebc1518edbc9e1
 
 
 미리보기
@@ -144,6 +144,8 @@ reply 응답 처리
 --------------------
 
 ``reply`` 뷰에서 AI 응답 메시지를 자바스크립트까지 있어 복잡하므로, 아래와 같이 장고 템플릿 시스템을 통해 처리합니다.
+HTMX를 통해서 서버 응답을 처리할 때 HTML 뿐만 아니라 alpine.js를 포함한 자바스크립트 코드까지 모두 자동 수행해주므로,
+자바스크립트 코드를 통해 여러 동적인 처리를 할 수 있어, 활용도가 무궁무진 합니다.
 
 .. code-block:: python
    :caption: ``chat/views.py``
@@ -160,31 +162,62 @@ reply 응답 처리
             },
         )
 
+.. tab-set::
 
-.. code-block:: html+django
-   :caption: ``chat/templates/chat/_chat_message.html``
+   .. tab-item:: 템플릿 코드
 
-    <div>
-        <div class="chat chat-start">
-            <div class="chat-bubble">{{ human_message }}</div>
-        </div>
-        {# markdown 문자열은 숨겨둡니다. #}
-        <div class="markdown hidden">{{ ai_message }}</div>
-        <div class="chat chat-end">
-            {# 변환된 html 문자열을 노출시킬 요소입니다. #}
-            <div class="chat-bubble ai"></div>
-        </div>
-        <script>
-        {# 웹페이지 내 다른 자바스크립트 코드와 변수 충돌을 막기 위해 #}
-        {# 즉시 실행 함수로 작성하고, 함수 내 지역변수로 처리합니다. #}
-        (() => {
-            const mdText = document.currentScript.parentElement.querySelector(".markdown")?.textContent;
-            const aiEl = document.currentScript.parentElement.querySelector(".ai");
-            // 이미 변환한 요소에 대해서 재변환을 하지 않도록 dataset 속성에 플래그를 남겨둡니다.
-            if (mdText && aiEl && !aiEl.dataset.mdProcessed) {
-                aiEl.innerHTML = window.markdownToHtml(mdText);
-                aiEl.dataset.mdProcessed = "true";
-            }
-        })();
-        </script>
-    </div>
+      .. code-block:: html+django
+         :caption: ``chat/templates/chat/_chat_message.html``
+
+         <div>
+             <div class="chat chat-start">
+                 <div class="chat-bubble">{{ human_message }}</div>
+             </div>
+             {# markdown 문자열은 숨겨둡니다. #}
+             <div class="markdown hidden">{{ ai_message }}</div>
+             <div class="chat chat-end">
+                 {# 변환된 html 문자열을 노출시킬 요소입니다. #}
+                 <div class="chat-bubble ai"></div>
+             </div>
+             <script>
+             {# 웹페이지 내 다른 자바스크립트 코드와 변수 충돌을 막기 위해 #}
+             {# 즉시 실행 함수로 작성하고, 함수 내 지역변수로 처리합니다. #}
+             (() => {
+                 const mdText = document.currentScript.parentElement.querySelector(".markdown")?.textContent;
+                 const aiEl = document.currentScript.parentElement.querySelector(".ai");
+                 // 이미 변환한 요소에 대해서 재변환을 하지 않도록 dataset 속성에 플래그를 남겨둡니다.
+                 if (mdText && aiEl && !aiEl.dataset.mdProcessed) {
+                     aiEl.innerHTML = window.markdownToHtml(mdText);
+                     aiEl.dataset.mdProcessed = "true";
+                 }
+             })();
+             </script>
+         </div>
+
+   .. tab-item:: alpine.js 버전
+
+      alpine.js를 통해서도 동일하게 마크다운 변환을 수행할 수 있습니다.
+      ``x-data`` 속성을 통해 데이터 속성 및 메서드를 정의하고,
+      ``x-init`` 속성을 통해 초기화 코드를 정의합니다.
+
+      .. code-block:: html+django
+         :caption: ``chat/templates/chat/_chat_message.html``
+
+         {# https://daisyui.com/components/chat/ #}
+         <div x-data="{
+                convert() {
+                  const markdownText = this.$el.querySelector('.markdown')?.textContent || '';
+                  const aiEl = this.$el.querySelector('.ai');
+                  aiEl.innerHTML = window.markdownToHtml(markdownText);
+                }
+              }"
+              x-init="convert();">
+
+             <div class="chat chat-start">
+                 <div class="chat-bubble">{{ human_message }}</div>
+             </div>
+             <div class="markdown hidden">{{ ai_message }}</div>
+             <div class="chat chat-end">
+                 <div class="chat-bubble ai"></div>
+             </div>
+         </div>

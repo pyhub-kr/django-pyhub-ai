@@ -51,7 +51,7 @@ OpenAI API 호출을 위해 ``openai`` 패키지를 설치합니다.
 모델은 비용이 저렴한 ``gpt-4o-mini`` 로 고정했습니다.
 
 ``openai.OpenAi()`` 인스턴스 생성 시에 ``api_key`` 인자로 사용할 API Key를 지정할 수 있는 데요.
-지정하지 않았으니, :doc:`../api-key` 페이지에서 설정했던 ``OPENAI_API_KEY`` 환경 변수가 디폴트로 사용됩니다.
+지정하지 않았으니, :doc:`../setup` 페이지에서 설정했던 ``OPENAI_API_KEY`` 환경 변수가 디폴트로 사용됩니다.
 
 .. code-block:: python
    :caption: chat/ai.py 생성
@@ -94,10 +94,10 @@ OpenAI API 호출을 위해 ``openai`` 패키지를 설치합니다.
        except Exception as e:
            ai_message = f"죄송합니다. 응답을 생성하는 중 오류가 발생했습니다. ({e})"
 
-만약 아래와 같은 에러 메시지가 발생하면, :doc:`../api-key` 페이지의 ``OPENAI_API_KEY`` 환경 변수 부분을 다시 확인해주세요.
+만약 아래와 같은 에러 메시지가 발생하면, :doc:`../setup` 페이지의 ``OPENAI_API_KEY`` 환경 변수 부분을 다시 확인해주세요.
 
 .. error::
 
    죄송합니다. 응답을 생성하는 중 오류가 발생했습니다. (The api_key client option must be set either by passing api_key to the client or by setting the OPENAI_API_KEY environment variable)
 
-환경변수 개념이 익숙하지 않으시다면, 테스트 성격으로 ``client = OpenAI()`` 코드에 ``api_key`` 인자로 사용할 API Key를 하드코딩해서 동작을 확인해보세요. ``api_key`` 인자 지정 후에 잘 동작하신다면 API Key는 문제가 없습니다. 환경변수 이름을 잘못 지정했거나 관련 설정에서 오류가 있을 수 있습니다. :doc:`../api-key` 페이지 내용을 다시 확인해주세요. 하지만 이 방법은 API Key 노출 위험이 있습니다. 동작을 테스트하신 후에 반드시 다시 하드코딩한 API Key를 삭제해주셔야만 합니다.
+환경변수 개념이 익숙하지 않으시다면, 테스트 성격으로 ``client = OpenAI()`` 코드에 ``api_key`` 인자로 사용할 API Key를 하드코딩해서 동작을 확인해보세요. ``api_key`` 인자 지정 후에 잘 동작하신다면 API Key는 문제가 없습니다. 환경변수 이름을 잘못 지정했거나 관련 설정에서 오류가 있을 수 있습니다. :doc:`../setup` 페이지 내용을 다시 확인해주세요. 하지만 이 방법은 API Key 노출 위험이 있습니다. 동작을 테스트하신 후에 반드시 다시 하드코딩한 API Key를 삭제해주셔야만 합니다.

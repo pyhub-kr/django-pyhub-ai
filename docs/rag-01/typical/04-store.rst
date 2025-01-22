@@ -8,19 +8,17 @@
 ---------
 
 단순히 문서를 벡터로 변환했다고 해서 즉시 활용할 수 있는 것이 아니라, 빠르고 정확한 검색이 가능하도록 저장해야 하며, 적절한 인덱싱 기법을 적용하여 검색 속도를 최적화해야만 합니다.
-즉, "지식 저장 (Store)" 단계는 효율적인 검색을 위한 최적화된 저장소 구축 과정입니다.
+"지식 저장 (Store)" 단계는 효율적인 검색을 위한 최적화된 저장소 구축 과정입니다.
 
-"지식 저장 (Store)" 단계가 없다면?
-
-#. 매번 새로 벡터화를 해야하기 때문에, API 비용 증가 및 성능 저하
-#. 올바른 인덱싱 기법을 적용하지 않으면 유사한 문서를 찾는 속도가 매우 느려집니다.
+본 튜토리얼에서는 파이썬 코드로 저장만 구현하고 인덱싱 과정은 다루지 않습니다.
+Vector Store를 사용하실 때 인덱싱 기능을 활용하실 수 있습니다.
 
 
 파이썬 구현
 ----------------
 
 본 튜토리얼에서는 비효율적인 방식이지만 벡터 데이터를 리스트에 저장하고 이를 ``pickle`` 포맷으로 파일로 저장하는 방식으로 간략히 구현하여,
-Vector Store를 경험해보겠습니다.
+Vector Store의 동작을 이해해보겠습니다.
 
 ``list`` 클래스를 상속받은 ``VectorStore`` 클래스를 구현하여 ``VectorStore`` 내에서 벡터 데이터를 저장하고 관리할 수 있도록 구현합니다.
 다음 4개의 메서드를 지원합니다.
@@ -62,6 +60,19 @@ Vector Store를 경험해보겠습니다.
 
            return vector_store
 
+        # TODO: 이어서 구현할 예정입니다.
+
+        # 벡터 스토어 문서/임베딩 데이터를 지정 경로에 파일로 저장
+        # def save(self, vector_store_path: Path) -> None: ...
+
+        # 지정 경로의 파일을 읽어서 벡터 스토어 문서/임베딩 데이터 복원
+        # @classmethod
+        # def load(cls, vector_store_path: Path) -> "VectorStore": ...
+
+        # 질의 문자열을 받아서, 벡터 스토어에서 유사 문서를 최대 k개 반환
+        # def search(self, question: str, k: int = 4) -> List[Document]:
+
+
    # vector_store = embed(doc_list)
    vector_store = VectorStore.make(doc_list)
 
@@ -85,7 +96,7 @@ Vector Store를 경험해보겠습니다.
 
        def save(self, vector_store_path: Path) -> None:
            """
-           현재의 벡터 데이터 리스트를 지정 경로에 파일로 저장
+           벡터 스토어 문서/임베딩 데이터를 지정 경로에 파일로 저장
            """
            with vector_store_path.open("wb") as f:
                # 리스트(self)를 pickle 포맷으로 파일(f)에 저장
@@ -94,11 +105,16 @@ Vector Store를 경험해보겠습니다.
        @classmethod
        def load(cls, vector_store_path: Path) -> "VectorStore":
            """
-           지정 경로에 저장된 파일을 읽어서 벡터 데이터 리스트를 반환
+           지정 경로의 파일을 읽어서 벡터 스토어 문서/임베딩 데이터 복원
            """
            with vector_store_path.open("rb") as f:
                # pickle 포맷으로 파일(f)에서 리스트(VectorStore)를 로딩
                return pickle.load(f)
+
+        # TODO: 이어서 구현할 예정입니다.
+
+        # 질의 문자열을 받아서, 벡터 스토어에서 유사 문서를 최대 k개 반환
+        # def search(self, question: str, k: int = 4) -> List[Document]:
 
 
 ``search`` 메서드 구현
@@ -190,9 +206,13 @@ Vector Store를 경험해보겠습니다.
                # pickle 포맷으로 파일(f)에서 리스트(VectorStore)를 로딩
                return pickle.load(f)
        
-       # TODO: search 메서드 구현
+        # TODO: 이어서 구현할 예정입니다.
 
-``VectorStore`` 클래스는 다음과 같이 활용할 수 있습니다.
+        # 질의 문자열을 받아서, 벡터 스토어에서 유사 문서를 최대 k개 반환
+        # def search(self, question: str, k: int = 4) -> List[Document]:
+
+
+위 ``VectorStore`` 클래스는 다음과 같이 활용할 수 있습니다.
 
 .. code-block:: python
    :linenos:
@@ -200,6 +220,8 @@ Vector Store를 경험해보겠습니다.
    def main():
        vector_store_path = Path("vector_store.pickle")
 
+       # 지정 경로에 파일이 없으면
+       # 문서를 로딩하고 분할하여 벡터 데이터를 생성하고 해당 경로에 저장합니다.
        if not vector_store_path.is_file():
            doc_list = load()
            print(f"loaded {len(doc_list)} documents")
@@ -208,12 +230,15 @@ Vector Store를 경험해보겠습니다.
            vector_store = VectorStore.make(doc_list)
            vector_store.save(vector_store_path)
            print(f"created {len(vector_store)} items in vector store")
+        # 지정 경로에 파일이 있으면, 로딩하여 VectorStore 객체를 복원합니다.
        else:
            vector_store = VectorStore.load(vector_store_path)
            print(f"loaded {len(vector_store)} items in vector store")
 
-       # TODO: 질문을 받고, RAG를 통해 답변을 구현하겠습니다.
-       question = input("질문을 입력하세요: ")
+       # TODO: RAG를 통해 지식에 기반한 AI 답변을 구해보겠습니다.
+       question = "빽다방 카페인이 높은 음료와 가격은?"
+       print(f"RAG를 통해 '{question}' 질문에 대해서 지식에 기반한 AI 답변을 구해보겠습니다.")
+
 
    if __name__ == "__main__":
        main()

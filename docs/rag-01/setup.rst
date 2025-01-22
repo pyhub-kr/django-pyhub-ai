@@ -1,4 +1,4 @@
-OpenAI API Key 준비
+튜토리얼 실습 준비
 ===========================
 
 API Key 구하기
@@ -61,3 +61,20 @@ OPEN_API_KEY 환경변수 설정
 
 이미 ``git add`` 하신 상황이라면, ``git rm --cached .env`` 명령으로 파일은 삭제하지 않으면서, 소스코드 관리 대상에서 제외할 수 있습니다.
 그리고 커밋까지 해주시면 소스코드 관리 대상에서 제외됩니다.
+
+
+Jupyter Lab을 사용하실려면
+--------------------------------------
+
+:doc:`./typical/index`\를 실습하실 때에는 Jupyter Notebook/Lab을 사용하셔도 됩니다.
+``uv``\에서는 아래 명령으로 ``jupyter`` 패키지를 설치하고 원하는 명령으로 실행할 수 있습니다.
+
+.. code-block:: bash
+
+   uv pip install jupyter
+
+   # uv run jupyter notebook
+   uv run jupyter lab
+
+단 :doc:`./django/index`\를 실습하실 때에는 Jupyter를 사용하실 수 없습니다.
+소스코드 편집기가 필요하구요. Visual Studio Code 혹은 PyCharm Professional을 추천드립니다.

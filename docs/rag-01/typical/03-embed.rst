@@ -20,15 +20,47 @@
    * `BERT <https://github.com/google-research/bert>`_, `KoBERT <https://github.com/SKTBrain/KoBERT>`_
    * `OpenAI <https://platform.openai.com/docs/guides/embeddings>`_, `Google <https://cloud.google.com/vertex-ai/docs/generative-ai/embeddings>`_, `Hugging Face <https://huggingface.co/docs/text-embeddings-inference/en/index>`_ 의 임베딩 모델 등
 
-본 튜토리얼에서는 벡터 변환은 OpenAI의 ``text-embedding-3-small`` 임베딩 모델을 사용합니다. 이 모델은 1536 차원의 고정 크기의 벡터를 반환합니다.
+본 튜토리얼에서는 벡터 변환은 OpenAI의 ``text-embedding-3-small`` 임베딩 모델을 사용하겠습니다.
+이 모델은 1536 차원의 고정 크기의 벡터를 반환하구요. ``text-embedding-3-large`` 모델은 2배인 3072 차원의 벡터를 반환합니다.
 
-+ ``"오렌지"`` → ``[0.012021134607493877, -0.050807174295186996, ...]`` (1536 개의 실수 배열)
-+ ``"설탕 커피"`` → ``[-0.0008126725442707539, -0.03418251499533653, ...]`` (1536 개의 실수 배열)
-+ ``"카푸치노"`` → ``[-0.02137843146920204, 0.0011899990495294333, ...]`` (1536 개의 실수 배열)
-+ ``"coffee"`` → ``[-0.01013763528317213, 0.0037400354631245136, ...]`` (1536 개의 실수 배열)
+``["오렌지", "설탕 커피", "카푸치노", "coffee"]`` 문자열 리스트에서 각각의 문자열을 벡터 데이터로 변환하는 예시는 다음과 같습니다.
 
-각 벡터 값을 가지고, 유사 문서를 찾아내는 방법은 **코사인 유사도**, 유클리드 거리, 맨해튼 거리, 점수 기반 유사도, 자카드 유사도, **BM25** 등이 있습니다.
-이 중에 가장 많이 대중적인 방법은 **코사인 유사도**\이며 **두 벡터 간의 각도의 코사인 값**\을 이용하여 벡터 간의 유사도를 측정합니다.
+.. code-block:: python
+    :caption: OpenAI API를 활용한 벡터 데이터 생성 예시
+
+    from typing import List, Dict
+    import openai
+    from environ import Env
+
+    env = Env()
+    env.read_env(overwrite=True)  # .env 파일을 환경변수로 로딩합니다.
+
+    def embed_text(text: str) -> List[float]:
+        client = openai.Client()
+        res = client.embeddings.create(
+            model="text-embedding-3-small",  # 1536 차원
+            input=text)
+
+        return res.data[0].embedding
+
+    text_list = ["오렌지", "설탕 커피", "카푸치노", "coffee"]
+    vector_list =[embed_text(text) for text in text_list]
+    
+    for text, vector in zip(text_list, vector_list):
+        print(f"{text} => {len(vector)} 차원 : {vector[:2]}")
+
+실행해보면, 각 문자열은 1536차원 (1536개의 실수 배열)의 벡터 데이터로 변환되었음을 확인할 수 있습니다.
+
+.. code-block:: text
+
+   오렌지 => 1536 차원 : [0.012019923888146877, -0.05075591802597046]
+   설탕 커피 => 1536 차원 : [-0.0008126725442707539, -0.03418251499533653]
+   카푸치노 => 1536 차원 : [-0.02143724076449871, 0.0011578402481973171]
+   coffee => 1536 차원 : [-0.01013763528317213, 0.0037400354631245136]
+
+
+각 벡터 데이터를 가지고, 유사 문서를 찾아내는 방법은 **코사인 유사도**, 유클리드 거리, 맨해튼 거리, 점수 기반 유사도, 자카드 유사도, **BM25** 등이 있습니다.
+이 중에 가장 대중적인 방법은 **코사인 유사도**\이며 **두 벡터 간의 각도의 코사인 값**\을 이용하여 벡터 간의 유사도를 측정합니다.
 코사인 유사도 값의 범위는 코사인 값 범위인 ``-1 ≤ cos(θ) ≤ 1`` 입니다. 같은 방향이면 각도가 0이니 ``cos(0) = 1`` 로 계산됩니다.
 
 + ``1.0`` → 완전히 동일한 벡터 (매우 유사함)
@@ -41,7 +73,19 @@
 
    출처 : `What is Cosine Similarity? How to Compare Text and Images in Python <https://towardsdatascience.com/what-is-cosine-similarity-how-to-compare-text-and-images-in-python-d2bb6e411ef0>`_
 
-이 중에 ``"커피"`` 문자열과 유사한 단어를 찾아보겠습니다. ``"커피"`` 문자열의 벡터 값은 ``[-0.03496772050857544, -0.007349129766225815, ...]`` 이구요. "오렌지", "설탕 커피", "카푸치노", "coffee" 문자열 과의 코사인 유사도를 계산해보면 다음과 같습니다. (``scikit-learn`` 라이브러리에서 `cosine_similarity <https://scikit-learn.org/dev/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html>`_ 함수를 지원해줍니다.)
+이 중에 ``"커피"`` 문자열과 유사한 단어를 찾아보겠습니다. ``"커피"`` 문자열의 벡터 값은 ``[-0.03488345816731453, -0.0074335746467113495, ...]`` 입니다.
+
+.. code-block:: python
+
+   question = "커피"
+   question_vector = embed_text(question)
+   print(f"{question} => {len(question_vector)} 차원 : {question_vector[:2]}")
+   # 커피 => 1536 차원 : [-0.03488345816731453, -0.0074335746467113495]
+
+
+"오렌지", "설탕 커피", "카푸치노", "coffee" 문자열 과의 코사인 유사도를 계산해보면 다음과 같습니다.
+(파이썬 머신러닝 라이브러리인 `scikit-learn <https://scikit-learn.org/stable>`_\에서
+코사인 유사도 계산을 위한 `cosine_similarity <https://scikit-learn.org/dev/modules/generated/sklearn.metrics.pairwise.cosine_similarity.html>`_ 함수를 지원해줍니다.)
 
 + 의존 라이브러리 : ``pip install -U scikit-learn``
 
@@ -49,17 +93,27 @@
    :linenos:
 
    >>> from sklearn.metrics.pairwise import cosine_similarity
-   >>> cosine_similarity([커피_벡터], [오렌지_벡터, 설탕_커피_벡터, 카푸치노_벡터, coffee_벡터])
-   array([[0.24943755, 0.49060672, 0.24737702, 0.44323739]])
+   >>> similarity_list = cosine_similarity([question_vector], vector_list)[0]
+   >>> similarity_list  # numpy 배열 타입
+   array([0.24937937, 0.49054034, 0.24732958, 0.44292969])
 
-1. 가장 유사한 문자열은 ``"설탕 커피"`` (유사도: 0.49060672)
-2. 두번째로 유사한 문자열은 ``"coffee"`` (유사도: 0.44323739)
-3. 세번째로 유사한 문자열은 ``"오렌지"`` (유사도: 0.24943755)
-4. 네번째로 유사한 문자열은 ``"카푸치노"`` (유사도: 0.24737702)
+   >>> for text, similarity in zip(text_list, similarity_list):
+   ...     print(text, similarity)
 
-"카푸치노" 보다 "오렌지"가 더 유사하다고 측정되었습니다.
+   오렌지 0.24937936632106864
+   설탕 커피 0.49054033782539064
+   카푸치노 0.2473295791302273
+   coffee 0.4429296921609209
+
+1. 가장 유사한 문자열은 ``"설탕 커피"`` (유사도: 0.49054033782539064)
+2. 두번째로 유사한 문자열은 ``"coffee"`` (유사도: 0.4429296921609209)
+3. 세번째로 유사한 문자열은 ``"오렌지"`` (유사도: 0.24937936632106864)
+4. 네번째로 유사한 문자열은 ``"카푸치노"`` (유사도: 0.2473295791302273)
+
+OpenAI의 ``text-embedding-3-small`` 임베딩 모델을 활용한 벡터 데이터와 코사인 유사도를 통한 유사도 계산에서는
+"카푸치노" 보다 "오렌지"가 더 유사하다고 계산되었습니다.
 "카푸치노" 는 커피 종류이지만 문자 구조 자체는 "커피"와 비교적 거리가 멀 수 있습니다.
-어떤 임베딩 모델을 사용했는 지와 측정 방법에 따라 유사도 측정 결과가 달라질 수 있습니다. 😅
+어떤 임베딩 모델을 사용했는 지와 계산 방법에 따라 유사도 측정 결과가 달라질 수 있습니다. 😅
 
 .. admonition:: 참고: 코사인 유사도를 신중하게 사용해주세요.
    :class: note
@@ -80,7 +134,7 @@
 
        for doc in doc_list:
            response = client.embeddings.create(
-               model="text-embedding-3-small",  # 1536 차원
+               model="text-embedding-3-small",
                input=doc.page_content,
            )
            vector_store.append(
@@ -103,7 +157,7 @@
    for row in vector_store:
        print(
            "{}... => {} 차원, {} ...".format(
-               row["document"]["page_content"][:10],
+               row["document"].page_content[:10],
                len(row["embedding"]),
                row["embedding"][:2],
            )

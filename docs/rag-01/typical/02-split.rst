@@ -114,8 +114,11 @@
 2. **텍스트 구조**\ 에 기반한 쪼개기
 
    - **문단**, 헤더, 목록 등의 텍스트 구조를 고려해서 쪼갭니다.
+
      - 문단 : 글을 작성한 사람이 의미에 맞게 구분한 것. (작성자 생각의 구조)
+
    - 하지만 문서마다 텍스트 구조가 다를 수 밖에 없으므로 적용이 제한적입니다.
+
    - 랭체인 : `NltkTextSplitter <https://python.langchain.com/api_reference/text_splitters/nltk/langchain_text_splitters.nltk.NLTKTextSplitter.html>`_, `SpacyTextSplitter <https://python.langchain.com/api_reference/text_splitters/spacy/langchain_text_splitters.spacy.SpacyTextSplitter.html>`_ 등
 
 3. **문서 구조**\ 에 기반한 쪼개기

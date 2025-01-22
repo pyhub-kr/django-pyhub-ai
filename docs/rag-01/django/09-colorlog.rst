@@ -2,14 +2,14 @@ ColorLog
 ========
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/606172fa11169946c2f6e090f8be0e40e8c4e2a6>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/e53acc7e1a68eb148f30f48857b27005286602cd>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 현재 프로젝트 루트 경로에서 명령어 실행
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/606172fa11169946c2f6e090f8be0e40e8c4e2a6
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/e53acc7e1a68eb148f30f48857b27005286602cd
 
 
 미리보기
@@ -55,6 +55,7 @@ settings.LOGGING
 
     LOGGING = {
         "version": 1,
+        "disable_existing_loggers": False,  # 기본 로깅을 비활성화하지 않음
         "filters": {
             "require_debug_true": {
                 "()": "django.utils.log.RequireDebugTrue",
@@ -117,7 +118,11 @@ settings.LOGGING
     # 아래 모든 print를 logger.debug로 변경
 
     # print(f"Loaded vector store {len(self.vector_store)} items")
-    logger.debug(f"Loaded vector store %s items", len(self.vector_store))
+    logger.debug("Loaded vector store %s items", len(self.vector_store))
+
+    # print(f"Failed to load vector store: {e}")
+    logger.error("Failed to load vector store: %s", e)
+
     # ...
 
 

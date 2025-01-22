@@ -5,17 +5,15 @@ AI RAG 응답 생성
 .. admonition:: 관련 커밋
    :class: dropdown
 
-   * `VectorStore 생성명령 make_vector_store 구현 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/a0caa09cdf79e68d0d4aad4b21e7e25d2369ff3e>`_
-   * `빽다방 RAG를 통한 답변 생성 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/ee0d7f45efd7a1386ca6ea84a39051e0c3538c17>`_
+   * `VectorStore 생성명령 make_vector_store 구현 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/dac2dd355cfe152fcba08eaa1285ed6ef03d3b68>`_
+   * `빽다방 RAG를 통한 답변 생성 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/6f0426c43f76bdee0cd9dce1cca37c7c9d3746ea>`_
    
-     - 커밋에서 질문이 하드코딩되어있습니다. ``question`` 변수를 통해 질문을 전달받도록 수정되어야 합니다.
-
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 현재 프로젝트 루트 경로에서 명령어 실행
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/a0caa09cdf79e68d0d4aad4b21e7e25d2369ff3e
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/ee0d7f45efd7a1386ca6ea84a39051e0c3538c17
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/dac2dd355cfe152fcba08eaa1285ed6ef03d3b68
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/6f0426c43f76bdee0cd9dce1cca37c7c9d3746ea
 
 
 미리보기
@@ -329,8 +327,12 @@ PaikdabangAI
     class PaikdabangAI:
         # 서버 시작할 때에만 1회 호출되어, 벡터 스토어 파일을 로딩합니다.
         def __init__(self):
-            self.vector_store = rag.VectorStore.load(settings.VECTOR_STORE_PATH)
-            print(f"Loaded vector store {len(self.vector_store)} items")
+            try:
+                self.vector_store = rag.VectorStore.load(settings.VECTOR_STORE_PATH)
+                print(f"Loaded vector store {len(self.vector_store)} items")
+            except FileNotFoundError as e:
+                print(f"Failed to load vector store: {e}")
+                self.vector_store = rag.VectorStore()
 
         # 매 AI 답변을 요청받을 때마다 호출됩니다.
         def __call__(self, question: str) -> str:

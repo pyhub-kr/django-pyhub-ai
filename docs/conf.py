@@ -87,7 +87,7 @@ html_theme_options = {
     "source_edit_link": None,
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
     # "announcement": "django-pyhub-ai 라이브러리의 최신버전은 <em>0.8.25</em> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
-    "announcement": "야심차게 준비한 <a href='/rag-01/'>RAG 튜토리얼</a>을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
+    "announcement": "야심차게 준비한 <a href='/rag-01/'>RAG 초보자 튜토리얼</a>을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
     "light_logo": "favicon-128.png",  # _static 경로
     "dark_logo": "favicon-128.png",
     # https://pradyunsg.me/furo/customisation/colors/

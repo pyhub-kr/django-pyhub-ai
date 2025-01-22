@@ -19,6 +19,9 @@
         document.addEventListener("DOMContentLoaded", function() {
             const elements = document.querySelectorAll(".view-this-page, .edit-this-page");
             elements.forEach(el => el.remove());
+
+            const copyrightEl = document.querySelector(".copyright");
+            copyrightEl.insertAdjacentHTML("beforebegin", "<div>기술자문 및 교육 문의 : <a href='mailto:me@pyhub.kr'>me@pyhub.kr</a></div>");
         });
     </script>
 {%- endblock body %}
