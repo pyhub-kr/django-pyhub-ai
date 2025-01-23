@@ -360,7 +360,6 @@ HTMX에 다양한 기능을 부여하여 우리가 직접 자바스크립트 코
         x-data="{
             convert() {
                 const markdownText = this.$el.querySelector('.markdown')?.textContent;
-                console.log('markdownText :', markdownText);
                 const aiEl = this.$el.querySelector('.ai');
                 aiEl.innerHTML = window.markdownToHtml(markdownText);
             }
