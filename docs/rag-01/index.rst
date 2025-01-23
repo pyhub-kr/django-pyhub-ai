@@ -1,12 +1,26 @@
 RAG #01. RAG 밑바닥부터 웹 채팅까지
 ===========================================
 
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+      src="https://www.youtube.com/embed/aI-Dt4wSgLY?si=GP95LIzjA2bMYY1U"
+      title="YouTube video player"
+      frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+  </div>
+
+----
+
 .. admonition:: 본 튜토리얼이 RAG와 웹서비스 개발에 관심 있는 분들께 도움이 되셨으면 합니다. 😉
    :class: important
 
    본 튜토리얼을 수월하게 진행하시기 위해, 다음 선수 지식이 필요합니다.
 
-   #. 파이썬의 문자열/리스트, 함수, 클래스, Callable Object, Type Hint 문법
+   #. 파이썬의 문자열/리스트, 함수, 클래스, Callable Object, Type Hint, async/await 문법
    #. OpenAI LLM API를 파이썬 코드로 직접 호출해본 경험
 
 LLM(Large Language Model)은 대규모 텍스트 데이터로 학습된 인공지능 모델입니다. 자연어를 이해하고 생성할 수 있는 능력을 가지고 있어, 질문에 대한 답변, 텍스트 요약, 번역, 코드 작성 등 다양한 작업을 수행할 수 있습니다.
@@ -100,7 +114,7 @@ LLM이 이 세상 모든 지식을 다 알 수는 없습니다. 부족한 지식
 
    LLM은 정확한 메뉴와 가격으로 답변을 합니다.
 
-   .. image:: ./django/assets/10-markdown.png
+   .. image:: ./django/assets/12-async-stream-02.gif
 
 .. toctree::
    :maxdepth: 2
