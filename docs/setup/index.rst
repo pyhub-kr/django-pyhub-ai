@@ -12,3 +12,5 @@
 
    python/index
    venv
+   vscode
+   terminals/index
