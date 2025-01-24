@@ -1,0 +1,10 @@
+{%- extends "!page.html" %}
+{%- block body %}
+    {%- if title == "Page not found" %}
+        {{ body }}
+        <hr />
+        <a href="/">go to home</a>
+    {%- else %}
+        {{ super() }}
+    {%- endif %}
+{%- endblock %}
