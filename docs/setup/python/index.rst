@@ -6,3 +6,4 @@
 
    windows
    macos
+   linux

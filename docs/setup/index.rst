@@ -14,3 +14,4 @@
    venv
    vscode
    terminals/index
+   vector-stores/index
