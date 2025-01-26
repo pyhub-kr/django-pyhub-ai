@@ -69,6 +69,7 @@ docs = [
     "furo~=2024.8.6",
     "sphinxcontrib-mermaid",
     "sphinx-notfound-page",
+    "sphinx-sitemap",
     # zip 직접 설치 부분을 빼고, /src/ 에 추가
     # sphinx-comments 라이브러리는 더 이상 관리되지 않고 있어서, 이를 가져와서 패치했습니다.
     # "sphinx-comments2 @ https://github.com/allieus/sphinx-comments2/archive/refs/heads/master.zip",

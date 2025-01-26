@@ -33,6 +33,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx_copybutton",
     "sphinx_design",
+    "sphinx_sitemap",
     "sphinx_togglebutton",
     "sphinxcontrib.mermaid",
     "notfound.extension",
@@ -208,3 +209,12 @@ autodoc_class_signature = "separated"
 
 # https://www.sphinx-doc.org/en/master/development/tutorials/extending_build.html
 todo_include_todos = True
+
+
+# sphinx-sitemap : https://sphinx-sitemap.readthedocs.io/en/latest/getting-started.html
+html_baseurl = "https://ai.pyhub.kr"
+# sitemap_filename = "sitemap.xml"
+sitemap_excludes = [
+    "search.html",
+    "genindex.html",
+]

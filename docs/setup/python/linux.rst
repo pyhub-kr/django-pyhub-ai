@@ -124,7 +124,6 @@ pyenv로 파이썬에 sqlite3 지원을 추가하여, 빌드하기
 아래 명령은 파이썬 ``3.13.1`` 버전을 빌드합니다. 원하시는 버전으로 빌드해주세요.
 
 .. code-block:: bash
-   :emphasize-lines: 5
 
    CFLAGS="-DSQLITE_ENABLE_LOAD_EXTENSION=1" \
    PYTHON_CONFIGURE_OPTS="--enable-loadable-sqlite-extensions" \

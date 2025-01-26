@@ -815,6 +815,7 @@ docs = [
     { name = "sphinx-copybutton" },
     { name = "sphinx-design" },
     { name = "sphinx-notfound-page" },
+    { name = "sphinx-sitemap" },
     { name = "sphinx-togglebutton" },
     { name = "sphinxcontrib-mermaid" },
 ]
@@ -871,6 +872,7 @@ requires-dist = [
     { name = "sphinx-copybutton", marker = "extra == 'docs'", specifier = "~=0.5.2" },
     { name = "sphinx-design", marker = "extra == 'docs'", specifier = "~=0.6.1" },
     { name = "sphinx-notfound-page", marker = "extra == 'docs'" },
+    { name = "sphinx-sitemap", marker = "extra == 'docs'" },
     { name = "sphinx-togglebutton", marker = "extra == 'docs'", specifier = "~=0.3.2" },
     { name = "sphinxcontrib-mermaid", marker = "extra == 'docs'" },
     { name = "tabulate" },
@@ -3187,6 +3189,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/73/7d/c545883c714319380325a52c9f80d093c97e718d812fd8090e42b1a08508/sphinx_notfound_page-1.0.4.tar.gz", hash = "sha256:2a52f49cd367b5c4e64072de1591cc367714098500abf4ecb9a3ecb4fec25aae", size = 519228 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/87/c4/877a5beffb8dcaf35e919c4c3cad56732c76370d106126394f4ca211ad7f/sphinx_notfound_page-1.0.4-py3-none-any.whl", hash = "sha256:f7c26ae0df3cf3d6f38f56b068762e6203d0ebb7e1c804de1059598d7dd8b9d8", size = 8170 },
+]
+
+[[package]]
+name = "sphinx-sitemap"
+version = "2.6.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/42/ed/96cc112b671e06df01c8306c25ce3331ccfece0d30235e32eb039afc8094/sphinx_sitemap-2.6.0.tar.gz", hash = "sha256:5e0c66b9f2e371ede80c659866a9eaad337d46ab02802f9c7e5f7bc5893c28d2", size = 6042 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/94/d4/dffb4da380be24fd390d284634735d6fba560980014050e52569c04d215b/sphinx_sitemap-2.6.0-py3-none-any.whl", hash = "sha256:7478e417d141f99c9af27ccd635f44c03a471a08b20e778a0f9daef7ace1d30b", size = 5632 },
 ]
 
 [[package]]
