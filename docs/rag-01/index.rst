@@ -1,17 +1,21 @@
 RAG #01. RAG 밑바닥부터 웹 채팅까지
 ===========================================
 
+14분부터 보시면 됩니다.
 
 .. raw:: html
 
   <div class="video-container">
     <iframe
-      src="https://www.youtube.com/embed/aI-Dt4wSgLY?si=GP95LIzjA2bMYY1U"
-      title="YouTube video player"
-      frameborder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-      referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=840"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
   </div>
+
+.. tip::
+
+    2025.1.27. (월) 오후 9시에 `두번째 튜토리얼 따라하기 라이브 <https://www.youtube.com/watch?v=9ayknWI-VcI>`_\를 진행합니다. 함께 해요. ;-)
 
 ----
 
