@@ -10,7 +10,7 @@ sqlite-vec
 임베딩 벡터를 ``sqlite`` 데이터베이스에 효율적으로 저장하고
 벡터 간 거리도 계산할 수 있어, 간편하게 벡터 데이터베이스를 구축할 수 있습니다.
 
-`sqlite-vec 공식문서 API#distance <https://alexgarcia.xyz/sqlite-vec/api-reference.html#distance>`_\에 따르면
+`sqlite-vec <https://alexgarcia.xyz/sqlite-vec/api-reference.html#distance>`_\에 따르면
 다음 3개의 Distance 함수를 제공합니다.
 
 #. ``vec_distance_cosine(a, b)``

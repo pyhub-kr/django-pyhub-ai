@@ -6,7 +6,7 @@ API Key 구하기
 
 OpenAI API Key가 없으신 분은 :doc:`../quickstart/first-chat-bot` 튜토리얼의 "OpenAI API Key 얻기" 섹션을 참고해주세요.
 
-OPEN_API_KEY 환경변수 설정
+OPENAI_API_KEY 환경변수 설정
 ---------------------------------
 
 프레임워크/운영체제에 따라서 환경변수를 설정하는 방법은 제각각입니다.

@@ -138,7 +138,7 @@ pyenv로 파이썬에 sqlite3 지원을 추가하여, 빌드하기
    :emphasize-lines: 5
 
    LDFLAGS="-L$(brew --prefix sqlite)/lib" \
-   CPPFLAGS="-I$(brew --prefix sqlite/include" \
+   CPPFLAGS="-I$(brew --prefix sqlite)/include" \
    CFLAGS="-DSQLITE_ENABLE_LOAD_EXTENSION=1" \
    PYTHON_CONFIGURE_OPTS="--enable-loadable-sqlite-extensions" \
    pyenv install 3.13.1
