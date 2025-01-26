@@ -76,7 +76,14 @@ Postgres는 디폴트 포트 ``5432``\를 사용합니다. 호스트 머신에�
 
         .. code-block:: shell
 
-            docker compose up -d
+            # docker-compose.yml 내역대로 컨테이너들을 백그라운드에서 실행
+            docker-compose up -d
+
+            # 컨테이너 내역 확인
+            docker-compose ps
+
+            # 컨테이너 모두 중지
+            docker-compose down
 
 연결 문자열은 아래와 같습니다. 장고 프로젝트에서 ``DATABASE_URL`` 환경변수로 사용해주세요.
 
