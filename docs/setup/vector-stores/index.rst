@@ -5,3 +5,4 @@ Vector Store 구성
    :maxdepth: 2
 
    sqlite-vec
+   pgvector/index
