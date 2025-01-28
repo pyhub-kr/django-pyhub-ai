@@ -1,7 +1,6 @@
 HTML Form 기반으로 AI 응답 받기
 ================================
 
-
 .. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/9b7aa6c24bc3c3d6ae800470951489e060da175a>`_
    :class: dropdown
 
@@ -11,6 +10,19 @@ HTML Form 기반으로 AI 응답 받기
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/9b7aa6c24bc3c3d6ae800470951489e060da175a
 
+본 페이지는 1:48:51 지점부터 2:04:46 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/9ayknWI-VcI?start=6531"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
 
 장고 HTML 템플릿
 -------------------

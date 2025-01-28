@@ -1,6 +1,20 @@
 튜토리얼 실습 준비
 ===========================
 
+본 페이지는 49:40 지점부터 1:00:05 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=2980"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
 API Key 구하기
 --------------------
 

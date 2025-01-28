@@ -11,6 +11,19 @@ HTML Form + 바닐라 자바스크립트 기반으로 페이지 전환없이 AI 
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/e1ec4b164acdbfb6cf2f03654838ffa4494dd4e6
 
+본 페이지는 2:04:54 지점부터 2:11:24 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/9ayknWI-VcI?start=7494"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
 
 미리보기
 -----------

@@ -1,6 +1,20 @@
 전형적인 RAG
 ===============
 
+본 페이지는 1:16:24 지점부터 1:29:00 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=4584"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
 전형적인 RAG 프로세스는 크게 준비 단계와 활용 단계로 나눌 수 있습니다.
 
 * 준비 단계

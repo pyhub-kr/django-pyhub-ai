@@ -19,11 +19,10 @@ LLM을 활용한 애플리케이션 개발에서 자주 언급되는 ``Streamlit
 
 RAG/에이전트와 함께 여러분의 파이썬/장고 페이스메이커가 되겠습니다. 🥳
 
-----
-
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: 목차
+   :hidden:
 
    rag-01/index
    quickstart/index
@@ -32,41 +31,3 @@ RAG/에이전트와 함께 여러분의 파이썬/장고 페이스메이커가 �
    setup/index
    utils/index
    courses/index
-   
-
-튜토리얼 영상
-----------------
-
-.. raw:: html
-
-   <div class="video-container">
-       <iframe
-           src="https://www.youtube.com/embed/10Fp78n3jSw"
-           frameborder="0"
-           allowfullscreen>
-       </iframe>
-   </div>
-
-----
-
-.. raw:: html
-
-   <div class="video-container">
-       <iframe
-           src="https://www.youtube.com/embed/2huieuCugek"
-           frameborder="0"
-           allowfullscreen>
-       </iframe>
-   </div>
-
-스크린샷
---------
-
-.. list-table::
-   :widths: 50 50
-   :header-rows: 0
-
-   * - **LLM 채팅 챗봇 시연**
-     - **데이터 분석 에이전트 챗봇 시연**
-   * - .. image:: ./assets/screenshot-01.gif
-     - .. image:: ./assets/screenshot-02.gif

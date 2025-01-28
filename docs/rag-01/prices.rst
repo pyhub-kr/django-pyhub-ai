@@ -1,6 +1,20 @@
 비용 계산 함수
 =======================
 
+본 페이지는 1:00:06 지점부터 1:01:20 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=3606"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
 곧 OpenAI LLM API를 호출할텐데요. API는 사용한 토큰 수 만큼 과금이 됩니다.
 
 각 LLM 응답마다 입출력 토큰 수를 알 수 있구요. 토큰 수만 봐서는 비용을 가늠하기 어렵기 때문에

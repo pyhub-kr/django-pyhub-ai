@@ -1,6 +1,20 @@
 2단계. 지식을 쪼개기 (Split)
 ============================
 
+본 페이지는 5:50 지점부터 22:58 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/9ayknWI-VcI?start=350"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
   문서를 적절한 크기로 분할하여, 각 조각이 독립적인 의미를 가지도록 조정하는 과정
 
 :doc:`01-load` 단계에서 생성된 문서를 문서의 포맷은 유지하면서 쪼개고 정리해서 **적절한 크기의 문서**\들로 재구성하는 단계입니다.

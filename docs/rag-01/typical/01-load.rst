@@ -1,6 +1,20 @@
 1단계. 지식 변환 (Load)
 ============================
 
+본 페이지는 1:29:10 지점부터 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=5350"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
   원본 데이터를 텍스트로 변환하고, 불필요한 데이터를 제거하고, 검색과 벡터화에 적합한 형태로 정제하는 과정
 
 이 단계에서는 PDF/TXT/HTML 등의 문서 포맷에 맞는 라이브러리를 사용하여, 문서를 열고 메타 데이터와 내용을 읽어서 텍스트로 변환하신 후에,

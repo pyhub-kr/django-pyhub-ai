@@ -1,6 +1,20 @@
 LLM은 어떤 질문이든 답변을 할려고 노력합니다.
 ==============================================
 
+본 페이지는 14:00 지점부터 49:40 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=840"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
 LLM은 가지고 있는 지식으로만, 어떻게든 답변을 합니다.
 
 .. image:: ./assets/llm-brain.png

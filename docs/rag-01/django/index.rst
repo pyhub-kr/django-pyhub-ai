@@ -1,6 +1,20 @@
 장고로 RAG 웹 채팅 만들기 (장고 초보)
 ==========================================
 
+본 페이지는 1:19:53 지점부터 1:24:58 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/9ayknWI-VcI?start=4793"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
 오늘날 대화형 AI는 LLM(Large Language Model) 애플리케이션의 핵심 인터페이스로 자리 잡았습니다.
 특히 채팅 UI는 사용자가 자연스럽게 질문하고 답변을 받을 수 있는 직관적인 인터페이스로, 대부분의 LLM 기반 프로젝트에서 필수적인 구성 요소입니다.
 

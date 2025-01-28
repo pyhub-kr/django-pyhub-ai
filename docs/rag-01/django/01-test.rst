@@ -1,6 +1,20 @@
 웹소켓 채팅 페이지 접속 테스트
 ==============================
 
+본 페이지는 1:46:39 지점부터 1:48:51 지점까지 보시면 됩니다.
+
+.. raw:: html
+
+  <div class="video-container">
+    <iframe
+        src="https://www.youtube.com/embed/9ayknWI-VcI?start=6399"
+        frameborder="0"
+        allowfullscreen>
+    </iframe>
+  </div>
+
+----
+
 웹페이지 접속
 ---------------
 
