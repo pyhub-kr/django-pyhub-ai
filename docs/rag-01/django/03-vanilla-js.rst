@@ -41,41 +41,42 @@ URL 문자열 계산을 직접 하지 마시고 장고에게 양보하세요.
 ``await response.text()`` 호출은 응답 텍스트를 반환하며, 서버의 응답 텍스트를 HTML 포맷으로 보고 ``id="messages"`` 요소 끝에 추가합니다.
 
 .. code-block:: html+django
-   :caption: chat/templates/chat/index.html
-   :emphasize-lines: 6,12-27
-   :linenos:
+    :caption: chat/templates/chat/index.html
+    :emphasize-lines: 6,12-31
+    :linenos:
 
-   {% extends "base.html" %}
+    {% extends "base.html" %}
 
-   {% block main %}
-       <h2>WebSocket Chat</h2>
+    {% block main %}
+        <h2>WebSocket Chat</h2>
 
-       <form id="form" action="{% url 'chat:reply' %}" method="post">
-           {% csrf_token %}
-           <input type="text" name="message"/>
-       </form>
+        <form id="form" action="{% url 'chat:reply' %}" method="post">
+            {% csrf_token %}
+            <input type="text" name="message" />
+        </form>
 
-       <div id="messages"></div>
-       <script>
-       document.querySelector('#form').addEventListener('submit', async function (e) {
-           // form submit 기본 동작(페이지 전환되며 폼 전송) 을 막습니다.
-           e.preventDefault();
+        <div id="messages"></div>
+        <script>
+            document.querySelector('#form').addEventListener('submit', async function (e) {
+                // form submit 기본 동작(페이지 전환되며 폼 전송) 을 막습니다.
+                e.preventDefault();
 
-           const formEl = e.target;            // 이벤트가 발생한 요소
-           const url = formEl.action;          // 요청을 보낼 주소
-           const data = new FormData(formEl);  // 폼 데이터를 추출합니다.
+                const formEl = e.target;            // 이벤트가 발생한 요소
+                const url = formEl.action;          // 요청을 보낼 주소
+                const data = new FormData(formEl);  // 폼 데이터를 추출합니다.
 
-           formEl.reset();                     // 화면의 폼 필드를 초기화합니다.
+                formEl.reset();                     // 화면의 폼 필드를 초기화합니다.
 
-           try {
-               const response = await fetch(url, {method: 'POST', body: data});
-               const html = await response.text();
-               document.querySelector('#messages').innerHTML += html;
-           } catch (error) {
-               console.error(error);
-           }
-       });
-       </script>
+                try {
+                    const response = await fetch(url, {method: 'POST', body: data});
+                    const html = await response.text();
+                    document.querySelector('#messages').innerHTML += html;
+                } catch (error) {
+                    console.error(error);
+                }
+            });
+        </script>
+    {% endblock %}
 
 책임을 분리하세요.
 -------------------
