@@ -30,4 +30,3 @@ RAG/에이전트와 함께 여러분의 파이썬/장고 페이스메이커가 �
    consumers/index
    setup/index
    utils/index
-   courses/index

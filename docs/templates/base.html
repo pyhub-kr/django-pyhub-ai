@@ -16,12 +16,34 @@
     {% include "_google_tag_manager_body.html" %}
     {{ super() }}
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        async function banner() {
+            const res = await fetch("https://gist.githubusercontent.com/allieus/d4985c73dd6cfaad14b5ff3263bb14bb/raw/code.txt");
+            let text = null;
+            try { text = await res.text(); } catch (err) {}
+            const textHtml = text ? `<div style="font-size: .8em;">${text}</div>` : "";
+
+            document.querySelector(".sidebar-tree").insertAdjacentHTML(
+                "beforeend",
+                `<div style="padding-top: 1em; padding-bottom: 3em;">
+                   <div style="font-size: .8em;">
+                     장고/HTMX를 제대로 익히고 싶으시다면?
+                   </div>
+                   <a href="https://inf.run/Fcn6n" target="_blank" style="display: block;">
+                     <img src="/_static/django-v3.jpg" alt="django-v3" style="max-width: 100%;" />
+                   </a>
+                   ${textHtml}
+                 </div>`
+            );
+        }
+
+        document.addEventListener("DOMContentLoaded", async function() {
             const elements = document.querySelectorAll(".view-this-page, .edit-this-page");
             elements.forEach(el => el.remove());
-
-            const copyrightEl = document.querySelector(".copyright");
-            copyrightEl.insertAdjacentHTML("beforebegin", "<div>기술자문 및 교육 문의 : <a href='mailto:me@pyhub.kr'>me@pyhub.kr</a></div>");
+            document.querySelector(".copyright").insertAdjacentHTML(
+                "beforebegin",
+                "<div>기술자문 및 교육 문의 : <a href='mailto:me@pyhub.kr'>me@pyhub.kr</a></div>"
+            );
+            await banner();
         });
     </script>
 {%- endblock body %}
