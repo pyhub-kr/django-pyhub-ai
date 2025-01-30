@@ -34,7 +34,9 @@
 준비되셨나요? Let's go!
 
 .. toctree::
-   :maxdepth: 2
+    :maxdepth: 1
+    :caption: 목차
+    :numbered:
 
-   auth
-   conversation-messages
+    auth
+    conversation-messages

@@ -1,5 +1,5 @@
 ====================================
-[supabase] Postgre 서비스 활용하기
+[supabase] Postgres 서비스 활용하기
 ====================================
 
 `Supabase <https://supabase.com/>`_\는 오픈소스 기반의 Firebase 대체 서비스입니다.
@@ -22,9 +22,9 @@ Supabase 홈페이지에서 회원가입을 하시고, 로그인을 해주세요
 .. image:: ./assets/supabase-02-new-org.png
 
 프로젝트 생성 페이지에서 원하시는 이름을 지정하시고, 데이터베이스 암호를 입력해주세요.
-"Generator a password" 버튼을 클릭해서 자동 생성하면 생성된 암호를 알 수 없구요.
-데이터베이스 직접 연결에서 암호를 알 필요가 있으므로 복잡한 암호로 **직접** 입력해주세요.
-저장된 암호는 supabase 서비스에서 알려주지 않습니다.
+암호는 보안을 위해 "Generator a password" 버튼을 클릭해서 자동 생성하시길 권장드립니다.
+생성 후에 반드시 "Copy" 버튼을 클릭해서 암호를 복사해주세요.
+본 단계 이후에는 supabase 서비스에서 암호를 알려주지 않습니다.
 잃어버리셨다면 데이터베이스 설정 페이지에서 재설정하실 수 있습니다.
 
 Region은 가까운 지역을 선택하시고, "Create project" 버튼을 클릭해주세요.
@@ -52,23 +52,32 @@ supabase에서는 2가지 연결 방식을 지원합니다.
 
 .. code-block:: text
 
-    postgresql://postgres:[YOUR-PASSWORD]@db.apbkobhfnmcqqzqeeqss.supabase.co:5432/postgres
+    DATABASE_URL=postgresql://postgres.euvmdqdkpiseywirljvs:[YOUR-PASSWORD]@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres
 
 대시보드 상단의 "Connect" 버튼을 클릭하면 아래의 "Connect to your project" 창이 뜨며, 다음 3가지 연결 모드를 지원한다고 합니다.
-이 중에 ``Direct connection``\을 사용해보겠습니다.
+이 중에 ``Session pooler``\를 사용해보겠습니다.
 
 * ``Direct connection`` : 가상 머신이나 장기 실행 컨테이너와 같이 지속적이고 장기적인 연결이 필요한 애플리케이션에 이상적입니다.
+
+  - IPv4 호환 ❌
+
 * ``Transaction pooler`` : Postgres와의 각 상호작용이 짧고 독립적인 서버리스 함수와 같은 무상태 애플리케이션에 이상적입니다.
-* ``Session pooler`` : IPv4 네트워크를 통해 연결할 때 Direct Connection의 대안으로만 권장됩니다.
+
+  - IPv4 호환 ✅
+
+* ``Session pooler`` : **IPv4 네트워크**\를 통해 연결할 때 Direct Connection의 대안으로만 권장됩니다.
+
+  - IPv4 호환 ✅
+  - 가정에서는 IPv4 네트워크가 많으므로, 본 튜토리얼에서는 ``Session pooler``\를 사용해주세요.
 
 .. image:: ./assets/supabase-05-connection-string.png
 
-암호는 보안을 이유로 제공되지 않습니다. connection string을 메모장에 복사해둡니다.
+암호는 보안을 이유로 제공되지 않습니다. ``Session pooler`` 연결 모드의 ``connection string``\을 메모장에 복사해둡니다.
 
 .. code-block:: text
+    :caption: Session pooler
 
-    postgresql://postgres:[YOUR-PASSWORD]@db.eulifeisshortjvs.supabase.co:5432/postgres
-
+    DATABASE_URL=postgresql://postgres.euvmdqdkpiseywirljvs:[YOUR-PASSWORD]@aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres
 
 암호를 Connection string에 적용하기
 =============================================

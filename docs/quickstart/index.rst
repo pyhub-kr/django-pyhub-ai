@@ -11,10 +11,14 @@ LLM 챗봇 서비스를 빠르게 구축하고 싶으신가요? 아래 튜토리
 
 진행하시다가 궁금한 점이 있으시면 각 페이지 아래에 질문 남겨주세요. ;-)
 
-.. toctree::
-   :maxdepth: 2
+----
 
-   basic-setup
-   install-django-pyhub-ai
-   first-chat-bot
-   first-data-analyst-chat-bot
+.. toctree::
+    :maxdepth: 1
+    :caption: 목차
+    :numbered:
+
+    basic-setup
+    install-django-pyhub-ai
+    first-chat-bot
+    first-data-analyst-chat-bot

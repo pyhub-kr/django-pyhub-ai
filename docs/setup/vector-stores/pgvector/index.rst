@@ -7,8 +7,9 @@ pgvector 확장
 
 * 공식문서 : https://github.com/pgvector/pgvector
 
-pgvector는 PostgreSQL을 위한 벡터 유사도 검색 확장입니다.
-벡터 데이터 타입과 벡터 인덱싱을 지원하여 임베딩 벡터의 효율적인 저장과 검색이 가능합니다.
+pgvector는 PostgreSQL의 확장 기능으로, 벡터 데이터 타입과 벡터 인덱싱을 지원하여 임베딩 벡터를 효율적으로 저장하고 검색할 수 있습니다.
+PostgreSQL을 그대로 활용할 수 있어 별도의 추가 인프라 없이도 서비스에 손쉽게 적용할 수 있다는 장점이 있습니다.
+또한, Django는 PostgreSQL과 높은 호환성을 갖춘 프레임워크이므로, pgvector를 활용한 벡터 검색 기능을 쉽게 통합할 수 있습니다.
 
 주요 기능:
 
@@ -16,9 +17,6 @@ pgvector는 PostgreSQL을 위한 벡터 유사도 검색 확장입니다.
 * L2 거리, 내적(dot product), 코사인 유사도 연산 지원
 * 근사 최근접 이웃(ANN) 검색을 위한 IVFFlat 인덱스 지원
 * 대규모 벡터 데이터셋에서의 효율적인 유사도 검색
-
-이 확장을 사용하면 텍스트 임베딩, 이미지 특징 벡터 등 다양한 벡터 데이터를 PostgreSQL 데이터베이스에 저장하고
-효율적으로 검색할 수 있습니다.
 
 
 pgvector 지원되는 데이터베이스 만들기
@@ -28,7 +26,8 @@ pgvector 지원되는 데이터베이스 만들기
 이 환경변수를 장고 프로젝트 등의 애플리케이션에 주입에서 활용합니다.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    supabase
    docker
+   linux

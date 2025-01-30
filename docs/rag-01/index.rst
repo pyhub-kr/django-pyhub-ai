@@ -139,13 +139,17 @@ LLM이 이 세상 모든 지식을 다 알 수는 없습니다. 부족한 지식
 
    .. image:: ./django/assets/12-async-stream-02.gif
 
-.. toctree::
-   :maxdepth: 2
+----
 
-   overview
-   setup
-   prices
-   glance
-   typical/index
-   django/index
-   closing
+.. toctree::
+    :maxdepth: 1
+    :caption: 목차
+    :numbered:
+
+    overview
+    setup
+    prices
+    glance
+    typical/index
+    django/index
+    closing

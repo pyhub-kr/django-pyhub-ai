@@ -5,6 +5,15 @@ MySQL, MariaDB
     국내에서 가장 대중적인 관계형 데이터베이스
 
 
+데이터베이스 서버 설치하기
+====================================
+
+.. toctree::
+    :maxdepth: 1
+
+    docker
+
+
 필수 확장
 ==================
 
@@ -50,12 +59,3 @@ MySQL, MariaDB
 .. code-block:: text
 
     django.db.utils.OperationalError: (2003, "Can't connect to MySQL server on 'localhost' ([Errno 61] Connection refused)")
-
-
-----
-
-.. toctree::
-    :maxdepth: 2
-    :caption: 문서 목록
-
-    docker

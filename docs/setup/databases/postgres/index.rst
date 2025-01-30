@@ -5,6 +5,17 @@ Postgres
     국내외에서 인기가 점점 높아지고 있는 관계형 데이터베이스이며, 뛰어난 확장성이 강점.
 
 
+데이터베이스 서버 설치하기
+====================================
+
+.. toctree::
+    :maxdepth: 1
+
+    supabase
+    docker
+    linux
+
+
 장고에서 지원하는 PostgreSQL 만의 고급 기능
 ==============================================
 
@@ -69,12 +80,3 @@ settings
         Is the server running on that host and accepting TCP/IP connections?
     connection to server at "localhost" (127.0.0.1), port 5432 failed: Connection refused
         Is the server running on that host and accepting TCP/IP connections?
-
-
-----
-
-.. toctree::
-    :maxdepth: 2
-
-    supabase
-    docker

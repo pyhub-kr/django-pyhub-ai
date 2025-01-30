@@ -1,10 +1,10 @@
 =============================================
-[docker] Postgre 서버 구동하기
+[docker] Postgres 서버 구동하기
 =============================================
 
 Docker Hub에서 `postgres 공식 이미지 <https://hub.docker.com/_/postgres>`_\를 지원합니다.
 `지원 Tags <https://hub.docker.com/_/postgres/tags>`_\를 참고해서 원하는 버전으로 설치해주세요.
-아래에서는 2025년 1월 기준으로 최신버전 ``17.2``\를 사용합니다.
+아래에서는 ``16`` 버전을 사용하겠습니다.
 
 인증 정보로서 아래 3가지 환경변수를 설정했구요.
 추가적인 환경변수는 `공식문서의 Environment Variables 섹션 <https://hub.docker.com/_/postgres>`_\을 참고해주세요.
@@ -36,7 +36,7 @@ Postgres는 디폴트 포트 ``5432``\를 사용합니다. 호스트 머신에�
                 -p 5432:5432 \
                 -v pg_data:/var/lib/postgresql/data \
                 -d \
-                postgres:17.2
+                postgres:16
 
     .. tab-item:: powershell
 
@@ -50,7 +50,7 @@ Postgres는 디폴트 포트 ``5432``\를 사용합니다. 호스트 머신에�
                 -p 5432:5432 `
                 -v pg_data:/var/lib/postgresql/data `
                 -d `
-                postgres:17.2
+                postgres:16
 
     .. tab-item:: Docker Compose
 
@@ -59,7 +59,7 @@ Postgres는 디폴트 포트 ``5432``\를 사용합니다. 호스트 머신에�
 
             services:
               pg_db:
-                image: "postgres:17.2"
+                image: "postgres:16"
                 environment:
                   POSTGRES_USER: djangouser
                   POSTGRES_PASSWORD: djangopw
