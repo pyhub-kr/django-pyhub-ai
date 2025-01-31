@@ -48,5 +48,12 @@ figcaption {
 
 .price-table td:nth-child(2),
 .price-table td:nth-child(3) {
-    text-align: right;
+  text-align: right;
+}
+
+@view-transition {
+  navigation: auto;
+}
+::view-transition-group(root) {
+  animation-duration: 0.5s;
 }
