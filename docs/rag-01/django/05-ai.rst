@@ -12,6 +12,59 @@ OpenAI LLM을 활용하여 AI 응답 생성
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/91eb633465e829892b8b85a29a40c8d1880f7753
 
 
+.. raw:: html
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+
+----
+
+본 라이브 #3 부터 실습을 시작하신다면?
+-----------------------------------------
+
+먼저 직전 실습까지의 `프로젝트 코드를 다운로드 <https://github.com/pyhub-kr/django-llm-chat-proj/archive/c21bacf0e48a310877b89da2b3bcf27a03cd5683.zip>`_\해주세요.
+
+``manage.py`` 파일이 있는 프로젝트 루트 경로에서 ``.env`` 파일을 생성하고, 아래와 같이 ``OPENAI_API_KEY`` 환경 변수를 설정해주세요.
+
+.. code-block:: text
+    :caption: ``.env`` 파일에 ``OPENAI_API_KEY`` 환경 변수 설정
+
+    OPENAI_API_KEY=sk-...
+
+편하신 방법으로 가상환경을 생성해주시고, ``requirements.txt`` 파일에 명시된 라이브러리를 설치해주세요.
+
+.. code-block:: shell
+
+    # uv 유틸리티 설치
+    python -m pip install --upgrade uv
+
+    # uv를 활용한 가상환경 생성 및 라이브러리 설치
+    uv venv
+    uv pip install -r requirements.txt
+
+데이터베이스 마이그레이션을 진행하고, 관리자 계정을 생성하시고, 개발서버를 구동해주세요.
+
+.. code-block:: text
+
+    uv run python manage.py migrate
+    uv run python manage.py createsuperuser
+    uv run python manage.py runserver 0.0.0.0:8000
+
+브라우저로 http://localhost:8000 에 접속하시면, http://localhost:8000/chat/ 페이지로 자동 이동합니다.
+채팅창에 hello 라고 입력하시면 "입력하신 메시지는 5글자입니다." 라는 응답을 받으시게 됩니다.
+
+이제 실습 준비 끝입니다.
+
+VSCode, PyCharm Professional 등 편하신 에디터로 프로젝트 루트 경로를 열어주세요.
+
+이제 시작해보실까요? 😉
+
 미리보기
 --------
 

@@ -46,8 +46,8 @@ figcaption {
   font-size: 1.2rem;
 }
 
-.price-table td:nth-child(2),
-.price-table td:nth-child(3) {
+.price-table td:not(:first-child),
+.align-right td:not(:first-child) {
   text-align: right;
 }
 
@@ -56,4 +56,20 @@ figcaption {
 }
 ::view-transition-group(root) {
   animation-duration: 0.5s;
+}
+
+.table-wrapper.container {
+  margin: 1rem 0;
+}
+
+.table-wrapper table {
+  width: 100%;
+  margin: 0;
+}
+
+.table-wrapper table caption {
+  caption-side: bottom;
+  text-align: left;
+  padding: 0.4em 0 0 0;
+  font-style: italic;
 }
