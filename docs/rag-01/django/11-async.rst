@@ -11,9 +11,8 @@
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/d06a5a7a1ea679e20fb768de2b6c5586fe535d0d
 
-.. raw:: html
 
-    1시간 39분 16초부터 1시간 53분 29초까지 보시면 됩니다.
+.. raw:: html
 
     <div class="video-container">
         <iframe
@@ -23,7 +22,8 @@
         </iframe>
     </div>
 
-----
+    <small>1시간 39분 16초부터 1시간 53분 29초까지 보시면 됩니다.</small>
+
 
 미리보기
 ------------------

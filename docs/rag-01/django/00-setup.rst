@@ -1,19 +1,19 @@
 프로젝트 다운로드 및 초기 구동
 ================================
 
-본 페이지는 1:25:05 지점부터 1:46:38 지점까지 보시면 됩니다.
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/9ayknWI-VcI?start=5105"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/9ayknWI-VcI?start=5105"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
+    <small>본 페이지는 1:25:05 지점부터 1:46:38 지점까지 보시면 됩니다.</small>
+
 
 프로젝트 다운로드
 -----------------

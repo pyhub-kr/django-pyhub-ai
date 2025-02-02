@@ -11,9 +11,8 @@ tailwindcss/daisyui를 활용한 스타일링
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/d338364896984aa0a0e535926fea77d60c88347d
 
-.. raw:: html
 
-    32분 41초부터 45분 36초까지 보시면 됩니다.
+.. raw:: html
 
     <div class="video-container">
         <iframe
@@ -23,7 +22,8 @@ tailwindcss/daisyui를 활용한 스타일링
         </iframe>
     </div>
 
-----
+    <small>32분 41초부터 45분 36초까지 보시면 됩니다.</small>
+
 
 미리보기
 --------

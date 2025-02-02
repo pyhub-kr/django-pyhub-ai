@@ -1,21 +1,20 @@
 4단계. 지식 저장 (Store)
 ========================
 
-본 페이지는 45:42 지점부터 59:33 지점까지 보시면 됩니다.
+    벡터화된 데이터를 효율적으로 관리하고 검색할 수 있도록 저장하는 과정
+
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/9ayknWI-VcI?start=2742"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/9ayknWI-VcI?start=2742"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
-
-  벡터화된 데이터를 효율적으로 관리하고 검색할 수 있도록 저장하는 과정
+    <small>본 페이지는 45:42 지점부터 59:33 지점까지 보시면 됩니다.</small>
 
 
 필요성

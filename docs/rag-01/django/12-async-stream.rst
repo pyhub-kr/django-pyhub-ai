@@ -11,9 +11,8 @@ LLM 스트림 응답을 실시간으로 보여주기
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/615b26b9c849e93ef97d946d4f7f3aabc95233cd
 
-.. raw:: html
 
-    1시간 53분 30초부터 2시간 8분 16초까지 보시면 됩니다.
+.. raw:: html
 
     <div class="video-container">
         <iframe
@@ -23,7 +22,8 @@ LLM 스트림 응답을 실시간으로 보여주기
         </iframe>
     </div>
 
-----
+    <small>1시간 53분 30초부터 2시간 8분 16초까지 보시면 됩니다.</small>
+
 
 미리보기
 ------------------

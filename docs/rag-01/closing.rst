@@ -3,8 +3,6 @@
 
 .. raw:: html
 
-    2시간 8분 17초 부터 보시면 됩니다.
-
     <div class="video-container">
         <iframe
             src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=7697"
@@ -12,6 +10,8 @@
             allowfullscreen>
         </iframe>
     </div>
+
+    <small>2시간 8분 17초 부터 보시면 됩니다.</small>
 
 ----
 

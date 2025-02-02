@@ -1,17 +1,19 @@
 장고로 RAG 웹 채팅 만들기 (장고 초보)
 ==========================================
 
-본 페이지는 1:19:53 지점부터 1:24:58 지점까지 보시면 됩니다.
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/9ayknWI-VcI?start=4793"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/9ayknWI-VcI?start=4793"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <small>본 페이지는 1:19:53 지점부터 1:24:58 지점까지 보시면 됩니다.</small>
+
 
 ----
 

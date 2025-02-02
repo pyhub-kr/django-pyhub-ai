@@ -14,17 +14,16 @@ OpenAI LLM을 활용하여 AI 응답 생성
 
 .. raw:: html
 
-    8분 37초부터 32분 40초까지 보시면 됩니다.
-
     <div class="video-container">
         <iframe
-            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=517"
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?&start=517"
             frameborder="0"
             allowfullscreen>
         </iframe>
     </div>
 
-----
+    <small>8분 37초부터 32분 40초까지 보시면 됩니다.</small>
+
 
 본 라이브 #3 부터 실습을 시작하신다면?
 -----------------------------------------

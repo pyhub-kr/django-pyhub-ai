@@ -11,9 +11,8 @@ ColorLog
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/e53acc7e1a68eb148f30f48857b27005286602cd
 
-.. raw:: html
 
-    1시간 20분 51초부터 1시간 26분 35초까지 보시면 됩니다.
+.. raw:: html
 
     <div class="video-container">
         <iframe
@@ -23,7 +22,8 @@ ColorLog
         </iframe>
     </div>
 
-----
+    <small>1시간 20분 51초부터 1시간 26분 35초까지 보시면 됩니다.</small>
+
 
 미리보기
 --------

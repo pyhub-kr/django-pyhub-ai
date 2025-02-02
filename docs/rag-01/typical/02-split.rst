@@ -1,21 +1,24 @@
 2단계. 지식을 쪼개기 (Split)
 ============================
 
-본 페이지는 5:50 지점부터 22:58 지점까지 보시면 됩니다.
+  문서를 적절한 크기로 분할하여, 각 조각이 독립적인 의미를 가지도록 조정하는 과정
+
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/9ayknWI-VcI?start=350"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/9ayknWI-VcI?start=350"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
+    <small>본 페이지는 5:50 지점부터 22:58 지점까지 보시면 됩니다.</small>
 
-  문서를 적절한 크기로 분할하여, 각 조각이 독립적인 의미를 가지도록 조정하는 과정
+
+필요성
+---------
 
 :doc:`01-load` 단계에서 생성된 문서를 문서의 포맷은 유지하면서 쪼개고 정리해서 **적절한 크기의 문서**\들로 재구성하는 단계입니다.
 
@@ -23,10 +26,6 @@
    :alt: (RAG) Indexing
 
    출처 : `랭체인 공식 튜토리얼: Text Splitters <https://python.langchain.com/docs/concepts/text_splitters/>`_
-
-
-필요성
----------
 
 :doc:`03-embed` 단계에서는 문서 단위로 문자열을 벡터화합니다. 하지만 하나의 문서에 여러 주제가 혼합되어있을 경우 벡터도 여러 주제를 반영하게 됩니다.
 그러면 특정 주제에 대한 정확도가 떨어질 수 있으며, 원하는 정보와 무관한 내용까지 (환각) 포함될 가능성이 높아집니다.

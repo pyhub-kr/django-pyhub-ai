@@ -40,7 +40,7 @@
           {% if gitstamp %}
             const gitstamp = "{{ gitstamp }}";
             const el = document.querySelector("article[role=main] h1:first-child");
-            const html = `<div style="text-align: right; margin-top: -0.5em;"><small>마지막 업데이트: ${gitstamp}</small></div>`;
+            const html = `<div style="text-align: right; margin-top: -0.5em; margin-bottom: 1em;"><small>마지막 업데이트: ${gitstamp}</small></div>`;
             el.insertAdjacentHTML("afterend", html);
           {% endif %}
         }

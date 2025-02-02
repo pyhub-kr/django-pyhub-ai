@@ -1,26 +1,25 @@
 LLM은 어떤 질문이든 답변을 할려고 노력합니다.
 ==============================================
 
-본 페이지는 14:00 지점부터 49:40 지점까지 보시면 됩니다.
-
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=840"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=840"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
+    <small>본 페이지는 14:00 지점부터 49:40 지점까지 보시면 됩니다.</small>
+
+
+LLM은 몰라도 어떻게든 짜내어 답변
+------------------------------------------
 
 LLM은 가지고 있는 지식으로만, 어떻게든 답변을 합니다.
 
 .. image:: ./assets/llm-brain.png
-
-LLM은 몰라도 어떻게든 짜내어 답변
-------------------------------------------
 
 LLM은 검색엔진이 아닙니다. 전 세계 모든 지식을 알고 있지 못합니다. 알고 있는 지식 범위내에서 어떻게든 짜내어 답변을 합니다.
 사실과 의견을 구분해달라고 요청하거나 모르는 건 모른다고 대답하라고 요청하지 않는다면,

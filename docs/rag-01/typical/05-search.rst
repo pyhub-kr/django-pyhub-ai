@@ -3,19 +3,19 @@
 
   저장된 지식을 검색하여 LLM에게 전달하고 최종 응답을 생성하는 과정
 
-본 페이지는 59:33 지점부터 1:13:10 지점까지 보시면 됩니다.
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/9ayknWI-VcI?start=3573"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/9ayknWI-VcI?start=3573"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
+    <small>본 페이지는 59:33 지점부터 1:13:10 지점까지 보시면 됩니다.</small>
+
 
 필요성
 ----------

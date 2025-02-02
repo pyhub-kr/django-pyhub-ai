@@ -15,9 +15,8 @@ AI RAG 응답 생성
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/dac2dd355cfe152fcba08eaa1285ed6ef03d3b68
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/6f0426c43f76bdee0cd9dce1cca37c7c9d3746ea
 
-.. raw:: html
 
-    54분 33초부터 1시간 20분 50초까지 보시면 됩니다.
+.. raw:: html
 
     <div class="video-container">
         <iframe
@@ -27,7 +26,8 @@ AI RAG 응답 생성
         </iframe>
     </div>
 
-----
+    <small>54분 33초부터 1시간 20분 50초까지 보시면 됩니다.</small>
+
 
 미리보기
 --------

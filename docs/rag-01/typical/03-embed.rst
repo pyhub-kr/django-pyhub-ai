@@ -1,21 +1,20 @@
 3단계. 지식 표현 (Embed)
 =======================================
 
-본 페이지는 22:58 지점부터 45:42 지점까지 보시면 됩니다.
+  분할된 텍스트를 벡터로 변환하여 의미적 유사도를 측정할 수 있도록 준비하는 과정
+
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/9ayknWI-VcI?start=1378"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/9ayknWI-VcI?start=1378"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
-
-  분할된 텍스트를 벡터로 변환하여 의미적 유사도를 측정할 수 있도록 준비하는 과정
+    <small>본 페이지는 22:58 지점부터 45:42 지점까지 보시면 됩니다.</small>
 
 
 필요성

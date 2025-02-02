@@ -6,19 +6,19 @@
 
    많은 응원 부탁드립니다. 😉
 
-본 페이지는 1:13:10 지점부터 1:19:51 지점까지 보시면 됩니다.
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/9ayknWI-VcI?start=4390"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/9ayknWI-VcI?start=4390"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
+    <small>본 페이지는 1:13:10 지점부터 1:19:51 지점까지 보시면 됩니다.</small>
+
 
 지식 Load 및 Split
 -----------------------------

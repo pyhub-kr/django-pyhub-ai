@@ -11,9 +11,8 @@ AI 응답 메시지에 markdown 변환 지원
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/fd4d9109910c979e9fadc16b30ebc1518edbc9e1
 
-.. raw:: html
 
-    1시간 26분 36초부터 1시간 39분 15초까지 보시면 됩니다.
+.. raw:: html
 
     <div class="video-container">
         <iframe
@@ -23,7 +22,8 @@ AI 응답 메시지에 markdown 변환 지원
         </iframe>
     </div>
 
-----
+    <small>1시간 26분 36초부터 1시간 39분 15초까지 보시면 됩니다.</small>
+
 
 미리보기
 --------

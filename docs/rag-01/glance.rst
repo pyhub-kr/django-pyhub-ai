@@ -1,19 +1,19 @@
 대화 시작 시에 한 번에 모든 지식을 제공하기
 ===========================================
 
-본 페이지는 1:01:21 지점부터 1:16:14 지점까지 보시면 됩니다.
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=3681"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=3681"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
+    <small>본 페이지는 1:01:21 지점부터 1:16:14 지점까지 보시면 됩니다.</small>
+
 
 OpenAI LLM에게 지식 제공없이 그냥 물어봅시다.
 ----------------------------------------------------

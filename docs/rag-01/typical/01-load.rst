@@ -1,21 +1,24 @@
 1단계. 지식 변환 (Load)
 ============================
 
-본 페이지는 1:29:10 지점부터 본 영상 끝까지 보시면 됩니다. (라이브 #1 마지막 페이지)
+  원본 데이터를 텍스트로 변환하고, 불필요한 데이터를 제거하고, 검색과 벡터화에 적합한 형태로 정제하는 과정
+
 
 .. raw:: html
 
-  <div class="video-container">
-    <iframe
-        src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=5350"
-        frameborder="0"
-        allowfullscreen>
-    </iframe>
-  </div>
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/aI-Dt4wSgLY?start=5350"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
 
-----
+    <small>본 페이지는 1:29:10 지점부터 본 영상 끝까지 보시면 됩니다. (라이브 #1 마지막 페이지)</small>
 
-  원본 데이터를 텍스트로 변환하고, 불필요한 데이터를 제거하고, 검색과 벡터화에 적합한 형태로 정제하는 과정
+
+필요성
+------
 
 이 단계에서는 PDF/TXT/HTML 등의 문서 포맷에 맞는 라이브러리를 사용하여, 문서를 열고 메타 데이터와 내용을 읽어서 텍스트로 변환하신 후에,
 ``List[Document]`` 객체로 변환하는 단계입니다.
@@ -33,10 +36,6 @@
    * `마크다운 데이터 <https://python.langchain.com/docs/how_to/document_loader_markdown/>`_
    * `마이크로소프트 오피스 데이터 <https://python.langchain.com/docs/how_to/document_loader_office_file/>`_
    * `커스텀 문서 로더 <https://python.langchain.com/docs/how_to/document_loader_custom/>`_
-
-
-필요성
-------
 
 원본 파일은 그대로 검색에 사용할 수 없으며, RAG 시스템이 이해할 수 있는 형태 (텍스트)로 변환하는 과정이 필요합니다.
 변환 과정에서 구조적인 노이즈, 형식, 특수문자 등을 제거할 수도 있습니다.

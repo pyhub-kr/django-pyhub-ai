@@ -1,18 +1,24 @@
+===========================================
 RAG #01. RAG 밑바닥부터 웹 채팅까지
 ===========================================
 
+.. admonition:: 본 튜토리얼이 RAG와 웹서비스 개발에 관심 있는 분들께 도움이 되셨으면 합니다. 😉
+   :class: important
 
-.. tip::
+   본 튜토리얼을 수월하게 진행하시기 위해, 다음 선수 지식이 필요합니다.
 
-    2025.2.1. (토) 오후 9시에 `세번째 튜토리얼 따라하기 라이브 <https://youtube.com/live/Lzy9F_Hv4z8>`_\를 진행합니다. 함께 해요. ;-)
+   #. 파이썬의 문자열/리스트, 함수, 클래스, Callable Object, Type Hint, async/await 문법
+   #. OpenAI LLM API를 파이썬 코드로 직접 호출해본 경험
+
+
+라이브 영상
+==================
 
 .. grid:: 2
 
     .. grid-item::
 
         .. raw:: html
-
-            14분부터 보시면 됩니다.
 
             <div class="video-container">
                 <iframe
@@ -22,11 +28,17 @@ RAG #01. RAG 밑바닥부터 웹 채팅까지
                 </iframe>
             </div>
 
+            <small>14분부터 보시면 됩니다.</small>
+
+    .. grid-item::
+
+        현재 페이지부터 시작합니다.
+
+        RAG를 파이썬 코드로 직접 구현해보며, RAG를 완벽하게 이해해봅시다.
+
     .. grid-item::
 
         .. raw:: html
-
-            5:50 지점부터 보시면 됩니다.
 
             <div class="video-container">
                 <iframe
@@ -36,15 +48,38 @@ RAG #01. RAG 밑바닥부터 웹 채팅까지
                 </iframe>
             </div>
 
-----
+            <small>5분 50초부터 보시면 됩니다.</small>
 
-.. admonition:: 본 튜토리얼이 RAG와 웹서비스 개발에 관심 있는 분들께 도움이 되셨으면 합니다. 😉
-   :class: important
+    .. grid-item::
 
-   본 튜토리얼을 수월하게 진행하시기 위해, 다음 선수 지식이 필요합니다.
+        :doc:`/rag-01/typical/02-split` 페이지부터 시작합니다.
 
-   #. 파이썬의 문자열/리스트, 함수, 클래스, Callable Object, Type Hint, async/await 문법
-   #. OpenAI LLM API를 파이썬 코드로 직접 호출해본 경험
+        HTML Form + HTMX 기반으로 페이지 전환없이 채팅 메시지를 처리하는 방법을 다룹니다.
+
+    .. grid-item::
+
+        .. raw:: html
+
+            <div class="video-container">
+                <iframe
+                    src="https://www.youtube.com/embed/Lzy9F_Hv4z8?start=517"
+                    frameborder="0"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <small>8분 37초부터 보시면 됩니다.</small>
+
+    .. grid-item::
+
+        :doc:`/rag-01/django/05-ai` 페이지부터 시작합니다.
+
+        RAG와 장고 채팅 웹서비스와의 통합을 다룹니다.
+
+
+
+튜토리얼 시작
+=================
 
 LLM(Large Language Model)은 대규모 텍스트 데이터로 학습된 인공지능 모델입니다. 자연어를 이해하고 생성할 수 있는 능력을 가지고 있어, 질문에 대한 답변, 텍스트 요약, 번역, 코드 작성 등 다양한 작업을 수행할 수 있습니다.
 
