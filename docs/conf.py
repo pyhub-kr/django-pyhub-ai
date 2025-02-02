@@ -37,6 +37,7 @@ extensions = [
     "sphinx_togglebutton",
     "sphinxcontrib.mermaid",
     "sphinx_gitstamp",
+    "sphinxext.opengraph",
     "notfound.extension",
     "myst_parser",
 ]
@@ -226,3 +227,17 @@ sitemap_excludes = [
 
 # https://github.com/jdillard/sphinx-gitstamp
 gitstamp_fmt = "%Y-%m-%d %H:%M %z"
+
+
+# https://sphinxext-opengraph.readthedocs.io/en/latest/
+ogp_site_url = "https://ai.pyhub.kr"
+ogp_type = "article"
+ogp_custom_meta_tags = [
+    #  og:url 대신 해당 페이지의 URL을 직접 사용하도록 설정
+    '<meta property="og:ignore_canonical" content="true" />',
+]
+ogp_enable_meta_description = True
+# https://sphinxext-opengraph.readthedocs.io/en/latest/socialcards.html
+ogp_social_cards = {
+    "enable": False,
+}

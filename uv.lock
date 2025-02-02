@@ -819,6 +819,7 @@ docs = [
     { name = "sphinx-sitemap" },
     { name = "sphinx-togglebutton" },
     { name = "sphinxcontrib-mermaid" },
+    { name = "sphinxext-opengraph" },
 ]
 test = [
     { name = "django-debug-toolbar" },
@@ -877,6 +878,7 @@ requires-dist = [
     { name = "sphinx-sitemap", marker = "extra == 'docs'" },
     { name = "sphinx-togglebutton", marker = "extra == 'docs'", specifier = "~=0.3.2" },
     { name = "sphinxcontrib-mermaid", marker = "extra == 'docs'" },
+    { name = "sphinxext-opengraph", marker = "extra == 'docs'" },
     { name = "tabulate" },
     { name = "tenacity" },
     { name = "twine", marker = "extra == 'build'" },
@@ -3331,6 +3333,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/3b/44/6716b257b0aa6bfd51a1b31665d1c205fb12cb5ad56de752dfa15657de2f/sphinxcontrib_serializinghtml-2.0.0.tar.gz", hash = "sha256:e9d912827f872c029017a53f0ef2180b327c3f7fd23c87229f7a8e8b70031d4d", size = 16080 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/52/a7/d2782e4e3f77c8450f727ba74a8f12756d5ba823d81b941f1b04da9d033a/sphinxcontrib_serializinghtml-2.0.0-py3-none-any.whl", hash = "sha256:6e2cb0eef194e10c27ec0023bfeb25badbbb5868244cf5bc5bdc04e4464bf331", size = 92072 },
+]
+
+[[package]]
+name = "sphinxext-opengraph"
+version = "0.9.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1c/5b/4302fe33c88dbfb572e2c1cad26735164c23f16fb8dba94ddb1867d0ef06/sphinxext-opengraph-0.9.1.tar.gz", hash = "sha256:dd2868a1e7c9497977fbbf44cc0844a42af39ca65fe1bb0272518af225d06fc5", size = 1034511 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/92/0a/970b80b4fa1feeb6deb6f2e22d4cb14e388b27b315a1afdb9db930ff91a4/sphinxext_opengraph-0.9.1-py3-none-any.whl", hash = "sha256:b3b230cc6a5b5189139df937f0d9c7b23c7c204493b22646273687969dcb760e", size = 1005241 },
 ]
 
 [[package]]
