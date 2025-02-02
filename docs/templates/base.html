@@ -36,6 +36,15 @@
             );
         }
 
+        async function addGitstamp() {
+          {% if gitstamp %}
+            const gitstamp = "{{ gitstamp }}";
+            const el = document.querySelector("article[role=main] h1:first-child");
+            const html = `<div style="text-align: right; margin-top: -0.5em;"><small>마지막 업데이트: ${gitstamp}</small></div>`;
+            el.insertAdjacentHTML("afterend", html);
+          {% endif %}
+        }
+
         document.addEventListener("DOMContentLoaded", async function() {
             const elements = document.querySelectorAll(".view-this-page, .edit-this-page");
             elements.forEach(el => el.remove());
@@ -44,6 +53,7 @@
                 "<div>기술자문 및 교육 문의 : <a href='mailto:me@pyhub.kr'>me@pyhub.kr</a></div>"
             );
             await banner();
+            await addGitstamp();
         });
     </script>
 {%- endblock body %}

@@ -36,6 +36,7 @@ extensions = [
     "sphinx_sitemap",
     "sphinx_togglebutton",
     "sphinxcontrib.mermaid",
+    "sphinx_gitstamp",
     "notfound.extension",
     "myst_parser",
 ]
@@ -68,6 +69,9 @@ if is_enable_comments:
             "crossorigin": "anonymous",
         }
     }
+
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-language
+language = "ko"
 
 # Theme settings
 # https://pydata-sphinx-theme.readthedocs.io
@@ -218,3 +222,7 @@ sitemap_excludes = [
     "search.html",
     "genindex.html",
 ]
+
+
+# https://github.com/jdillard/sphinx-gitstamp
+gitstamp_fmt = "%Y-%m-%d %H:%M %z"
