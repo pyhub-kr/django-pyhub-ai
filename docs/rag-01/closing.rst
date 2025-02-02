@@ -1,6 +1,20 @@
 감사합니다. 🤩
 ==============
 
+.. raw:: html
+
+    2시간 8분 17초 부터 보시면 됩니다.
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=7697"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+----
+
 :doc:`index` 를 살펴봐주시고, 이렇게 끝까지 함께해 주셔서 진심으로 감사드립니다. 🥳
 
 이번 튜토리얼을 통해 파이썬/장고와 RAG 웹 서비스에 대한 이해도가 한층 높아지셨길 바랍니다.

@@ -11,6 +11,19 @@ ColorLog
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/e53acc7e1a68eb148f30f48857b27005286602cd
 
+.. raw:: html
+
+    1시간 20분 51초부터 1시간 26분 35초까지 보시면 됩니다.
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=4851"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+----
 
 미리보기
 --------
@@ -26,9 +39,9 @@ ColorLog
 파일에 저장하거나 메일로 보내도록 설정할 수도 있습니다. 그리고 로그가 필요없을 때에는 해당 로그 처리를 끄는 것도 가능합니다.
 
 .. figure:: ./assets/09-colorlog.png
-   :alt: 09-colorlog.png
+    :alt: 09-colorlog.png
 
-   로그에 색상 적용된 서버 로그 화면
+    로그에 색상 적용된 서버 로그 화면
 
 
 settings.LOGGING
@@ -37,19 +50,19 @@ settings.LOGGING
 색상 지원을 위해 ``colorlog`` 라이브러리를 설치해야 합니다.
 
 .. code-block:: text
-   :caption: requirement.txt 파일에 추가
+    :caption: requirement.txt 파일에 추가
 
-   colorlog
+    colorlog
 
 .. code-block:: bash
 
-   uv pip install colorlog 
+    uv pip install colorlog 
 
 ``mysite/settings.py`` 파일에 로깅 설정을 아래와 같이 추가합니다.
 ``chat`` 로거는 ``settings.DEBUG = True`` 상황에서만 ``debug_console`` 핸들러에서 ``color`` 포맷터를 통해 출력됩니다.
 
 .. code-block:: python
-   :caption: ``mysite/settings.py``
+    :caption: ``mysite/settings.py``
 
     # ...
 
@@ -110,7 +123,7 @@ settings.LOGGING
 ``print(...)`` 함수를 사용하는 모든 코드를 찾아서 아래와 같이 ``logger.debug(...)`` 함수를 통해 로깅하도록 변경합니다.
 
 .. code-block:: python
-   :caption: ``chat/ai.py``
+    :caption: ``chat/ai.py``
 
     import logging
     logger = logging.getLogger(__name__)
@@ -127,7 +140,7 @@ settings.LOGGING
 
 
 .. code-block:: python
-   :caption: ``chat/rag.py``
+    :caption: ``chat/rag.py``
 
     import logging
     logger = logging.getLogger(__name__)
@@ -139,18 +152,18 @@ settings.LOGGING
 
 
 .. admonition:: 로깅 인자를 직접 조합하지 마세요.
-   :class: warning
+    :class: warning
 
-   .. code-block:: python
+    .. code-block:: python
 
-       # ❌ 올바르지 않은 예
-       logger.debug("Loaded vector store %s items" % len(self.vector_store))
+        # ❌ 올바르지 않은 예
+        logger.debug("Loaded vector store %s items" % len(self.vector_store))
 
-       # ✅ 올바른 예
-       logger.debug("Loaded vector store %s items", len(self.vector_store), extra={})
+        # ✅ 올바른 예
+        logger.debug("Loaded vector store %s items", len(self.vector_store), extra={})
 
-   로깅 템플릿과 인자를 분리하면
+    로깅 템플릿과 인자를 분리하면
 
-   * 다국어 지원 : 메시지 본문만 손쉽게 다른 언어로 교체하거나 번역할 수 있습니다.
-   * 메시지와 데이터를 분리해두면, 향후 로그 파싱 및 분석 툴에서 메타정보나 통계치로 활용하기 유리합니다.
-   * 민감 정보가 포함된 로그의 경우 핸들러를 통해 안전하게 처리하여 잘못 출력하는 경우를 방지할 수 있습니다.
+    * 다국어 지원 : 메시지 본문만 손쉽게 다른 언어로 교체하거나 번역할 수 있습니다.
+    * 메시지와 데이터를 분리해두면, 향후 로그 파싱 및 분석 툴에서 메타정보나 통계치로 활용하기 유리합니다.
+    * 민감 정보가 포함된 로그의 경우 핸들러를 통해 안전하게 처리하여 잘못 출력하는 경우를 방지할 수 있습니다.

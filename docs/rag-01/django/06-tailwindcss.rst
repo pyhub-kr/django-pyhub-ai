@@ -11,6 +11,19 @@ tailwindcss/daisyui를 활용한 스타일링
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/d338364896984aa0a0e535926fea77d60c88347d
 
+.. raw:: html
+
+    32분 41초부터 45분 36초까지 보시면 됩니다.
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=1961"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+----
 
 미리보기
 --------
@@ -72,9 +85,9 @@ CDN 버전은 프로젝트 내에서 사용하지 않는 스타일과 컴포넌�
 (참고: :doc:`/django/tailwind/index`)
 
 .. code-block:: html+django
-   :caption: templates/base.html
-   :linenos:
-   :emphasize-lines: 9-10,13,14-34,36,39
+    :caption: templates/base.html
+    :linenos:
+    :emphasize-lines: 9-10,13,14-34,36,39
 
     <!doctype html>
     <html lang="ko">
@@ -126,34 +139,34 @@ CDN 버전은 프로젝트 내에서 사용하지 않는 스타일과 컴포넌�
 채팅 화면에서도 tailwindcss를 적용해서 이렇게 간결하게 스타일링을 할 수 있습니다.
 
 .. code-block:: html+django
-   :caption: chat/templates/chat/index.html
-   :linenos:
-   :emphasize-lines: 5,7,18
+    :caption: chat/templates/chat/index.html
+    :linenos:
+    :emphasize-lines: 5,7,18
 
-   {% extends "base.html" %}
+    {% extends "base.html" %}
 
-   {% block main %}
+    {% block main %}
 
-       <div class="flex flex-col h-[calc(100vh-4rem)] w-full p-2">
-           <div id="messages"
+        <div class="flex flex-col h-[calc(100vh-4rem)] w-full p-2">
+            <div id="messages"
                 class="flex-1 overflow-y-auto"
                 hx-on::after-settle="this.scrollTo({ top: this.scrollHeight, behavior: 'smooth' });">
-           </div>
+            </div>
 
-           <form id="form"
-                 hx-post="{% url 'chat:reply' %}"
-                 hx-target="#messages"
-                 hx-swap="beforeend"
-                 hx-on::after-request="this.reset();">
-                 {% csrf_token %}
-                 <input type="text" name="message"
+            <form id="form"
+                    hx-post="{% url 'chat:reply' %}"
+                    hx-target="#messages"
+                    hx-swap="beforeend"
+                    hx-on::after-request="this.reset();">
+                    {% csrf_token %}
+                    <input type="text" name="message"
                     class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500"
                     autocomplete="off"
                     placeholder="메시지를 입력하세요..."/>
-           </form>
-       </div>
+            </form>
+        </div>
 
-   {% endblock %}
+    {% endblock %}
 
 
 AI 응답에 ``daisyUI`` 컴포넌트 적용
@@ -164,58 +177,58 @@ AI 응답에서는 ``daisyUI`` 의 `Chat bubble <https://daisyui.com/components/
 
 .. tab-set::
 
-   .. tab-item:: View에서 직접 HTML 문자열 반환
+    .. tab-item:: View에서 직접 HTML 문자열 반환
 
-      View에서의 HTML 문자열 조합은 간단한 값 조합이라면 충분하지만,
-      조금만 복잡해져도 대응이 어렵고 유지보수가 어렵습니다.
-      더군다나 파이썬 코드 내에서 HTML 코드는 파이썬 문자열로서 취급되기에 문법 강조도 안 되어 코드 읽기도 어렵습니다.
-      특별한 경우가 아니라면 장고 템플릿 시스템을 활용하는 것을 권장합니다.
+        View에서의 HTML 문자열 조합은 간단한 값 조합이라면 충분하지만,
+        조금만 복잡해져도 대응이 어렵고 유지보수가 어렵습니다.
+        더군다나 파이썬 코드 내에서 HTML 코드는 파이썬 문자열로서 취급되기에 문법 강조도 안 되어 코드 읽기도 어렵습니다.
+        특별한 경우가 아니라면 장고 템플릿 시스템을 활용하는 것을 권장합니다.
 
-      .. code-block:: python
-         :emphasize-lines: 6,8-15
-         :linenos:
+        .. code-block:: python
+            :emphasize-lines: 6,8-15
+            :linenos:
 
-         # chat/views.py
+            # chat/views.py
 
-         def reply(request):
-             if request.method == 'POST':
-                 # ...
-                 # https://daisyui.com/components/chat/
-                 return HttpResponse(
-                     format_html(
-                         """
-                             <div class="chat chat-start"><div class="chat-bubble">{}</div></div>
-                             <div class="chat chat-end"><div class="chat-bubble">{}</div></div>
-                         """,
-                         human_message,
-                         ai_message,
-                     )
-                 )
-              # ...
+            def reply(request):
+                if request.method == 'POST':
+                    # ...
+                    # https://daisyui.com/components/chat/
+                    return HttpResponse(
+                        format_html(
+                            """
+                                <div class="chat chat-start"><div class="chat-bubble">{}</div></div>
+                                <div class="chat chat-end"><div class="chat-bubble">{}</div></div>
+                            """,
+                            human_message,
+                            ai_message,
+                        )
+                    )
+                # ...
 
-   .. tab-item:: 장고 템플릿 시스템을 활용한 렌더링
+    .. tab-item:: 장고 템플릿 시스템을 활용한 렌더링
 
-      템플릿 시스템을 활용하면 파이썬 코드와 HTML 코드를 분리해서 유지보수가 쉬워집니다.
-      HTML 문자열 조합 뿐만 아니라 이메일/푸쉬 메시지 문자열 조합에도 템플릿 시스템을 활용하세요.
+        템플릿 시스템을 활용하면 파이썬 코드와 HTML 코드를 분리해서 유지보수가 쉬워집니다.
+        HTML 문자열 조합 뿐만 아니라 이메일/푸쉬 메시지 문자열 조합에도 템플릿 시스템을 활용하세요.
 
-      .. code-block:: python
-         :emphasize-lines: 7-10
-         :linenos:
+        .. code-block:: python
+            :emphasize-lines: 7-10
+            :linenos:
 
-         # chat/views.py
-         from django.shortcuts import render
+            # chat/views.py
+            from django.shortcuts import render
 
-         def reply(request):
-             if request.method == 'POST':
-                 # ...
-                 return render(request, 'chat/_chat_message.html', {
-                     "human_message": human_message,
-                     "ai_message": ai_message,
-                 })
-             # ...
+            def reply(request):
+                if request.method == 'POST':
+                    # ...
+                    return render(request, 'chat/_chat_message.html', {
+                        "human_message": human_message,
+                        "ai_message": ai_message,
+                    })
+                # ...
 
-      .. code-block:: html+django
+        .. code-block:: html+django
 
-         {# chat/templates/chat/_chat_message.html #}
-         <div class="chat chat-start"><div class="chat-bubble">{{ human_message }}</div></div>
-         <div class="chat chat-end"><div class="chat-bubble">{{ ai_message }}</div></div>
+            {# chat/templates/chat/_chat_message.html #}
+            <div class="chat chat-start"><div class="chat-bubble">{{ human_message }}</div></div>
+            <div class="chat chat-end"><div class="chat-bubble">{{ ai_message }}</div></div>

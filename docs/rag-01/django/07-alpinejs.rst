@@ -11,6 +11,19 @@ alpine.js를 활용한 채팅폼 enable/focus 상탯값 처리
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/62e083731c222d848166db42d1ebffca12387180
 
+.. raw:: html
+
+    45분 37초부터 54분 32초까지 보시면 됩니다.
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=2737"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+----
 
 미리보기
 --------

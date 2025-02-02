@@ -11,6 +11,19 @@ LLM 스트림 응답을 실시간으로 보여주기
 
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/615b26b9c849e93ef97d946d4f7f3aabc95233cd
 
+.. raw:: html
+
+    1시간 53분 30초부터 2시간 8분 16초까지 보시면 됩니다.
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=6810"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+----
 
 미리보기
 ------------------
@@ -356,15 +369,15 @@ HTMX에 다양한 기능을 부여하여 우리가 직접 자바스크립트 코
     :emphasize-lines: 1-2
 
     <div {% if message_pair_id %}id="{{ message_pair_id }}"{% endif %}
-        {% if chunk_index > 0 %}hx-swap-oob="true"{% endif %}
-        x-data="{
-            convert() {
-                const markdownText = this.$el.querySelector('.markdown')?.textContent;
-                const aiEl = this.$el.querySelector('.ai');
-                aiEl.innerHTML = window.markdownToHtml(markdownText);
-            }
-        }"
-        x-init="convert();">
+         {% if chunk_index > 0 %}hx-swap-oob="true"{% endif %}
+         x-data="{
+             convert() {
+                 const markdownText = this.$el.querySelector('.markdown')?.textContent;
+                 const aiEl = this.$el.querySelector('.ai');
+                 aiEl.innerHTML = window.markdownToHtml(markdownText);
+             }
+         }"
+         x-init="convert();">
 
         <div class="chat chat-start">
             <div class="chat-bubble">{{ human_message }}</div>

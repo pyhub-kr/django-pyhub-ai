@@ -12,7 +12,7 @@ HTML Form + HTMX 기반으로 페이지 전환없이 AI 응답 받기
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/c21bacf0e48a310877b89da2b3bcf27a03cd5683
 
 
-본 페이지는 2:11:29 지점부터 본 영상 끝까지 보시면 됩니다.
+본 페이지는 2:11:29 지점부터 본 영상 끝까지 보시면 됩니다. (라이브 #2 마지막 페이지)
 
 .. raw:: html
 

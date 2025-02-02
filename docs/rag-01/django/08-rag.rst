@@ -15,6 +15,19 @@ AI RAG 응답 생성
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/dac2dd355cfe152fcba08eaa1285ed6ef03d3b68
       uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/6f0426c43f76bdee0cd9dce1cca37c7c9d3746ea
 
+.. raw:: html
+
+    54분 33초부터 1시간 20분 50초까지 보시면 됩니다.
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/Lzy9F_Hv4z8?si=jGIgze35S5n27ztg&start=3273"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+----
 
 미리보기
 --------
@@ -90,7 +103,7 @@ VectorStore 생성명령 make_vector_store 구현
 ~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
-   :caption: ``requirements.txt`` 파일에 없다면 추가하고 라이브러리 설치
+    :caption: ``requirements.txt`` 파일에 없다면 추가하고 라이브러리 설치
 
     openai
     langchain
@@ -100,14 +113,14 @@ VectorStore 생성명령 make_vector_store 구현
 
 .. code-block:: bash
 
-   uv pip install -r requirements.txt
+    uv pip install -r requirements.txt
 
 
 커스텀 settings 설정 추가
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
-   :caption: ``mysite/settings.py`` 파일에 추가
+    :caption: ``mysite/settings.py`` 파일에 추가
 
     # 암시적으로 OPENAI_API_KEY 환경변수를 사용하지 않고, 명시적으로 OPENAI_API_KEY 설정을 참조하겠습니다.
     # 설정을 추가하여 LLM마다 다른 API 키를 명시적으로 지정할 수도 있습니다.
@@ -259,7 +272,7 @@ VectorStore 생성명령 make_vector_store 구현
 이 과정은 지식 파일이 변경되었을 때마다 수행되어야하며, 생성된 벡터 스토어 파일은 장고 서버에 배포하고 장고 서버를 재시작시켜 다시 로딩해야 합니다.
 
 .. code-block:: python
-   :caption: ``chat/management/commands/make_vector_store.py`` 파일
+    :caption: ``chat/management/commands/make_vector_store.py`` 파일
 
     from pathlib import Path
     from django.conf import settings
