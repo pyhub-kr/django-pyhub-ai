@@ -33,6 +33,11 @@
     sudo systemctl enable postgresql
 
 
+.. tip::
+
+    `pgadmin4 설치법 <./pgadmin.rst>`_ 문서를 참고하여 Postgres 데이터베이스 관리 도구를 설치하실 수 있습니다.
+
+
 데이터베이스 계정 만들기
 ============================
 

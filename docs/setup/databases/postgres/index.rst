@@ -14,6 +14,7 @@ Postgres
     supabase
     docker
     linux
+    pgadmin
 
 
 장고에서 지원하는 PostgreSQL 만의 고급 기능
