@@ -10,6 +10,9 @@ LLM을 활용한 애플리케이션 개발에서 자주 언급되는 ``Streamlit
 * RAG 튜토리얼
 
   - :doc:`./rag-01/index` : RAG 초심자 분들에게 추천드립니다 ~ !!!
+  - :doc:`./rag-02/index` : **실전 튜토리얼**\로서, 실제 서비스 개발에 많이 사용되어지는
+    Postgres `pgvector <https://github.com/pgvector/pgvector>`_ 확장을
+    장고 프로젝트에 통합하는 방법을 다룹니다.
 
 * ``django-pyhub-ai`` 라이브러리를 활용한 LLM 에이전트 채팅 서비스 개발 튜토리얼
 
@@ -25,6 +28,7 @@ RAG/에이전트와 함께 여러분의 파이썬/장고 페이스메이커가 �
    :hidden:
 
    rag-01/index
+   rag-02/index
    quickstart/index
    quickstart_02/index
    consumers/index

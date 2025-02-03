@@ -73,3 +73,7 @@ figcaption {
   padding: 0.4em 0 0 0;
   font-style: italic;
 }
+
+img.no-border {
+  border: none !important;
+}
