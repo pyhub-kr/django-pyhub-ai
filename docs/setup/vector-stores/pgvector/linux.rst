@@ -13,3 +13,9 @@
 .. code-block:: shell
 
     sudo apt install -y postgresql-16-pgvector
+
+생성하신 데이터베이스 계정으로 데이터베이스에 접속하신 후에 아래 명령으로 ``pgvector`` 확장을 활성화해주세요.
+
+.. code-block:: sql
+
+    CREATE EXTENSION vector;
