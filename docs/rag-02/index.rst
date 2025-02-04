@@ -2,7 +2,7 @@
 RAG #02. 실전: 빽다방 문서 pgvector 임베딩
 ============================================
 
-.. warning::
+.. tip::
 
     전체적인 내용은 모두 작성했고, 세부 내용을 다듬고 있습니다.
     내용이 정리되는 대로 유튜브 라이브로 인사드리겠습니다. 😉
@@ -16,7 +16,7 @@ Postgres `pgvector <https://github.com/pgvector/pgvector>`_ 확장을
 ``pgvector``\를 선택한 이유는 다음과 같습니다.
 
 #. Postgres를 사용하는 서비스에서는 추가 인프라 없이 벡터 검색 기능을 구현할 수 있습니다.
-   Postgres는 장고가 가장 잘 지원하며, 가장 많이 사용되어지는 데이터베이스입니다.
+#. 장고가 지원하는 수많은 데이터베이스 중에 Postgres는 장고가 가장 잘 지원하는 오픈소스 데이터베이스입니다.
 #. 단일 데이터베이스로 관계형 데이터와 벡터 데이터를 함께 관리할 수 있어 운영이 단순해집니다.
    물론 벡터 데이터를 별도의 데이터베이스로 나눠 관리할 수도 있습니다.
    장고 모델의 라우터 기능을 활용하면, 모델 별로 다른 데이터베이스 혹은
@@ -43,7 +43,15 @@ Postgres `pgvector <https://github.com/pgvector/pgvector>`_ 확장을
     doc_list: List[PaikdabangMenuDocument] = \
         await PaikdabangMenuDocument.objects.search("빽다방 고카페인 음료 종류는?")
 
+문서 리스트를 프롬프트 문자열에 손쉽게 전달할 수 있습니다.
+
+.. code-block:: python
+
+    # 랭체인 Document 리스트와 동일한 포맷으로 변환됩니다.
+    지식 = str(doc_list)
+
 새로운 문서 모델이 필요할 때, 본 튜토리얼을 통해 직접 구현한 :doc:`Document 모델 상속 </rag-02/abstract-document>` 만으로
+
 손쉽게 새로운 문서 모델을 추가할 수 있게 됩니다.
 
 .. code-block:: python

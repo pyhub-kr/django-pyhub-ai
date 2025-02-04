@@ -21,6 +21,18 @@
     uv pip install --upgrade pgvector
 
 
+장고 모델 소개
+========================
+
+장고 모델은 장고에서 지원하는 ORM :sup:`(Object-Relational Mapping)`\이며, 장고의 핵심 기능입니다.
+데이터베이스 테이블과 모델 클래스를 1:1로 매핑하여, 데이터베이스 테이블의 구조를 파이썬 클래스로 정의하구요.
+장고 만의 간결한 문법으로 다양한 데이터베이스 작업을 수행할 수 있습니다.
+
+데이터베이스마다 지원하는 SQL 문법이 다르지만, 장고 모델은 데이터베이스 종류에 상관없이
+동일한 코드로 여러 데이터베이스에 걸쳐 데이터베이스 작업을 수행할 수 있습니다.
+프로젝트 ``settings.DATABASES`` 설정만 변경해서, 그 즉시 다른 데이터베이스와 연동할 수 있습니다.
+
+
 장고 모델에 벡터 필드 추가하기
 ======================================
 
@@ -55,52 +67,23 @@
 
 * `HnswIndex <https://github.com/pgvector/pgvector?tab=readme-ov-file#hnsw>`_ :sup:`Hierarchical Navigable Small World 그래프 기반`
 
-  - 다층 그래프를 생성하는 인덱스 방식
-  - ``IvfflatIndex`` 대비
-
-    - 장점 : 빠른 속도와 높은 정확도
-    - 단점 : 느린 인덱스 생성, 높은 메모리 사용량
-
-  - `옵션 <https://github.com/pgvector/pgvector?tab=readme-ov-file#index-options>`_
-
-    - ``m`` : 각 벡터를 연결할 최대 연결수 (디폴트: 16)
-
-      - 높을 수록 인덱스 크기가 커지며 더 긴 구축 시간, 더 정확한 결과
-
-    - ``ef_construction`` (디폴트: 64)
-    
-      - 인덱스 구축시 고려할 후보 개수 (높을 수록 높은 정확도)
-
-    - ``opclasses`` : 인덱스 생성에 사용할 벡터 연산 클래스
+  - 다중 그래프를 생성하는 인덱스 방식
+  - 장점 : 빠른 속도와 높은 정확도
+  - 단점 : 느린 인덱스 생성, 높은 메모리 사용량
 
 * `IvfflatIndex <https://github.com/pgvector/pgvector?tab=readme-ov-file#ivfflat>`_ :sup:`Inverted File with Flat Search 클러스터 기반`
 
   - 벡터들을 리스트로 나누고, 쿼리 벡터와 가장 가까운 리스트들의 부분집합을 검색하는 방식
-  - HNSW 대비 빠른 인덱스 생성과 적은 메모리 사용량이 장점이나, 검색 성능(속도-정확도 트레이드오프)은 낮음
-  - 인자
-
-    - ``lists`` : 인덱스 클러스터 개수 (높을 수록 높은 정확도)
-    - ``opclasses`` : 인덱스 생성에 사용할 벡터 연산 클래스
-
-.. admonition:: ``pgvector`` 확장에서 지원하는 벡터 연산 목록
-
-    - ``vector_cosine_ops`` : 코사인 거리 연산
-    - ``vector_l2_ops`` : L2 거리 연산
-    - ``vector_ip_ops`` : 내적 (inner product) 연산
-    - ``vector_l1_ops`` : L1 거리 연산
-    - ``bit_hamming_ops`` : 해밍 거리 연산
-    - ``bit_jaccard_ops`` : 자카드 거리 연산
-
-    참고: https://github.com/pgvector/pgvector?tab=readme-ov-file#hnsw
-
+  - ``HnswIndex`` 대비 빠른 인덱스 생성과 적은 메모리 사용량이 장점이나, 검색 성능(속도/정확도는 트레이드오프)은 낮음
 
 아래 예시에서는 정확도가 높은 ``HnswIndex`` 인덱스를 사용하겠습니다.
-인덱스에서 ``name`` 인자는 데이터베이스 내에서 유일해야 합니다.
+지식을 실시간으로 임베딩하는 것이 아니라 미리 임베딩된 벡터를 저장하는 것이므로,
+인덱스 생성이 상대적으로 느려도 정확도가 높아진다면 무시할 수 있는 문제입니다.
 
 .. code-block:: python
     :caption: ``chat/models.py``
     :linenos:
-    :emphasize-lines: 2,8-16
+    :emphasize-lines: 2,8-20
 
     from django.db import models
     from pgvector.django import VectorField, HnswIndex
@@ -110,14 +93,32 @@
 
         class Meta:
             indexes = [
+                # https://github.com/pgvector/pgvector?tab=readme-ov-file#index-options
                 HnswIndex(
                     name='item_embedding_hnsw_idx',  # 유일한 이름이어야 합니다.
                     fields=['embedding'],
-                    m=16,
-                    ef_construction=64,
+                    # 각 벡터를 연결할 최대 연결수
+                    # 높을수록 인덱스 크기가 커지며 더 긴 구축시간, 더 정확한 결과
+                    m=16,  # default: 16
+                    # 인덱스 구축시 고려할 후보 개수 
+                    ef_construction=64,  # default: 64
+                    # 인덱스 생성에 사용할 벡터 연산 클래스
                     opclasses=['vector_cosine_ops']
                 ),
             ]
+
+인덱스의 ``opclasses`` 인자에는 유사 문서 검색에 사용할 벡터 연산 클래스를 지정합니다.
+``pgvector`` 확장에서는 다음의 벡터 연산을 지원합니다.
+추후 검색 시에 사용할 벡터 연산을 지정해서 인덱스를 생성해야만, 인덱스를 통해 검색이 효율적으로 수행됩니다.
+
+* ``vector_cosine_ops`` : 코사인 거리 연산
+* ``vector_l2_ops`` : L2 거리 연산
+* ``vector_ip_ops`` : 내적 (inner product) 연산
+* ``vector_l1_ops`` : L1 거리 연산
+* ``bit_hamming_ops`` : 해밍 거리 연산
+* ``bit_jaccard_ops`` : 자카드 거리 연산
+
+참고: https://github.com/pgvector/pgvector?tab=readme-ov-file#hnsw
 
 
 마이그레이션을 통해 데이터베이스에 반영하기
@@ -127,20 +128,23 @@
 ``makemigrations`` 명령으로 마이그레이션 파일을 생성해주세요.
 
 .. code-block:: text
-    :emphasize-lines: 1
+    :emphasize-lines: 1,3
 
     $ uv run python manage.py makemigrations chat
-    [2025-01-29 10:42:42,911] Loaded vector store 10 items
     Migrations for 'chat':
     chat/migrations/0001_initial.py
         + Create model Item
 
 ``chat/migrations/0001_initial.py`` 경로에 마이그레이션 파일을 생성만 했을 뿐,
-아직 데이터베이스에는 미적용 상황입니다. 아직 적용하지 않았기에 이 파일을 삭제하고 다시 생성하셔도 됩니다.
+아직 데이터베이스에는 미적용 상황입니다. 모델 수정이 필요한 상황이라면,
+이 마이그레이션 파일은 아직 적용하지 않았기에 이 파일을 삭제하고 다시 생성하셔도 됩니다.
 
-``vector`` 확장이 활성화되어야만 ``vector`` 타입을 사용할 수 있는 데요.
+데이터베이스에 ``vector`` 확장이 활성화되어야만 ``vector`` 타입을 사용할 수 있는 데요.
 ``chat/migrations/0001_initial.py`` 마이그레이션을 데이터베이스에 적용하기에 앞서,
 데이터베이스에 ``vector`` 확장을 활성화하는 Operation을 추가하겠습니다.
+
+마이그레이션을 수행하면, ``vector`` 확장부터 체크하고,
+``vector`` 타입이 지정된 테이블 생성을 시도하게 됩니다.
 
 .. code-block:: python
     :caption: ``chat/migrations/0001_initial.py``
