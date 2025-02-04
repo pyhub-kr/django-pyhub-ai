@@ -91,7 +91,7 @@ OpenAI 웹 대시보드 `Batches <https://platform.openai.com/batches/>`_ 페이
 
 
 생성된 jsonl 파일 예시
----------------------
+---------------------------
 
 배치 요청이 끝나고 나서, Output 링크에서 생성된 ``jsonl`` 파일을 다운받으실 수 있습니다.
 각 줄은 json 포맷으로서 ``id``, ``custom_id``, ``response``, ``error`` 필드를 가지며,
