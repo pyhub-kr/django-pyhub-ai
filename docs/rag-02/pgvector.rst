@@ -51,35 +51,35 @@ pgvector 데이터베이스 접속 준비
 장고 프로젝트 데이터베이스 연동 확인
 =========================================
 
-장고는 SQLite, Postgres, MySQL, Oracle 등의 관계형 데이터베이스를 지원하며,
+장고는 SQLite, Postgres, MySQL, MariaDB, Oracle 관계형 데이터베이스를 공식 지원하며,
 ``settings.DATABASES`` 설정 변경 만으로 손쉽게 데이터베이스를 교체할 수 있습니다.
+
+.. tip::
+
+    :doc:`/setup/databases/index` 문서에서 장고 프로젝트에서 다양한 데이터베이스를 설정하는 방법을 안내합니다.
 
 장고 프로젝트 디폴트 데이터베이스인 ``SQLite``\는
 `파이썬 기본에서 드라이버를 지원 <https://docs.python.org/3/library/sqlite3.html>`_\하기에
-별도의 라이브러리 설치없이, ``django`` 설치 만으로 즉시 개발을 시작할 수 있었습니다.
+별도의 데이터베이스 구축과 라이브러리 설치없이 ``django`` 라이브러리 설치 만으로 즉시 개발을 시작할 수 있었습니다.
 하지만 :doc:`/setup/databases/postgres/index`\, :doc:`/setup/databases/mysql/index`\,
-:doc:`/setup/databases/oracle/index` 등의 관계형 데이터베이스는 드라이버 설치가 필요합니다.
+:doc:`/setup/databases/oracle/index` 등의 관계형 데이터베이스는 데이터베이스 서버 구축과 그에 따른 드라이버 설치가 필요합니다.
 
-Postgres 드라이버는 2가지 버전이 있습니다.
+Postgres 드라이버는 2가지 라이브러리로 제공됩니다.
 
 * ``psycopg2`` : 공식 라이브러리이지만, 맥/리눅스에서 버전에 따라 빌드 툴이 필요해서 설치가 조금 번거롭습니다.
 * ``psycopg2-binary`` : 윈도우/맥/리눅스 모두에서 라이브러리 빌드없이 ``.whl`` 바이너리 파일로 설치되어 간편합니다.
 
-.. tip::
-
-    :doc:`Postgres 라이브러리 및 설정법 </setup/databases/postgres/index>`
-
-``psycopg2-binary`` 라이브러리를 설치해주세요.
+손쉬운 설치를 위해 ``psycopg2-binary`` 라이브러리를 설치해주세요.
 
 .. code-block:: bash
 
     uv pip install --upgrade psycopg2-binary
 
 
-``DATABASE_URL`` 환경변수를 적용하기 전에는, 장고 프로젝트는 ``db.sqlite3`` 데이터베이스를 사용했었죠.
-방금 ``DATABASE_URL`` 환경변수로 새로운 데이터베이스를 지정했고,
-``mysite/settings.py`` 내에서 ``env.db()`` 함수를 통해 ``DATABASE_URL`` 환경변수를 파싱하여
-``settings.DATABASES["default"]`` 데이터베이스 설정에 반영하고 있습니다.
+DATABASE_URL 환경변수가 로딩된 상황에서 ``django-environ`` 라이브러리의 ``env.db()`` 함수는
+``DATABASE_URL`` 환경변수 값을 파싱하여 ``settings.DATABASES["default"]`` 데이터베이스 설정에 반영합니다.
+``DATABASE_URL`` 환경변수가 정의되지 않은 상황에 대응하기 위해 ``default`` 인자를 통해 디폴트 데이터베이스로
+SQLite 데이터베이스를 지정했습니다.
 
 .. code-block:: python
     :caption: 기존 ``settings.DATABASES`` 설정

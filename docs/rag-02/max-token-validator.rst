@@ -9,17 +9,42 @@
 커스텀 settings
 ========================
 
-RAG 관련 설정들을 일원화하여 관리하기 위해 다음과 같이 커스텀 settings를 정의합니다.
+RAG 관련 설정들을 일원화하여 관리하기 위해 다음과 같이 커스텀 settings를 정의하고, 환경변수 값을 파싱하여 각 설정값들을 초기화합니다.
+
+OpenAI API는 서비스 전반적으로 사용되기에 전역 설정값을 정의하고, RAG에서는 다른 API Key 혹은 다른 서비스의 API을 호출할 수 있기에 설정값들은 별도로 정의합니다.
+
+``RAG_*`` 설정값을 사용하는 각종 RAG 모듈에서도 RAG 모듈에 따라 다른 API Key 혹은 다른 서비스를 사용할 수도 있기에
+``RAG_*`` 설정값을 디폴트 값으로 사용하겠습니다.
 
 .. code-block:: python
     :caption: ``mysite/settings.py``
-    :emphasize-lines: 3-5
 
+    # 디폴트 값으로 사용할 OpenAI API key와 BASE_URL
     OPENAI_API_KEY = env.str("OPENAI_API_KEY", default=None)
+    OPENAI_BASE_URL = env.str("OPENAI_BASE_URL", default=None)
 
+    # RAG에서 사용할 OpenAI API key와 BASE_URL
     RAG_OPENAI_API_KEY = env.str("RAG_OPENAI_API_KEY", default=OPENAI_API_KEY)
+    RAG_OPENAI_BASE_URL = env.str("RAG_OPENAI_BASE_URL", default=OPENAI_BASE_URL)
+
+    # RAG에서 사용할 임베딩 모델
     RAG_EMBEDDING_MODEL = env.str("RAG_EMBEDDING_MODEL", default="text-embedding-3-small")
+
+    # RAG에서 사용할 임베딩 모델의 차원수
     RAG_EMBEDDING_DIMENSIONS = env.int("RAG_EMBEDDING_DIMENSIONS", default=1536)
+
+
+.. admonition:: OpenAI 호환 API
+    :class: tip
+
+    `구글 <https://cloud.google.com/vertex-ai/generative-ai/docs/multimodal/call-vertex-using-openai-library?hl=ko>`_,
+    `딥시크 <https://api-docs.deepseek.com>`_\,
+    `업스테이지 <https://console.upstage.ai/api/embeddings#example>`_\의 API는 OpenAI 호환 API를 제공해줍니다.
+    ``openai`` 라이브러리를 사용하여 ``base_url`` 설정 변경 만으로 손쉽게 사용할 수 있습니다.
+    ``api_key`` 설정은 각 서비스의 API Key를 할당받아 지정합니다.
+
+    * 딥시크 ``base_url`` : ``https://api.deepseek.com``
+    * 업스테이지 ``base_url`` : ``https://api.upstage.ai/v1/solar``
 
 
 문서 모델 정의
@@ -30,17 +55,20 @@ RAG 관련 설정들을 일원화하여 관리하기 위해 다음과 같이 커
 임베딩 데이터를 저장할 ``embedding`` 필드를 ``VectorField`` 타입으로 정의합니다.
 최대 2000 차원까지 저장할 수 있습니다.
 
-각 모델에서 사용할 api key, 모델, 차원수 설정값은 클래스 변수로 두어,
+각 모델에서 사용할 api key, base url, 임베딩 모델, 차원수 설정값은 클래스 변수로 두어,
 각 설정값을 모델 클래스 내에서 일관되게 참조할 수 있도록 합니다. 설정값 변경 시 클래스 변수 한 곳만 수정하면 됩니다.
 아래 모델 구성은 다른 모델에도 동일하게 적용할 수 있구요.
 단, 인덱스 ``name`` 속성값은 데이터베이스에서 유일한 값으로 지정해주어야 합니다.
 
 .. code-block:: python
+    :caption: ``chat/models.py``
+    :linenos:
 
     from pgvector.django import VectorField, HnswIndex
 
     class PaikdabangMenuDocument(models.Model):
         openai_api_key = settings.RAG_OPENAI_API_KEY
+        openai_base_url = settings.RAG_OPENAI_BASE_URL
         embedding_model = settings.RAG_EMBEDDING_MODEL
         embedding_dimensions = settings.RAG_EMBEDDING_DIMENSIONS
 
@@ -65,9 +93,12 @@ RAG 관련 설정들을 일원화하여 관리하기 위해 다음과 같이 커
     :class: warning
 
     인덱스 ``name`` 속성값이 중복될 경우, ``makemigrations`` 명령을 실행할 때 ``SystemCheckError`` 오류가 발생합니다.
+    반드시 인덱스 이름은 데이터베이스 내에서 유일한 값으로 지정되어야 합니다.
 
-    ?: (models.E030) index name 'paikdabang_menu_doc_idx' is not unique among models:
-    chat.PaikdabangMenuDocument, chat.StarbucksMenuDocument
+    .. code-block:: text
+
+        ?: (models.E030) index name 'paikdabang_menu_doc_idx' is not unique among models:
+        chat.PaikdabangMenuDocument, chat.StarbucksMenuDocument
 
 .. admonition:: VectorField 타입은 최대 2000 차원까지 지원합니다.
     :class: tip
@@ -108,7 +139,7 @@ OpenAI 임베딩 API는 총 3개의 모델을 지원하며, 각 모델의 최대
 
 최대 토큰 수를 초과한 임베딩 API 요청은 다음과 같은 ``BadRequestError`` 예외가 발생합니다.
 
-.. admonition:: 오류 메시지
+.. admonition:: BadRequestError 예외 메시지
     :class: warning
 
     BadRequestError: Error code: 400 - {'error': {'message': "This model's maximum context length is 8192 tokens, however you requested 8193 tokens (8193 in your prompt; 0 for the completion). Please reduce your prompt; or completion length.", 'type': 'invalid_request_error', 'param': None, 'code': None}}
@@ -116,7 +147,8 @@ OpenAI 임베딩 API는 총 3개의 모델을 지원하며, 각 모델의 최대
 ``page_content`` 필드에 저장한 문자열을 줄이지 않으면 임베딩을 진행할 수 없게 됩니다.
 ``page_content`` 필드에 값을 저장하기 전에 최대 토큰 수를 초과하지 않는 지 반드시 검사를 수행해야 할 것입니다.
 
-.. tip::
+.. admonition:: 백엔드 단에서의 유효성 검사는 필수입니다.
+    :class: tip
 
     유효성 검사를 수행하고 유효성 검사 통과 여부를 판단하는 것은 장고의 기본 기능입니다.
     직접 유효성 검사 루틴을 구성할 필요가 전혀 없습니다.
@@ -139,7 +171,7 @@ OpenAI 임베딩 API는 총 3개의 모델을 지원하며, 각 모델의 최대
     from .validators import MaxTokenValidator  # 곧 구현할 유효성 검사기
 
     class PaikdabangMenuDocument(LifecycleModelMixin, models.Model):
-        openai_api_key = settings.OPENAI_API_KEY
+        openai_api_key = settings.RAG_OPENAI_API_KEY
         embedding_model = settings.RAG_EMBEDDING_MODEL
         embedding_dimensions = settings.RAG_EMBEDDING_DIMENSIONS
 
@@ -246,10 +278,20 @@ OpenAI Cookbook의 `How to count tokens with Tiktoken <https://cookbook.openai.c
     >>> validator(x2)  # 유효성 검사 실패 ❌
     ValidationError: ['토큰 수는 최대 8191개여야 합니다 (현재 8192개).']
 
-.. tip::
+.. admonition:: 장고에서 유효성 검사 통과 여부는 ``ValidationError`` 예외 발생 여부로만 판단합니다.
+    :class: tip
 
-    장고에서 유효성 검사 통과 여부는 ``ValidationError`` 예외 발생 여부로만 판단합니다.
+    장고에서는 유효성 검사 시에 각 유효성 검사 함수를 호출하여 ``ValidationError`` 예외 발생 여부로만 유효성 검사 통과 여부를 판단합니다.
     함수 반환값도 사용되지 않기에 값을 반환하셔도 전혀 사용되지 않습니다.
+
+    .. code-block:: python
+
+        import re
+
+        def validate_has_korean(value: str) -> None:
+            if not re.search("[가-힣]", value):
+                raise ValidationError("한글이 포함되지 않은 문자열은 스팸으로 판단되어 허용되지 않습니다.")
+            return value  # 값을 반환되어도 사용되어지지 않고, 무시됩니다.
 
     반면 장고 폼에서의 ``clean_필드명``, ``clean`` 메서드는 유효성 검사를 비롯하여 값 변환 기능도 제공하기에,
     ``clean`` 메서드의 반환값은 변환된 값이 됩니다.
@@ -262,6 +304,7 @@ MaxTokenValidator 활용 예
 유효성 검사를 통과하지 못하고 ``ValidationError`` 예외가 발생합니다.
 
 .. code-block:: python
+    :emphasize-lines: 5
 
     >>> from chat.models import PaikdabangMenuDocument
 
@@ -317,7 +360,8 @@ MaxTokenValidator 활용 예
 
 http://localhost:8000/admin/ 페이지에 접속하시면 아래와 같이 ``PaikdabangMenuDocument`` 레코드 내역을 확인하실 수 있습니다.
 
-.. tip::
+.. admonition:: 슈퍼유저 계정 생성
+    :class: tip
 
     슈퍼유저 계정이 생각나지 않으시면, ``uv run python manage.py createsuperuser`` 명령을 통해
     새 슈퍼유저 계정을 생성하실 수 있습니다.
@@ -330,8 +374,8 @@ http://localhost:8000/admin/ 페이지에 접속하시면 아래와 같이 ``Pai
         >>> from django.contrib.auth import get_user_model
         >>> User = get_user_model()          # 현 프로젝트의 User 모델 클래스 조회
         >>> user = User.objects.first()      # 첫 번째 유저 조회
-        >>> user.set_password("원하는 암호")  # 지정 암호를 해싱하여 .password 필드에 저장
-        >>> user.save()                      # 데이터베이스에 User 모든 필드 저장
+        >>> user.set_password("원하는 암호")  # 지정 암호를 해싱하여 .password 필드에 저장 (아직 데이터베이스 저장 전)
+        >>> user.save()                      # 데이터베이스에 User 인스턴스의 모든 모델 필드 저장
 
 .. grid:: 2
 
@@ -358,7 +402,8 @@ http://localhost:8000/admin/ 페이지에 접속하시면 아래와 같이 ``Pai
         .. figure:: ./assets/admin-4.png
 
 
-.. tip::
+.. admonition:: 명령행에서 파이썬 코드 실행하기
+    :class: tip
 
     8192개 토큰을 가지는 문자열은 아래 파이썬 코드로 손쉽게 클립보드에 복사해서 사용하실 수 있습니다.
     클립보드에 복사하는 명령은 운영체제마다 다릅니다.

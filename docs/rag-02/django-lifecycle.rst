@@ -4,11 +4,41 @@ django-lifecycle hook을 통한 자동 임베딩
 
 ``PaikdabangMenuDocument`` 레코드 생성 시에 ``.page_content`` 필드, ``.metadata`` 필드와 함께
 매번 임베딩 값을 계산하고 ``.embedding`` 필드에 저장하는 것은 번거로운 일입니다.
-``PaikdabangMenuDocument`` 모델 내부에서 임베딩 데이터를 자동으로 생성하도록 하면 다음과 같은 장점이 있습니다:
 
-1. 데이터 일관성 보장: 문서 내용과 임베딩이 항상 동기화되어 있음을 보장할 수 있습니다.
-2. 코드 재사용성: 임베딩 생성 로직이 모델에 캡슐화되어 있어 여러 곳에서 일관되게 사용할 수 있습니다.
-3. 유지보수성: 임베딩 관련 로직 변경이 필요할 때 한 곳만 수정하면 됩니다.
+.. code-block:: python
+    :emphasize-lines: 4-6,11
+
+    page_content = "hello world"
+    metadata = {}
+
+    client = openai.Client()
+    res = client.embeddings.create(input=page_content, model="text-embedding-3-small")
+    embedding = res.data[0].embedding
+
+    PaikdabangMenuDocument.objects.create(
+        page_content=page_content,
+        metadata=metadata,
+        embedding=embedding,
+    )
+
+``PaikdabangMenuDocument`` 모델 내부에서 ``page_content`` 필드 값 생성/변경 시에
+``embedding`` 필드 값을 자동으로 생성하도록 하면,
+
+.. code-block:: python
+
+    page_content = "hello world"
+    metadata = {}
+
+    PaikdabangMenuDocument.objects.create(
+        page_content=page_content,
+        metadata=metadata,
+    )
+
+다음과 같은 장점이 있습니다:
+
+#. 데이터 일관성 보장: 문서 내용과 임베딩이 항상 동기화되어 있음을 보장할 수 있습니다.
+#. 코드 재사용성: 임베딩 생성 로직이 모델에 캡슐화되어 있어 여러 곳에서 일관되게 사용할 수 있습니다.
+#. 유지보수성: 임베딩 관련 로직 변경이 필요할 때 한 곳만 수정하면 됩니다.
 
 이를 구현하기 위해 `django-lifecycle <https://rsinger86.github.io/django-lifecycle/>`_ 라이브러리를 활용하겠습니다.
 장식자를 통해 레코드의 생성/수정/삭제 시점에 특정 메소드를 호출시킬 수 있습니다.
@@ -31,10 +61,11 @@ django-lifecycle hook을 통한 자동 임베딩
 .. code-block:: python
     :caption: ``chat/models.py``
     :linenos:
-    :emphasize-lines: 12-15,17-27,29-36
+    :emphasize-lines: 13-16,18-28,30-37
 
     class PaikdabangMenuDocument(models.Model):
         openai_api_key = settings.RAG_OPENAI_API_KEY
+        openai_base_url = settings.RAG_OPENAI_BASE_URL
         embedding_model = settings.RAG_EMBEDDING_MODEL
         embedding_dimensions = settings.RAG_EMBEDDING_DIMENSIONS
 
@@ -54,7 +85,7 @@ django-lifecycle hook을 통한 자동 임베딩
             """
             주어진 문자열에 대한 임베딩 벡터를 생성합니다.
             """
-            client = openai.Client(api_key=cls.openai_api_key)
+            client = openai.Client(api_key=cls.openai_api_key, base_url=cls.openai_base_url)
             response = client.embeddings.create(
                 input=input,
                 model=cls.embedding_model,
@@ -63,20 +94,20 @@ django-lifecycle hook을 통한 자동 임베딩
 
         @classmethod
         async def aembed(cls, input: str) -> List[float]:
-            client = openai.AsyncClient(api_key=cls.openai_api_key)
+            client = openai.AsyncClient(api_key=cls.openai_api_key, base_url=cls.openai_base_url)
             response = await client.embeddings.create(
                 input=input,
                 model=cls.embedding_model,
             )
             return response.data[0].embedding
 
-다음 2가지 상황에서는 반드시 ``update_embedding`` 메서드를 호출되어야 합니다.
+다음 2가지 상황에서는 반드시 ``update_embedding`` 메서드가 호출되어야 합니다.
 
 #. 새로운 ``PaikdabangMenuDocument`` 레코드를 생성할 때
 #. 기존 ``PaikdabangMenuDocument`` 레코드에서 ``page_content`` 필드가 변경되었을 때
 
 이 ``update_embedding`` 메서드를 매번 수동으로 호출하는 것은 번거롭고 호출이 누락될 수 있습니다.
-``django-lifecycle`` 라이브러리를 통해 생성/수정 시점에 메서드를 자동으로 호출이 되도록 구성해보겠습니다.
+``django-lifecycle`` 라이브러리를 통해 생성/수정 시점에 메서드를 자동으로 호출되도록 구성해보겠습니다.
 
 
 생성/수정 시점에 메서드 자동 호출
@@ -130,13 +161,14 @@ django-lifecycle hook을 통한 자동 임베딩
 .. code-block:: python
     :caption: ``chat/models.py``
     :linenos:
-    :emphasize-lines: 1,15-18,20-23,25-28,30-40,42-52
+    :emphasize-lines: 1,16-19,21-24,26-29,31-41,43-53
 
     from django_lifecycle import hook, BEFORE_CREATE, BEFORE_UPDATE, LifecycleModelMixin
 
     class PaikdabangMenuDocument(LifecycleModelMixin, models.Model):
         # embedding_model = "text-embedding-3-small"
         openai_api_key = settings.RAG_OPENAI_API_KEY
+        openai_base_url = settings.RAG_OPENAI_BASE_URL
         embedding_model = settings.RAG_EMBEDDING_MODEL
         embedding_dimensions = settings.RAG_EMBEDDING_DIMENSIONS
 
@@ -166,7 +198,7 @@ django-lifecycle hook을 통한 자동 임베딩
             """
             주어진 문자열에 대한 임베딩 벡터를 생성합니다.
             """
-            client = openai.Client(api_key=cls.openai_api_key)
+            client = openai.Client(api_key=cls.openai_api_key, base_url=cls.openai_base_url)
             response = client.embeddings.create(
                 input=input,
                 model=cls.embedding_model,
@@ -178,7 +210,7 @@ django-lifecycle hook을 통한 자동 임베딩
             """
             embed 함수의 비동기 버전
             """
-            client = openai.AsyncClient(api_key=cls.openai_api_key)
+            client = openai.AsyncClient(api_key=cls.openai_api_key, base_url=cls.openai_base_url)
             response = await client.embeddings.create(
                 input=input,
                 model=cls.embedding_model,

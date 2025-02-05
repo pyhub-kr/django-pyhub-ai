@@ -83,7 +83,7 @@
 .. code-block:: python
     :caption: ``chat/models.py``
     :linenos:
-    :emphasize-lines: 2,8-20
+    :emphasize-lines: 2,8-21
 
     from django.db import models
     from pgvector.django import VectorField, HnswIndex
@@ -117,8 +117,6 @@
 * ``vector_l1_ops`` : L1 거리 연산
 * ``bit_hamming_ops`` : 해밍 거리 연산
 * ``bit_jaccard_ops`` : 자카드 거리 연산
-
-참고: https://github.com/pgvector/pgvector?tab=readme-ov-file#hnsw
 
 
 마이그레이션을 통해 데이터베이스에 반영하기

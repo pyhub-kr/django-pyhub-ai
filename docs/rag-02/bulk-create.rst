@@ -184,7 +184,7 @@ OpenAI 임베딩 API 응답에서 ``response.data``\는 항상 리스트입니�
 
         @classmethod
         def embed(cls, input: Union[str, List[str]]) -> Union[List[float], List[List[float]]]:
-            client = openai.Client(api_key=cls.openai_api_key)
+            client = openai.Client(api_key=cls.openai_api_key, base_url=cls.openai_base_url)
             response = client.embeddings.create(
                 input=input,
                 model=cls.embedding_model,
@@ -195,7 +195,7 @@ OpenAI 임베딩 API 응답에서 ``response.data``\는 항상 리스트입니�
 
         @classmethod
         async def aembed(cls, input: Union[str, List[str]]) -> Union[List[float], List[List[float]]]:
-            client = openai.AsyncClient(api_key=cls.openai_api_key)
+            client = openai.AsyncClient(api_key=cls.openai_api_key, base_url=cls.openai_base_url)
             response = await client.embeddings.create(
                 input=input,
                 model=cls.embedding_model,

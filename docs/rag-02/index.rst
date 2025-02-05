@@ -4,8 +4,7 @@ RAG #02. 실전: 빽다방 문서 pgvector 임베딩
 
 .. tip::
 
-    전체적인 내용은 모두 작성했고, 세부 내용을 다듬고 있습니다.
-    내용이 정리되는 대로 유튜브 라이브로 인사드리겠습니다. 😉
+    곧 유튜브 영상으로 인사드리겠습니다. 😉
 
 지난 :doc:`/rag-01/index` 튜토리얼에서는 RAG에 대한 이해도를 높이기 위해
 Vector Store를 파이썬 리스트로 직접 구현했었습니다.
@@ -43,6 +42,14 @@ Postgres `pgvector <https://github.com/pgvector/pgvector>`_ 확장을
     doc_list: List[PaikdabangMenuDocument] = \
         await PaikdabangMenuDocument.objects.search("빽다방 고카페인 음료 종류는?")
 
+``search`` 메서드는 쿼리셋 메서드이기에, 장고 쿼리셋으로 검색 대상의 범위를 좁힌 뒤에
+유사 문서 검색을 수행할 수 있습니다.
+
+.. code-block:: python
+
+    qs = PaikdabangMenuDocument.objects.filter(...)  # 조회 조건 지정
+    doc_list = await qs.search("빽다방 고카페인 음료 종류는?")
+
 문서 리스트를 프롬프트 문자열에 손쉽게 전달할 수 있습니다.
 
 .. code-block:: python
@@ -51,7 +58,6 @@ Postgres `pgvector <https://github.com/pgvector/pgvector>`_ 확장을
     지식 = str(doc_list)
 
 새로운 문서 모델이 필요할 때, 본 튜토리얼을 통해 직접 구현한 :doc:`Document 모델 상속 </rag-02/abstract-document>` 만으로
-
 손쉽게 새로운 문서 모델을 추가할 수 있게 됩니다.
 
 .. code-block:: python
