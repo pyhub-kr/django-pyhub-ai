@@ -1,6 +1,6 @@
-============================================
-RAG #02. 실전: 빽다방 문서 pgvector 임베딩
-============================================
+=======================================================
+RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩
+=======================================================
 
 .. tip::
 
@@ -66,6 +66,18 @@ Postgres `pgvector <https://github.com/pgvector/pgvector>`_ 확장을
     class StarbucksMenuDocument(Document):
         pass
 
+    # 세법 해석례 문서 모델
+    class TaxLawDocument(Document):
+        pass
+
+``TaxLawDocument`` 모델을 통해 세법 해석례 문서를 저장하고, 아래와 같이 간결한 코드로
+질문과 유사한 문서를 검색할 수 있습니다.
+
+.. code-block:: python
+
+    question = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
+    doc_list = await TaxLawDocument.objects.search(question)
+
 준비되셨나요? 시작합니다. 😉
 
 .. toctree::
@@ -84,4 +96,5 @@ Postgres `pgvector <https://github.com/pgvector/pgvector>`_ 확장을
     bulk-create
     batch
     abstract-document
+    taxlaw
     closing

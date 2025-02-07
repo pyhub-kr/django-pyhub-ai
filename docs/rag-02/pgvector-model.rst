@@ -109,14 +109,102 @@
 
 인덱스의 ``opclasses`` 인자에는 유사 문서 검색에 사용할 벡터 연산 클래스를 지정합니다.
 ``pgvector`` 확장에서는 다음의 벡터 연산을 지원합니다.
-추후 검색 시에 사용할 벡터 연산을 지정해서 인덱스를 생성해야만, 인덱스를 통해 검색이 효율적으로 수행됩니다.
+이후 데이터베이스 조회 시에 사용할 벡터 연산을 지정해서 인덱스를 생성해야만, 인덱스를 통해 데이터베이스 조회가 이뤄집니다.
 
-* ``vector_cosine_ops`` : 코사인 거리 연산
-* ``vector_l2_ops`` : L2 거리 연산
-* ``vector_ip_ops`` : 내적 (inner product) 연산
-* ``vector_l1_ops`` : L1 거리 연산
-* ``bit_hamming_ops`` : 해밍 거리 연산
-* ``bit_jaccard_ops`` : 자카드 거리 연산
+* 코사인 거리 연산 : ``vector_cosine_ops``, ``halfvec_cosine_ops``
+* L2 거리 연산 : ``vector_l2_ops``, ``halfvec_l2_ops``
+* L1 거리 연산 : ``vector_l1_ops``, ``halfvec_l1_ops``
+* 내적 (inner product) 연산 : ``vector_ip_ops``, ``halfvec_ip_ops``
+* 해밍 거리 연산 : ``bit_hamming_ops``
+* 자카드 거리 연산 : ``bit_jaccard_ops``
+
+.. list-table:: 필드 및 연산 정보
+   :widths: 15 15 25 35
+   :header-rows: 1
+
+   * - 필드
+     - 인덱스
+     - 연산
+     - 설명
+   * - vector
+     - hnsw
+     - vector_cosine_ops
+     - 코사인 거리 연산
+   * - 
+     - 
+     - vector_l2_ops
+     - L2 거리 연산
+   * - 
+     - 
+     - vector_l1_ops
+     - L1 거리 연산
+   * - 
+     - 
+     - vector_ip_ops
+     - 내적 (inner product) 연산
+   * - vector
+     - ivfflat
+     - vector_cosine_ops
+     - 코사인 거리 연산
+   * - 
+     - 
+     - vector_l2_ops
+     - L2 거리 연산
+   * - 
+     - 
+     - vector_ip_ops
+     - 내적 (inner product) 연산
+   * - halfvec
+     - hnsw
+     - halfvec_cosine_ops
+     - 코사인 거리 연산
+   * - 
+     - 
+     - halfvec_l2_ops
+     - L2 거리 연산
+   * - 
+     - 
+     - halfvec_l1_ops
+     - L1 거리 연산
+   * - 
+     - 
+     - halfvec_ip_ops
+     - 내적 (inner product) 연산
+   * - halfvec
+     - ivfflat
+     - halfvec_cosine_ops
+     - 코사인 거리 연산
+   * - 
+     - 
+     - halfvec_l2_ops
+     - L2 거리 연산
+   * - 
+     - 
+     - halfvec_ip_ops
+     - 내적 (inner product) 연산
+   * - bit
+     - hnsw
+     - bit_hamming_ops
+     - 해밍 거리 연산
+   * - 
+     - 
+     - bit_jaccard_ops
+     - 자카드 거리 연산
+   * - bit
+     - ivfflat
+     - bit_hamming_ops
+     - 해밍 거리 연산
+
+.. admonition:: 필드 타입과 인덱스 타입에 따라 사용할 수 있는 벡터 연산이 다릅니다.
+    :class: tipo
+
+    필드 타입과 인덱스 타입에 따라 사용할 수 있는 벡터 연산이 다릅니다. 타입에 맞지 않게 지정하시면 인덱스 생성에 실패합니다.
+
+    코사인 거리 연산을 사용할 경우
+
+    * 1536차원 벡터 필드를 저장할려면 ``VectorField`` 타입을 쓰고, ``HnswIndex`` 인덱스에 ``vector_cosine_ops`` 연산을 사용합니다.
+    * 3072차원 벡터 필드를 저장할려면 2000차원을 넘기에 ``VectorField`` 타입에는 담지 못하고 ``HalfVectorField`` 타입을 써야만 하고,
+      ``HnswIndex`` 인덱스를 사용하되, ``vector_cosine_ops`` 연산을 사용할 수 없고 ``halfvec_cosine_ops`` 연산을 사용합니다.
 
 
 마이그레이션을 통해 데이터베이스에 반영하기

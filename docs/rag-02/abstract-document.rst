@@ -89,11 +89,10 @@ Document 추상화 모델
 질문과 유사한 문서 검색을 할 수 있게 됩니다.
 
 
-
 모델 인덱스에 맞춰 검색하기
 ================================
 
-인덱스를 정의할 때, 인덱스 생성 시에 사용할 벡터 연산 클래스를 지정합니다.
+인덱스를 정의할 때 인덱스 생성에 사용될 벡터 연산 클래스를 지정하고, 데이터베이스 조회 쿼리도 맞춰 작성해야만 합니다.
 ``pgvector`` 확장에서 지원하는 벡터 연산 목록은 :doc:`/rag-02/pgvector-model` 문서에 정리되어있습니다.
 
 .. code-block:: python
@@ -113,18 +112,25 @@ Document 추상화 모델
                 ),
             ]
 
-코사인 거리 연산 클래스는 ``vector_cosine_ops``\이고 ``DocumentQuerySet``\에서 ``search`` 메서드에서는
-인덱스를 활용할 수 있도록 ``CosineDistance`` 데이터베이스 함수를 통해 쿼리를 작성해야만 합니다.
+.. admonition:: 타입에 따라 다른 코사인 거리 연산 클래스
+    :class: tip
+
+    같은 코사인 거리 연산이더라도 필드 타입에 따라 인덱스 생성에 사용해야할 연산 클래스가 다릅니다.
+
+    * ``VectorField`` 필드에 대한 코사인 거리 : ``vector_cosine_ops``
+    * ``HalfVectorField`` 필드에 대한 코사인 거리 : ``halfvec_cosine_ops``
+
+    검색 시에는 동일하게 ``CosineDistance`` 데이터베이스 함수를 사용합니다.
 
 인덱스 정의는 ``Document`` 모델 클래스에서 이뤄지고, 검색 쿼리는 ``DocumentQuerySet.search`` 메서드에서 이뤄집니다.
 ``search`` 메서드를 개선하여 ``Document`` 모델의 인덱스 선언에 맞춰 쿼리를 작성할 수 있도록 하겠습니다.
-``pgvector`` 확장을 통해 여러 벡터 연산 클래스가 지원되지만, 본 튜토리얼에서는
-코사인 거리와 L2 거리 연산 클래스만 구현했습니다.
+코사인 거리 연산 클래스는 ``vector_cosine_ops``\이고 ``DocumentQuerySet``\에서 ``search`` 메서드에서는
+인덱스를 활용할 수 있도록 ``CosineDistance`` 데이터베이스 함수를 통해 거리를 계산합니다.
 
 .. code-block:: python
     :linenos:
     :caption: ``chat/models.py``
-    :emphasize-lines: 12,14-18,19-23
+    :emphasize-lines: 12,14-18,19-26
 
     from django.core.exceptions import ImproperlyConfigured
     from django.db.models import Index
@@ -140,12 +146,14 @@ Document 추상화 모델
             index: Index
             for index in self.model._meta.indexes:
                 if "embedding" in index.fields:
-                    if "vector_cosine_ops" in index.opclasses:
+                    # vector_cosine_ops, halfvec_cosine_ops, etc.
+                    if any("_cosine_ops" in cls for cls in index.opclasses):
                         qs = (qs or self).annotate(
                             distance=CosineDistance("embedding", question_embedding)
                         )
                         qs = qs.order_by("distance")
-                    elif "vector_l2_ops" in index.opclasses:
+                    # vector_l2_ops, halfvec_l2_ops, etc.
+                    elif any("_l2_ops" in cls for cls in index.opclasses):
                         qs = (qs or self).annotate(
                             distance=L2Distance("embedding", question_embedding)
                         )
@@ -157,6 +165,11 @@ Document 추상화 모델
                 raise ImproperlyConfigured(f"{self.model.__name__} 모델에 embedding 필드에 대한 인덱스를 추가해주세요.")
 
             return await sync_to_async(list)(qs[:k])
+
+.. tip::
+
+    ``pgvector`` 확장을 통해 여러 벡터 연산 클래스가 지원되지만, 본 튜토리얼에서는
+    코사인 거리와 L2 거리 연산 클래스만 구현했습니다.
 
 
 make_vector_store 명령 개선
@@ -245,10 +258,3 @@ make_vector_store 명령 개선
 .. code-block:: bash
 
     uv run python manage.py make_vector_store chat.PaikdabangMenuDocument  ./chat/assets/빽다방.txt
-
-
-이후 튜토리얼에서는
-=====================
-
-``Document`` 모델마다 지식을 load/split하는 과정이 다를 텐데요.
-이에 대해서는 이후 튜토리얼에서 다뤄보겠습니다.

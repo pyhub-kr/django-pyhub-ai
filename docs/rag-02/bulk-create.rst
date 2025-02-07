@@ -335,7 +335,7 @@ OpenAI 공식문서 `How to count tokens with Tiktoken <https://cookbook.openai.
                 # ...
 
                 def bulk_create(self, objs, *args, max_retry=3, interval=60, **kwargs):
-                    # 임베딩된 벡터 데이터를 저장할 리스트
+                    # 임베딩된 벡터를 저장할 리스트
                     embeddings = []
 
                     groups = make_groups_by_length(
@@ -416,3 +416,60 @@ OpenAI 공식문서 `How to count tokens with Tiktoken <https://cookbook.openai.
     split into 10 documents
     100%|████████████████████████████████| 10/10 [00:00<00:00, 12409.18it/s]
     [2025-02-02 10:41:22,525] Made group : length=854, item size=10
+
+
+embedding 필드가 지정된 인스턴스는 제외하고 임베딩 벡터를 생성하기
+============================================================================
+
+``bulk_create`` 메서드 호출 시에 ``.embedding`` 필드가 지정된 인스턴스가 있을 수 있습니다.
+다음 페이지에 소개하는 :doc:`batch`\가 적용되면, 별도의 프로세스로 벡터를 생성하고,
+``bulk_create`` 메서드 호출 시에 이미 생성된 벡터를 할당하고 데이터베이스에 저장합니다.
+
+아래와 같이 ``bulk_create`` 메서드 호출 시에 ``.embedding`` 필드가 지정되지 않은 인스턴스만 추출하여
+해당 인스턴스들에 대해서만 임베딩 벡터를 생성토록 개선합니다.
+
+.. code-block:: python
+    :linenos:
+    :caption: ``chat/models.py``
+    :emphasize-lines: 6-9,16,37
+
+    class PaikdabangMenuDocumentQuerySet(models.QuerySet):
+        # ...
+
+        def bulk_create(self, objs, *args, max_retry=3, interval=60, **kwargs):
+            # 임베딩 필드가 지정되지 않은 인스턴스만 추출
+            non_embedding_objs = [obj for obj in objs if obj.embedding is None]
+
+            # 임베딩되지 않은 인스턴스가 있으면, 해당 인스턴스들에 대해서만 임베딩 벡터 생성
+            if len(non_embedding_objs) > 0:
+
+                # 임베딩된 벡터를 저장할 리스트
+                embeddings = []
+
+                groups = make_groups_by_length(
+                    # 임베딩을 할 문자열 리스트
+                    text_list=non_embedding_objs,
+                    # 그룹의 최대 허용 크기 지정
+                    group_max_length=self.model.embedding_max_tokens,
+                    # 토큰 수 계산 함수
+                    length_func=self.model.get_token_size,
+                )
+
+                # 토큰 수 제한에 맞춰 묶어서 임베딩 요청
+                for group in groups:
+                    for retry in range(1, max_retry + 1):
+                        try:
+                            embeddings.extend(self.model.embed(group))
+                            break
+                        except openai.RateLimitError as e:
+                            if retry == max_retry:
+                                raise e
+                            else:
+                                msg = "Rate limit exceeded. Retry after %s seconds... : %s"
+                                logger.warning(msg, interval, e)
+                                time.sleep(interval)
+
+                for obj, embedding in zip(non_embedding_objs, embeddings):
+                    obj.embedding = embedding
+
+            return super().bulk_create(objs, *args, **kwargs)

@@ -41,6 +41,12 @@ django-lifecycle hook을 통한 자동 임베딩
 #. 유지보수성: 임베딩 관련 로직 변경이 필요할 때 한 곳만 수정하면 됩니다.
 
 이를 구현하기 위해 `django-lifecycle <https://rsinger86.github.io/django-lifecycle/>`_ 라이브러리를 활용하겠습니다.
+라이브러리를 설치해주세요.
+
+.. code-block:: bash
+
+    uv pip install --upgrade django-lifecycle
+
 장식자를 통해 레코드의 생성/수정/삭제 시점에 특정 메소드를 호출시킬 수 있습니다.
 ``save`` 메서드를 재정의하거나 ``pre_save`` 시그널을 연결하는 것보다 코드 가독성이 좋고 유지보수가 용이합니다.
 
@@ -61,7 +67,10 @@ django-lifecycle hook을 통한 자동 임베딩
 .. code-block:: python
     :caption: ``chat/models.py``
     :linenos:
-    :emphasize-lines: 13-16,18-28,30-37
+    :emphasize-lines: 1-2,16-19,21-31,33-40
+
+    from typing import List
+    import openai
 
     class PaikdabangMenuDocument(models.Model):
         openai_api_key = settings.RAG_OPENAI_API_KEY
@@ -161,7 +170,10 @@ django-lifecycle hook을 통한 자동 임베딩
 .. code-block:: python
     :caption: ``chat/models.py``
     :linenos:
-    :emphasize-lines: 1,16-19,21-24,26-29,31-41,43-53
+    :emphasize-lines: 4,19-22,24-27,29-32,34-44,46-56
+
+    from typing import List
+    import openai
 
     from django_lifecycle import hook, BEFORE_CREATE, BEFORE_UPDATE, LifecycleModelMixin
 
