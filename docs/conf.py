@@ -97,7 +97,7 @@ html_theme_options = {
     # "announcement": "야심차게 준비한 <a href='/rag-01/'>RAG 초보자 튜토리얼</a>을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
     # "announcement": "2025.2.1. (토) 오후 9시에 <a href='https://youtube.com/live/Lzy9F_Hv4z8' target='_blank'>튜토리얼 따라하기 세번째 라이브</a>를 진행합니다. 함께 해요. ;-)",
     # "announcement": "첫번째 RAG 튜토리얼 라이브를 마무리했습니다. 곧 두번째 RAG 튜토리얼도 오픈합니다. 많은 관심 부탁드립니다. 🥳",
-    "announcement": "<a href='/rag-02/'>RAG #02. 실전: 빽다방 문서 pgvector 임베딩</a> 튜토리얼을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
+    "announcement": "<a href='/rag-02/'>RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩</a> 튜토리얼을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
     "light_logo": "favicon-128.png",  # _static 경로
     "dark_logo": "favicon-128.png",
     # https://pradyunsg.me/furo/customisation/colors/
