@@ -248,8 +248,9 @@ Document 모델의 임베딩 관련 설정과 필드를 검증하도록 하겠�
     jsonl_url = "https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl"
 
     print(f"Downloading {jsonl_url} ...")
-    jsonl_data = urlopen(jsonl_url).read().decode("utf-8")
-    print(f"Downloaded {len(jsonl_data)} bytes.")
+    res_data: bytes = urlopen(jsonl_url).read()
+    print(f"Downloaded {len(res_data)} bytes.")
+    jsonl_data: str = res_data.decode("utf-8")
 
     doc_list = []
     for line in jsonl_data.splitlines():
@@ -274,7 +275,7 @@ Document 모델의 임베딩 관련 설정과 필드를 검증하도록 하겠�
 .. code-block:: text
 
     Downloading https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl ...
-    Downloaded 43160870 bytes.
+    Downloaded 44343331 bytes.
     Creating 1000 documents...
     INSERT INTO "chat_taxlawdocument" ("page_content", "metadata", "created_at", "updated_at", "embedding")
     VALUES ('{"문서ID": "010000000000001684", "제목": "건물의 신축・분양 등을 신탁회사에 위탁한 경우 취득가액의 계산 등", "문서번호": "법인46012-2799", "법령분류": "법인세", "요지": "건물의 신축・분양・임대・유지관리를 위탁하법인이 신탁업법에 의한 신탁회사에 건물의 신축․분양․임대․유지관리를 위탁하고 지급하는 신탁수수료 중 건물신축에 따른 신탁수수료는 당해 건물의 취득원가에 산입하고, 분양 등의 수익을 위해서 지출한 신탁수수료는 당해 법인의 각 건물을 양도하는 경우 특별부가세과세표준을 계산함에 있어 당해 건물의 취득원가에 산입하는 신탁수수료와 제세공과금(취득세, 등록세 등)은 양도가액에서 공제할 수있는 것이고, 위의 신탁과 관련하여 신탁회사가 위탁자를 대리하여[.., '{"url": "https://taxlaw.nt
