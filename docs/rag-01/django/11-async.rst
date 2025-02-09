@@ -268,7 +268,7 @@ OpenAI API에서는 스트림 처리 여부는 ``stream`` 인자 하나로만 �
             return ai_message
 
         # 비동기. 응답이 생성되는 대로 점진적으로 반환
-        async def astream(self, question: str) -> AsyncGenerator[Optional[str]]:
+        async def astream(self, question: str) -> AsyncGenerator[Optional[str], None]:
             res: AsyncStream[ChatCompletionChunk]
             res = await self.get_response(question, stream=True)
             # AsyncGenerator는 값 순회를 위해 비동기 반복문을 사용해야 합니다.
@@ -409,7 +409,7 @@ OpenAI API에서는 스트림 처리 여부는 ``stream`` 인자 하나로만 �
             return ai_message
 
         # 비동기. 응답이 생성되는 대로 점진적으로 반환
-        async def astream(self, question: str) -> AsyncGenerator[Optional[str]]:
+        async def astream(self, question: str) -> AsyncGenerator[Optional[str], None]:
             res: AsyncStream[ChatCompletionChunk]
             res = await self.get_response(question, stream=True)
             async for chunk in res:
