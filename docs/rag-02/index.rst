@@ -4,7 +4,19 @@ RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩
 
 .. tip::
 
-    곧 유튜브 영상으로 인사드리겠습니다. 😉
+    2025.2.11. (화) 오후 9시에 `RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩 <https://youtube.com/live/ka0Vb-z_MPQ>`_
+    튜토리얼 라이브를 진행합니다. 함께 해요. ;-)
+
+    .. raw:: html
+
+        <div class="video-container">
+            <iframe
+                src="https://www.youtube.com/embed/ka0Vb-z_MPQ?si=rnn2f5lCQupbOeEp"
+                frameborder="0"
+                allowfullscreen>
+            </iframe>
+        </div>
+
 
 지난 :doc:`/rag-01/index` 튜토리얼에서는 RAG에 대한 이해도를 높이기 위해
 Vector Store를 파이썬 리스트로 직접 구현했었습니다.
