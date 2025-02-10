@@ -761,7 +761,7 @@ wheels = [
 
 [[package]]
 name = "django-pyhub-ai"
-version = "0.8.25"
+version = "0.8.26"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
