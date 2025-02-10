@@ -106,25 +106,7 @@ OpenAI API는 서비스 전반적으로 사용되기에 전역 설정값을 정�
     OpenAI의 임베딩 모델은 차원수가 다릅니다. ``text-embedding-3-small`` 모델은 1536 차원을,
     ``text-embedding-3-large`` 모델은 3072 차원을 사용합니다.
     ``VectorField``\는 최대 2000 차원까지만 지원하므로, 3072 차원의 ``text-embedding-3-large`` 모델을 사용할 때는
-    ``HalfVectorField``\를 사용해야 합니다. 임베딩 차원수에 따라 적절한 필드 타입을 자동으로 선택하도록 다음과 같이 구현할 수 있습니다:
-
-    .. code-block:: python
-
-        from pgvector.django import VectorField, HalfVectorField, HnswIndex
-
-        class PaikdabangMenuDocument(models.Model):
-            embedding_model = "text-embedding-3-large"
-            embedding_dimensions = 1536 * 2
-
-            if embedding_dimensions <= 2000:
-                embedding = VectorField(dimensions=embedding_dimensions, editable=False)
-            elif embedding_dimensions <= 4000:
-                embedding = HalfVectorField(dimensions=embedding_dimensions, editable=False)
-            else:
-                raise ValueError(f"Unsupported embedding dimensions : {embedding_dimensions}")
-
-    ``embedding_dimensions`` 설정값을 변경할 경우 데이터베이스 스키마도 함께 변경되어야 하므로, 
-    반드시 마이그레이션 과정을 수행해야만 합니다.
+    ``HalfVectorField``\를 사용해야 합니다.
 
 
 최대 토큰 수 유효성 검사
