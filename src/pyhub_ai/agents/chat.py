@@ -169,10 +169,12 @@ class ChatAgent:
         """
         chunk_message: Union[AIMessageChunk, AddableDict]
 
-        # anthropic api 호출에서는 입력되자마자 입력 token 수가 생성되고,
-        # 출력 token 수는 출력이 완료되고 나서 따로 출력되기에
-        # 이를 합산해서 마지막에 출력합시다.
-        usage_chunk_message_list = []
+        # 한 message id 내의 모든 usage_metadata를 합산해서 마지막에 생성
+        #   openai api : 마지막 chunk에서 usage_metadata 속성 존재
+        #   anthropic api : 첫 chunk에서 usage_metadata 존재,
+        #                   출력 token 수는 모든 chunk가 생성되고 나서 출력
+        #   google api : 모든 chunk에서 usage_metadata가 존재
+        usage_metadata_list = []
 
         async for chunk_message in self.runnable.astream(
             input={
@@ -197,17 +199,16 @@ class ChatAgent:
                                     if ob is not None:
                                         agent_step.observation = ob
 
-                yield chunk_message
-
             else:
-                usage_chunk_message_list.append(chunk_message)
+                usage_metadata_list.append(chunk_message.usage_metadata.copy())
+                chunk_message.usage_metadata = None
 
-        if usage_chunk_message_list:
-            last_chunk_message = usage_chunk_message_list[-1]
-            last_chunk_message.usage_metadata = sum_and_merge_dicts(
-                *(chunk_message.usage_metadata for chunk_message in usage_chunk_message_list)
-            )
-            yield last_chunk_message
+            yield chunk_message
+
+        if usage_metadata_list:
+            empty_chunk_message = AIMessageChunk(id=chunk_message.id, content="")
+            empty_chunk_message.usage_metadata = sum_and_merge_dicts(*usage_metadata_list)
+            yield empty_chunk_message
 
     async def think(
         self,
