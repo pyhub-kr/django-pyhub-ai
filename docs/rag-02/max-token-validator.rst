@@ -6,6 +6,16 @@
 ``pgvector`` 확장과 장고 모델을 통해 Postgres 데이터베이스에 저장해보겠습니다.
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/470021caf41280d9fc98037835762efb4c1870d8>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/470021caf41280d9fc98037835762efb4c1870d8
+
+
 커스텀 settings
 ========================
 
@@ -64,6 +74,7 @@ OpenAI API는 서비스 전반적으로 사용되기에 전역 설정값을 정�
     :caption: ``chat/models.py``
     :linenos:
 
+    from django.conf import settings
     from pgvector.django import VectorField, HnswIndex
 
     class PaikdabangMenuDocument(models.Model):
@@ -88,6 +99,20 @@ OpenAI API는 서비스 전반적으로 사용되기에 전역 설정값을 정�
                     opclasses=["vector_cosine_ops"],
                 ),
             ]
+
+방금 새로운 모델을 정의했으니, 모델 변경사항을 데이터베이스에 적용합니다.
+
+.. code-block:: bash
+
+    # 모델 변경내역 대로 마이그레이션 파일을 생성합니다.
+    uv run python manage.py makemigrations chat
+
+    # 지정 마이그레이션 파일에 대한 SQL 수행 내역을 확인합니다.
+    # 현재 활성화된 데이터베이스 엔진에 따라 수행되는 SQL이 다릅니다.
+    uv run python manage.py sqlmigrate chat 0002
+
+    # 마이그레이션 파일을 데이터베이스에 적용합니다.
+    uv run python manage.py migrate chat
 
 .. admonition:: 인덱스 ``name`` 속성값이 중복될 경우
     :class: warning

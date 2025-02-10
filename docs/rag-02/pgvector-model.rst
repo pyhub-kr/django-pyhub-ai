@@ -8,6 +8,16 @@
 몸풀기로서 3차원 벡터를 저장하는 ``Item`` 모델을 통해 ``pgvector`` 확장과 장고의 통합을 체험해봅니다.
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/fbee535c6929b4f1966bf8efd07679577f875ee0>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/fbee535c6929b4f1966bf8efd07679577f875ee0
+
+
 라이브러리 설치
 ========================
 

@@ -3,8 +3,18 @@ make_vector_store 명령 수정
 ==============================
 
 
-PaikdabangMenuDocument 모델을 통한 저장
-==============================================
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/bf9de8db17040a7301593f8e54bae3cfc6986b9e>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/bf9de8db17040a7301593f8e54bae3cfc6986b9e
+
+
+PaikdabangMenuDocument 모델을 통한 저장 및 자동 임베딩
+================================================================
 
 앞서 구현했던 ``make_vector_store`` 명령을 수정하여,
 파이썬 리스트를 생성하고 pickle 포맷으로 저장하는 대신

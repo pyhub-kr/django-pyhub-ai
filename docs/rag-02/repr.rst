@@ -3,6 +3,16 @@
 ========================================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/c5a0135625c115b373b7113ee9e5062c1466b891>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/c5a0135625c115b373b7113ee9e5062c1466b891
+
+
 개선 포인트
 ===============
 

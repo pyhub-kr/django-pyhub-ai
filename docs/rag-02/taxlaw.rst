@@ -11,6 +11,16 @@ LLM 기술과 RAG 기술을 결합하여 최신법령 및 예규․판례 등에
 세법 해석례 데이터와 ``Document`` 모델을 통해 세법해석례 질답 데이터를 저장 및 임베딩하고, 빠르게 문서 RAG를 구현해보겠습니다.
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/bade803ce4e8211dbba03de0458450e248df1bad>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/bade803ce4e8211dbba03de0458450e248df1bad
+
+
 데이터 다운로드
 ===================
 
@@ -66,8 +76,8 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
                 ),
             ]
 
-그런데, 위 데이터의 임베딩 데이터는 ``text-embedding-3-large``\을 사용하기에 임베딩 차원은 ``3072``\입니다.
-``VectorField`` 필드는 2000차원까지만 담을 수 있기에 모델 필드 변경이 필요합니다.
+그런데, 앞서 살펴본 ``sample-taxlaw-1000.jsonl`` 데이터는 ``text-embedding-3-large`` 모델을 통해 임베딩 되었기에 ``3072``\차원 벡터입니다.
+그런데 ``VectorField`` 필드는 2000차원까지만 담을 수 있기에 모델 필드 변경이 필요합니다.
 
 
 2000 차원을 넘는 벡터를 저장할려면?
@@ -152,6 +162,7 @@ Document 모델의 임베딩 관련 설정과 필드를 검증하도록 하겠�
 
     from django.core import checks
     from django.core.exceptions import FieldDoesNotExist
+    from pgvector.django import IvfflatIndex
 
     class Document(models.Model):
         # ...
@@ -230,8 +241,8 @@ Document 모델의 임베딩 관련 설정과 필드를 검증하도록 하겠�
 
 .. code-block:: bash
 
-    python manage.py makemigrations chat
-    python manage.py migrate chat
+    uv run python manage.py makemigrations chat
+    uv run python manage.py migrate chat
 
 장고 쉘을 구동하시고 아래 코드를 실행하시면, 1000건의 세법 해석례 jsonl 데이터를 자동으로 다운받고,
 ``TaxLawDocument`` 모델을 통해 Postgres 데이터베이스에 데이터를 저장합니다.
@@ -418,8 +429,9 @@ LLM 모델에 따라 답변 결과가 다르므로, 여러 모델을 활용하�
     .. tab-item:: OpenAI
 
         .. code-block:: python
-            :emphasize-lines: 3,8,9
+            :emphasize-lines: 4,9,10
 
+            import os
             import openai
 
             client = openai.AsyncClient(api_key=os.getenv("OPENAI_API_KEY"))
@@ -458,8 +470,9 @@ LLM 모델에 따라 답변 결과가 다르므로, 여러 모델을 활용하�
         지원 모델은 `Anthropic API 문서 <https://docs.anthropic.com/en/docs/about-claude/models>`_ 참고하세요.
 
         .. code-block:: python
-            :emphasize-lines: 3,11,13,15
+            :emphasize-lines: 4,12,14,16
 
+            import os
             from anthropic import Anthropic
 
             client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
@@ -527,8 +540,9 @@ LLM 모델에 따라 답변 결과가 다르므로, 여러 모델을 활용하�
         `google-genai <https://googleapis.github.io/python-genai/>`_ 라이브러리를 통해서 API를 호출합니다.
 
         .. code-block:: python
-            :emphasize-lines: 4,9,11
+            :emphasize-lines: 5,10,12
 
+            import os
             from google import genai
             from google.genai import types
 
@@ -560,8 +574,9 @@ LLM 모델에 따라 답변 결과가 다르므로, 여러 모델을 활용하�
         나머진 OpenAI 라이브러리 사용법과 동일합니다.
 
         .. code-block:: python
-            :emphasize-lines: 4-5,10-11
+            :emphasize-lines: 5-6,11-12
 
+            import os
             import openai
 
             client = openai.AsyncClient(

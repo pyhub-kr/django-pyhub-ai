@@ -2,6 +2,17 @@
 django-lifecycle hook을 통한 자동 임베딩
 ================================================
 
+
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/28702a8c5f46ba2f336e9db27e32211cf9bac6c8>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/28702a8c5f46ba2f336e9db27e32211cf9bac6c8
+
+
 ``PaikdabangMenuDocument`` 레코드 생성 시에 ``.page_content`` 필드, ``.metadata`` 필드와 함께
 매번 임베딩 값을 계산하고 ``.embedding`` 필드에 저장하는 것은 번거로운 일입니다.
 
@@ -110,6 +121,9 @@ django-lifecycle hook을 통한 자동 임베딩
             )
             return response.data[0].embedding
 
+        class Meta:
+            # 생략
+
 다음 2가지 상황에서는 반드시 ``update_embedding`` 메서드가 호출되어야 합니다.
 
 #. 새로운 ``PaikdabangMenuDocument`` 레코드를 생성할 때
@@ -137,7 +151,7 @@ django-lifecycle hook을 통한 자동 임베딩
 ``@hook(BEFORE_CREATE)`` 장식자를 적용하면, 생성 시에 ``save`` 메서드 호출 직전에 자동 호출됩니다.
 
 .. code-block:: python
-    :emphasize-lines: 6-9
+    :emphasize-lines: 1,6-9
 
     from django_lifecycle import hook, BEFORE_CREATE, LifecycleModelMixin
 
@@ -153,9 +167,9 @@ django-lifecycle hook을 통한 자동 임베딩
 수정 시에 ``page_content`` 필드값이 변경되었을 때에만 ``save`` 메서드 호출 직전에 자동 호출됩니다.
 
 .. code-block:: python
-    :emphasize-lines: 6-9
+    :emphasize-lines: 1,6-9
 
-    from django_lifecycle import hook, BEFORE_UPDATE, LifecycleModelMixin
+    from django_lifecycle import hook, BEFORE_CREATE, BEFORE_UPDATE, LifecycleModelMixin
 
     class PaikdabangMenuDocument(LifecycleModelMixin, models.Model):
         ...

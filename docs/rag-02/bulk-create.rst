@@ -2,6 +2,17 @@
 개선: make_vector_store 명령에서 다수의 INSERT 쿼리를 묶어서 실행
 =====================================================================
 
+
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/222c962aa9c6e16d2acb995166fd6c3f9c563345>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/222c962aa9c6e16d2acb995166fd6c3f9c563345
+
+
 bulk_create 적용
 =====================
 
@@ -29,6 +40,7 @@ bulk_create 적용
 아래 코드는 기존의 개별 ``INSERT`` 쿼리로 실행되는 코드이구요.
 
 .. code-block:: python
+    :caption: ``chat/management/commands/make_vector_store.py``
 
     for doc in tqdm(doc_list):
         paikdabang_menu_document = PaikdabangMenuDocument(
@@ -40,6 +52,7 @@ bulk_create 적용
 아래와 같이 모델 인스턴스를 리스트로 모아, 1000개씩 묶어서 데이터베이스로의 저장을 시도해봅니다.
 
 .. code-block:: python
+    :caption: ``chat/management/commands/make_vector_store.py``
 
     # 객체만 생성할 뿐, 아직 데이터베이스 저장 전 입니다.
     paikdabang_menu_documents = [
@@ -53,7 +66,13 @@ bulk_create 적용
     # 1000개씩 묶어서 데이터베이스로의 저장을 시도합니다.
     PaikdabangMenuDocument.objects.bulk_create(paikdabang_menu_documents, batch_size=1000)
 
-실행하면 아래와 같이 ``IntegrityError`` 예외가 발생합니다.
+실행하면
+
+.. code-block:: bash
+
+    uv run python manage.py make_vector_store ./chat/assets/빽다방.txt
+
+아래와 같이 ``IntegrityError`` 예외가 발생합니다.
 ``embedding`` 컬럼은 NOT NULL 컬럼인데, 데이터베이스 저장 시에 ``embedding`` 컬럼에 값 지정없이 INSERT 쿼리가 수행되어
 NULL 값으로 INSERT 쿼리가 수행되었구요. NOT NULL 제약 조건 위배로 예외가 발생했습니다.
 ``embedding`` 컬럼에 값이 지정되어 있었다면 예외없이 저장되었을 것입니다.
@@ -61,9 +80,7 @@ NULL 값으로 INSERT 쿼리가 수행되었구요. NOT NULL 제약 조건 위�
 .. admonition:: 예외 발생: NOT NULL 제약 조건 위배
     :class: warning
 
-    django.db.utils.IntegrityError: **null value in column "embedding"** of
-    relation "chat_paikdabangmenudocument" **violates not-null constraint**
-    DETAIL:  Failing row contains (22, 1. 아이스티샷추가(아.샷.추) - SNS에서 더 유명..., {"source": "빽다방.txt"}, null, 2025-01-31 09:10:36.083187+00, 2025-01-31 09:1207+00)
+    .. figure:: ./assets/bulk-create-integrity-error.png
 
 ``PaikdabangMenuDocument`` 모델에서는 ``django-lifecycle`` 훅을 통해 ``save`` 메서드 호출 전에
 ``embedding`` 필드에 값을 지정하는 데요.
@@ -342,7 +359,7 @@ OpenAI 공식문서 `How to count tokens with Tiktoken <https://cookbook.openai.
                         # 임베딩을 할 문자열 리스트
                         text_list=[obj.page_content for obj in objs],
                         # 그룹의 최대 허용 크기 지정
-                        group_max_length=self.model.embedding_max_tokens,
+                        group_max_length=self.model.embedding_max_tokens_limit,
                         # 토큰 수 계산 함수
                         length_func=self.model.get_token_size,
                     )
@@ -448,9 +465,9 @@ embedding 필드가 지정된 인스턴스는 제외하고 임베딩 벡터를 �
 
                 groups = make_groups_by_length(
                     # 임베딩을 할 문자열 리스트
-                    text_list=non_embedding_objs,
+                    text_list=[obj.page_content for obj in non_embedding_objs],
                     # 그룹의 최대 허용 크기 지정
-                    group_max_length=self.model.embedding_max_tokens,
+                    group_max_length=self.model.embedding_max_tokens_limit,
                     # 토큰 수 계산 함수
                     length_func=self.model.get_token_size,
                 )

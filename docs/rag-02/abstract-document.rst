@@ -3,6 +3,16 @@ Document 추상화 모델
 =======================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/ba2dc25d4555f89dab979a800bbc750ba655d1d3>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/ba2dc25d4555f89dab979a800bbc750ba655d1d3
+
+
 여러 Document 모델을 둘려면?
 =================================
 
@@ -84,7 +94,14 @@ Document 추상화 모델
                 ),
             ]
 
-마이그레이션을 해주시면 ``StarbucksMenuDocument`` 모델에 대한 테이블도 생성되고,
+마이그레이션을 해주시면
+
+.. code-block:: bash
+
+    uv run python manage.py makemigrations chat
+    uv run python manage.py migrate chat
+
+``StarbucksMenuDocument`` 모델에 대한 테이블도 생성되고,
 ``DocumentQuerySet`` 클래스에서 정의한 ``search`` 메서드를 통해
 질문과 유사한 문서 검색을 할 수 있게 됩니다.
 

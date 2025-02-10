@@ -6,6 +6,16 @@ pgvector DB 생성
 ``pgvector``\가 지원되는 데이터베이스를 생성하고, 장고 프로젝트에 데이터베이스로서 인식시켜보겠습니다.
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/c62e0dbc43938864101f169b405841e43abc6f72>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/c62e0dbc43938864101f169b405841e43abc6f72
+
+
 pgvector 란?
 ========================
 
