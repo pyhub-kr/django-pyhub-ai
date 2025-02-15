@@ -23,6 +23,20 @@ section img {
   border: 1px solid #e0e0e0;
 }
 
+section strong {
+  background: linear-gradient(to right, #ffffd4, #fff8e8);
+  box-shadow: 0 0 10px 5px rgba(255, 255, 212, 0.5);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
+[data-theme="dark"] section strong {
+  background: linear-gradient(to right, #3f3f1f, #2a2a15);
+  box-shadow: 0 0 10px 5px rgba(63, 63, 31, 0.5);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+
 figure {
   display: flex !important;
   flex-direction: column; /* 세로 정렬 */

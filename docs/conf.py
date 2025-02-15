@@ -95,9 +95,9 @@ html_theme_options = {
     # https://pydata-sphinx-theme.readthedocs.io/en/stable/user_guide/announcements.html
     # "announcement": "django-pyhub-ai 라이브러리의 최신버전은 <em>0.8.26</em> 입니다. 버그가 수정되고, 기능이 자주 개선되고 있으니 항상 최신버전으로 사용 부탁드립니다.",
     # "announcement": "야심차게 준비한 <a href='/rag-01/'>RAG 초보자 튜토리얼</a>을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
-    "announcement": "2025.2.15. (토) 오후 9시에 <a href='https://www.youtube.com/live/mEnhWwkOgzI?si=CeHumws2-ySZyeAl' target='_blank'>RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩</a> 튜토리얼 라이브를 진행합니다. 함께 해요. ;-)",
+    # "announcement": "2025.2.15. (토) 오후 9시에 <a href='https://www.youtube.com/live/mEnhWwkOgzI?si=CeHumws2-ySZyeAl' target='_blank'>RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩</a> 튜토리얼 라이브를 진행합니다. 함께 해요. ;-)",
     # "announcement": "첫번째 RAG 튜토리얼 라이브를 마무리했습니다. 곧 두번째 RAG 튜토리얼도 오픈합니다. 많은 관심 부탁드립니다. 🥳",
-    # "announcement": "<a href='/rag-02/'>RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩</a> 튜토리얼을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
+    "announcement": "<a href='/rag-02/'>RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩</a> 튜토리얼과 라이브 영상을 공개합니다. 많은 관심과 널리 공유 부탁드립니다. 🥳",
     "light_logo": "favicon-128.png",  # _static 경로
     "dark_logo": "favicon-128.png",
     # https://pradyunsg.me/furo/customisation/colors/
