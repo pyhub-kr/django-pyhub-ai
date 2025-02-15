@@ -2,16 +2,26 @@
 RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩
 =======================================================
 
+.. raw:: html
+
+    <div class="video-container">
+        <iframe
+            src="https://www.youtube.com/embed/ka0Vb-z_MPQ?si=rnn2f5lCQupbOeEp"
+            frameborder="0"
+            allowfullscreen>
+        </iframe>
+    </div>
+
 .. tip::
 
-    2025.2.11. (화) 오후 9시에 `RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩 <https://youtube.com/live/ka0Vb-z_MPQ>`_
+    2025.2.15. (토) 오후 9시에 `RAG #02. 실전: 세법 RAG를 위한 pgvector 임베딩 <https://youtube.com/live/ka0Vb-z_MPQ>`_
     튜토리얼 라이브를 진행합니다. 함께 해요. ;-)
 
     .. raw:: html
 
         <div class="video-container">
             <iframe
-                src="https://www.youtube.com/embed/ka0Vb-z_MPQ?si=rnn2f5lCQupbOeEp"
+                src="https://www.youtube.com/embed/mEnhWwkOgzI?si=rqFhnIUhZIoHOxoq"
                 frameborder="0"
                 allowfullscreen>
             </iframe>
