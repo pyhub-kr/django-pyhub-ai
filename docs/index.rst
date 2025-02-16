@@ -32,5 +32,6 @@ RAG/에이전트와 함께 여러분의 파이썬/장고 페이스메이커가 �
    quickstart/index
    quickstart_02/index
    consumers/index
+   django/index
    setup/index
    utils/index
