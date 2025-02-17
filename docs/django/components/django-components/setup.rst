@@ -6,13 +6,13 @@ django-components 설치
 신규로 설치한 경우
 =================================
 
-2025년 2월 기준으로 최신 버전은 ``0.128`` 입니다.
+2025년 2월 기준으로 최신 버전은 ``0.129`` 입니다.
 
 ``django-components`` 라이브러리를 설치하고
 
 .. code-block:: bash
 
-    python -m pip install 'django-components==0.128'
+    python -m pip install 'django-components==0.129'
 
 ``settings.INSTALLED_APPS`` 리스트에 추가합니다.
 
@@ -122,10 +122,13 @@ CSS/JS 지원을 위해 추가 설정이 필요합니다.
             .hello-world-component h1:hover { color: red; }
 
 
-0.67 버전에서 0.128 버전으로 업그레이드할 경우
+0.67 버전에서 0.129 버전으로 업그레이드할 경우
 ==============================================
 
 `인프런 파이썬/장고 웹서비스 개발 완벽 가이드 with 리액트 (장고 4.2 기준) <https://inf.run/Fcn6n>`_ 강의에서는 ``django-components`` 라이브러리를 ``0.67`` 버전으로 설치했습니다.
+``0.129`` 버전 적용 내역은
+`커밋: django-components 0.129 버전 대응 <https://github.com/pyhub-kr/course-django-complete-guide-v3/commit/c0d965ac1a1df9a33986b70ff6d8a65e8b699fc9>`_\을
+참고하세요.
 
 이제 더 이상 ``django_components.safer_staticfiles`` 앱은 필요없습니다.
 공식문서 `Migrating from safer_staticfiles <https://django-components.github.io/django-components/latest/migrating_from_safer_staticfiles/?h=safer_staticfiles>`_ 문서에 따르면,
@@ -209,3 +212,77 @@ CSS/JS 지원을 위해 추가 설정이 필요합니다.
 ``{% component_css_dependencies %}`` 템플릿 태그를 사용하지 않아도,
 미들웨어에 의해서 ``<head>`` 태그에 CSS가 자동 렌더링되고, ``<body>`` 태그에 JS가 자동 렌더링됩니다.
 하지만 필요한 경우 `해당 템플릿 태그를 활용하여, 렌더링 위치를 직접 지정 <https://django-components.github.io/django-components/latest/concepts/advanced/rendering_js_css/>`_\할 수 있습니다.
+
+그러니 부모 템플릿인 ``myproj/core/templates/base.html`` 파일에서 아래 3개 코드를 모두 제거합니다.
+
+.. code-block:: html+django
+
+    {% load component_tags %}
+    {% component_css_dependencies %}
+    {% component_js_dependencies %}
+
+
+변경 포인트
+===============
+
+템플릿 파이썬/HTML/CSS/JS 파일 찾는 경로
+----------------------------------------
+
+``settings.COMPONENTS`` 설정의 ``dirs`` 속성을 통해 컴포넌트 루트 경로를 지정합니다. 디폴트 ``BASE_DIR / "components"`` 경로입니다.
+
+더 이상 ``TEMPLATES`` 설정과 ``STATICFILES_DIRS`` 설정에 컴포넌트 경로를 지정할 필요가 없습니다.
+
+정적 파일은 ``STATICFILES_FINDERS`` 설정에 ``django_components.finders.ComponentsFileSystemFinder`` 경로를 추가하는 것 만으로 충분합니다.
+
+
+CSS/JS 주입 방법
+-------------------------------
+
+종전에는 반드시 템플릿 단에서 ``{% component_css_dependencies %}`` 템플릿 태그와 ``{% component_js_dependencies %}`` 템플릿 태그를 통해,
+한 번에 모든 컴포넌트의 CSS와 JS 코드를 생성했었습니다.
+
+이제는 ``django_components.middleware.ComponentDependencyMiddleware`` 미들웨어에 의해서 ``<head>`` 태그에 CSS가 자동 렌더링되고, ``<body>`` 태그에 JS가 자동 렌더링됩니다.
+``</head>``, ``</body>`` 태그가 있다면 ``{% component_css_dependencies %}`` 템플릿 태그와 ``{% component_js_dependencies %}`` 템플릿 태그를 사용할 필요가 없습니다.
+
+단 ``</head>``, ``</body>`` 태그가 없다면 CSS/JS 코드가 자동으로 주입되지 않기에,
+``{% component_css_dependencies %}`` 템플릿 태그와 ``{% component_js_dependencies %}`` 템플릿 태그를 사용해야 할 수도 있습니다.
+
+
+
+if_filled 템플릿 태그 변경
+-------------------------------
+
+버전 0.70부터 ``{% if_filled "my_slot" %}`` 템플릿 태그는 제거되고 ``{{ component_vars.is_filled.my_slot }}`` 템플릿 변수를 사용합니다.
+
+``myproj/core/src-django-components/image_overlay/image_overlay.html`` 템플릿에서 ``{% if_filled "href" %}`` 템플릿 태그 코드가 있습니다.
+이를 아래와 같이 ``{{ component_vars.is_filled.href }}`` 템플릿 변수로 변경합니다.
+
+.. tab-set::
+
+    .. tab-item:: BEFORE
+
+        .. code-block:: html+django
+            :emphasize-lines: 1,3,5,7
+
+            {% if_filled "href" %}
+                href="{% slot "href" %}{% endslot %}"
+            {% endif_filled %}
+
+            {% if_filled "text" %}
+                ...
+            {% endif_filled %}
+
+    .. tab-item:: AFTER
+        :selected:
+
+        .. code-block:: html+django
+            :emphasize-lines: 1,3,5,7
+
+            {% if component_vars.is_filled.href %}
+                href="{% slot "href" %}{% endslot %}"
+            {% endif %}
+
+            {% if component_vars.is_filled.text %}
+                ...
+            {% endif %}
+
