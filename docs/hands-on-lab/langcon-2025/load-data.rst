@@ -1,27 +1,13 @@
-===================
-세법해석례 RAG
-===================
-
-AI 세무사 서비스가 2025년 3월에 출시된다고 합니다.
-`세무사회, "AI 세무사" 출시..."최신 법령, 예규·판례 등 실시간 검색" <https://www.tfmedia.co.kr/news/article.html?no=178052>`_ 기사에 따르면
-LLM 기술과 RAG 기술을 결합하여 최신법령 및 예규․판례 등에 대한 세무서비스를 제공한다고 하는 데요.
+================================================
+문서 모델 데이터 입력 (세법 해석례 1000건)
+================================================
 
 `국세법령정보시스템 <https://taxlaw.nts.go.kr>`_\에는
 `13만 건이 넘는 세법해석례 질답 데이터 <https://taxlaw.nts.go.kr/qt/USEQTJ001M.do>`_\가 있습니다.
 세법 해석례 데이터와 ``Document`` 모델을 통해 세법해석례 질답 데이터를 저장 및 임베딩하고, 빠르게 문서 RAG를 구현해보겠습니다.
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-llm-chat-proj/commit/bade803ce4e8211dbba03de0458450e248df1bad>`_
-   :class: dropdown
-
-   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, rag-02 폴더 상위 경로에서 아래 명령어 실행
-
-   .. code-block:: bash
-
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-llm-chat-proj/commit/bade803ce4e8211dbba03de0458450e248df1bad
-
-
-데이터 다운로드
+데이터 설명
 ===================
 
 RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데이터가 필요합니다.
@@ -29,7 +15,6 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 총 13만건의 데이터 중에 샘플로 1000건의 데이터를 `링크 <https://github.com/pyhub-kr/dump-data/tree/main/rag>`_\에서 다운받으실 수 있습니다.
 이 중 `sample-taxlaw-1000.jsonl <https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl>`_ 파일 :sup:`(용량: 44MB)`\을 사용하겠습니다.
 파일은 지금 받지 않으셔도 되구요. 아래에서 코드를 통해 자동 다운로드하겠습니다.
-
 
 .. code-block:: json
     :linenos:
@@ -49,594 +34,77 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
     이는 대용량 데이터를 다룰 때 유용한 포맷으로, 스트리밍 처리가 가능하고 메모리 효율적입니다.
 
 
-모델 정의
-=============
+ipython 설치하기
+=======================
 
-세법해석례는 빽다방 모델 메뉴와 데이터 성격이 다르니, 별도의 ``Document`` 모델로 관리하겠습니다.
-:doc:`abstract-document` 페이지에서 다룬 ``Document`` 추상화 모델 상속을 상속받고, 인덱스 정의를 추가합니다.
-``Document`` 모델 디폴트 설정으로 임베딩 모델은 ``text-embedding-3-small``\을 사용하고 임베딩 차원은 ``1536``\이며
-``embedding`` 모델 필드 타입이 ``VectorField``\입니다.
+장고 쉘은 ``ipython`` 이 설치되어있다면 ``ipython`` 쉘로 구동됩니다.
 
-.. code-block:: python
-    :linenos:
-    :caption: ``chat/models.py``
-    :emphasize-lines: 1,7
+.. code-block:: shell
 
-    class TaxLawDocument(Document):
-        # category = models.ForeignKey(...)
+    python -m pip install ipython
 
-        class Meta:
-            indexes = [
-                HnswIndex(
-                    name="taxlaw_doc_idx",
-                    fields=["embedding"],
-                    m=16,
-                    ef_construction=64,
-                    opclasses=["vector_cosine_ops"],
-                ),
-            ]
-
-그런데, 앞서 살펴본 ``sample-taxlaw-1000.jsonl`` 데이터는 ``text-embedding-3-large`` 모델을 통해 임베딩 되었기에 ``3072``\차원 벡터입니다.
-그런데 ``VectorField`` 필드는 2000차원까지만 담을 수 있기에 모델 필드 변경이 필요합니다.
+``ipython`` 쉘에서는 복&붙으로 코드 실행하기가 용이합니다.
 
 
-2000 차원을 넘는 벡터를 저장할려면?
-===================================
-
-``text-embedding-3-small`` 모델은 1536 차원 벡터를 생성하고, ``text-embedding-3-large`` 모델은 3072 차원 벡터를 생성합니다.
-``VectorField`` 모델 필드는 데이터베이스 타입이 ``vector`` 이고 최대 2000 차원까지만 지원하기에 3072 차원 벡터를 저장할 수 없습니다.
-
-``HalfVectorField`` 모델 필드는 데이터베이스 타입이 ``halfvector`` 이고 최대 4000 차원까지 지원합니다.
-3072차원 벡터를 저장하기에 적합합니다. 아래와 같이 임베딩 모델, 차원수, 필드타입을 변경합니다.
-벡터 연산 클래스도 모델 필드 타입에 맞춰 ``halfvec_cosine_ops``\로 변경해야만 합니다.
-
-.. code-block:: python
-    :linenos:
-    :caption: ``chat/models.py``
-    :emphasize-lines: 1,4-5,7,18
-
-    from pgvector.django import HalfVectorField
-
-    class TaxlawDocument(Document):
-        embedding_model = "text-embedding-3-large"
-        embedding_dimensions = 1536 * 2
-
-        embedding = HalfVectorField(
-            dimensions=embedding_dimensions, editable=False
-        )
-
-        class Meta:
-            indexes = [
-                HnswIndex(
-                    name="taxlaw_doc_idx",
-                    fields=["embedding"],
-                    m=16,
-                    ef_construction=64,
-                    opclasses=["halfvec_cosine_ops"],  # halfvec 타입용 코사인 거리 연산 클래스
-                ),
-            ]
-
-코사인 거리를 사용할 때
-
-* ``VectorField`` 타입에서는 ``vector_cosine_ops``\를 사용하셔야 하며,
-* ``HalfVectorField`` 타입에서는 ``halfvec_cosine_ops``\를 사용하셔야 합니다.
-
-이를 맞춰주지 않으시면, ``makemigrations`` 단계에서는 오류가 발생하지 않지만 ``migrate`` 단계에서 데이터베이스 단에서 오류가 발생하여
-마이그레이션에 실패합니다.
-
-그런데, ``migrate`` 단계에서 오류를 만나는 것은 너무 늦죠. 모델 코드를 수정하는 즉시 그 오류 상황을 인지할 수 있으면
-베스트일 텐데요. 이를 위해 장고에서는 ``System check framework``\를 지원해줍니다.
-
-
-check 프레임워크를 통한 모델 설정 검증
-=======================================
-
-장고에서는 `System check framework <https://docs.djangoproject.com/en/dev/topics/checks/>`_\를 통해 장고 프로젝트 내 다양한 문제들을 파악하고 이를 수정할 수 있는 힌트를 제공해줍니다.
-``manage.py check`` 명령을 통해 명시적으로 실행할 수도 있고, ``manage.py runserver``, ``manage.py migrate`` 명령에서 자동으로 수행됩니다.
-
-이를 활용하면, ``embedding_dimensions`` 설정은 ``3072``\로 지정했는 데,
-``embedding`` 필드는 ``HalfVectorField``\가 아닌 ``VectorField``\일 경우에는 아래와 같은 에러 메시지를 남길 수 있게 됩니다.
-
-.. figure:: ./assets/system-check-1.png
-
-Document 모델의 임베딩 관련 설정과 필드를 검증하도록 하겠습니다.
-
-* ``embedding_dimensions`` 속성과 ``embedding`` 필드가 정의되어 있는지 확인
-
-* 차원 수에 따른 적절한 벡터 필드 타입 사용 여부 확인
-
-  - 2000차원 이하: ``VectorField`` 사용 가능
-
-  - 2000차원 초과: ``HalfVectorField`` 필수
-
-* 벡터 필드 타입에 맞는 연산자 클래스 사용 확인
-
-  - ``HNSW``, ``IVFFlat`` 인덱스 타입 확인
-
-.. tip::
-
-    각 에러 메시지는 ``debug``, ``info``, ``warning``, ``error``, ``critical`` 레벨을 지원합니다.
-
-.. code-block:: python
-    :caption: ``chat/models.py``
-
-    from django.core import checks
-    from django.core.exceptions import FieldDoesNotExist
-    from pgvector.django import IvfflatIndex
-
-    class Document(models.Model):
-        # ...
-        
-        @classmethod
-        def check(cls, **kwargs):
-            embedding_field_name = "embedding"
-
-            errors = super().check(**kwargs)
-
-            def add_error(msg: str, hint: str = None):
-                errors.append(checks.Error(msg, hint=hint, obj=cls))
-
-            embedding_dimensions: int = getattr(cls, "embedding_dimensions", None)
-            if embedding_dimensions is None:
-                add_error(
-                    "embedding_dimensions 클래스 변수가 누락되었습니다.",
-                    hint="embedding_dimensions 설정을 추가해주세요.",
-                )
-
-            try:
-                embedding_field = cls._meta.get_field(embedding_field_name)
-            except FieldDoesNotExist:
-                add_error(
-                    f"{embedding_field_name} 필드가 누락되었습니다.",
-                    hint="embedding 필드를 추가해주세요.",
-                )
-            else:
-                if embedding_dimensions > 2000:
-                    if not isinstance(embedding_field, HalfVectorField):
-                        add_error(
-                            f"{embedding_dimensions} 차원은 {embedding_field.__class__.__name__}에서 지원하지 않습니다.",
-                            hint=f"{embedding_dimensions} 차원 이상은 HalfVectorField를 사용해주세요.",
-                        )
-
-                for index in cls._meta.indexes:
-                    if embedding_field_name in index.fields:
-                        if isinstance(index, (HnswIndex, IvfflatIndex)):
-                            if embedding_dimensions <= 2000:
-                                for opclass_name in index.opclasses:
-                                    if "halfvec_" in opclass_name:
-                                        add_error(
-                                            f"{embedding_field.name} 필드는 {embedding_field.__class__.__name__} 타입으로서 "
-                                            f"{opclass_name}를 지원하지 않습니다.",
-                                            hint=f"{opclass_name.replace('halfvec_', 'vector_')}로 변경해주세요.",
-                                        )
-                            else:
-                                for opclass_name in index.opclasses:
-                                    if "vector_" in opclass_name:
-                                        add_error(
-                                            f"{embedding_field.name} 필드는 {embedding_field.__class__.__name__} 타입으로서 "
-                                            f"{opclass_name}를 지원하지 않습니다.",
-                                            hint=f"{opclass_name.replace('vector_', 'halfvec_')}로 변경해주세요.",
-                                        )
-                        else:
-                            add_error(
-                                f"Document 모델 check 메서드에서 {index.__class__.__name__}에 대한 확인이 누락되었습니다.",
-                                hint=f"{index.__class__.__name__} 인덱스에 대한 check 루틴을 보완해주세요.",
-                            )
-
-            return errors
-
-
-``TaxLawDocument`` 모델에서 ``embedding`` 필드 재정의 코드를 제거하시면, 부모의 ``VectorField`` 타입으로 동작할 것이구요.
-아래의 시스템 체크 오류 메시지를 확인하실 수 있습니다. :-)
-
-.. figure:: ./assets/system-check-1.png
-
-이제 설정에 오류가 있어도, 장고에서 알려주기에 부담없이 모델을 작성하실 수 있겠죠? 😉
-
-
-데이터 붓기
-===================
-
-모델과 마이그레이션이 오류없이 잘 구성되었습니다. 마이그레이션을 수행해서 데이터베이스에 테이블을 생성해줍니다.
-
-.. code-block:: bash
-
-    uv run python manage.py makemigrations chat
-    uv run python manage.py migrate chat
+모델을 통해 저장하기
+=======================
 
 장고 쉘을 구동하시고 아래 코드를 실행하시면, 1000건의 세법 해석례 jsonl 데이터를 자동으로 다운받고,
-``TaxLawDocument`` 모델을 통해 Postgres 데이터베이스에 데이터를 저장합니다.
-
-.. code-block:: python
-
-    # uv run python manage.py shell_plus --print-sql
-
-    import json
-    from urllib.request import urlopen
-
-    from chat.models import TaxLawDocument
-
-    jsonl_url = "https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl"
-
-    print(f"Downloading {jsonl_url} ...")
-    res_data: bytes = urlopen(jsonl_url).read()
-    print(f"Downloaded {len(res_data)} bytes.")
-    jsonl_data: str = res_data.decode("utf-8")
-
-    doc_list = []
-    for line in jsonl_data.splitlines():
-        obj = json.loads(line)
-        doc_list.append(
-            TaxLawDocument(
-                page_content=obj["page_content"],
-                metadata=obj["metadata"],
-                embedding=obj["embedding"],
-            )
-        )
-
-    print(f"Creating {len(doc_list)} documents...")
-    TaxLawDocument.objects.bulk_create(doc_list)
-    print("Saved.")
-
-    total = TaxLawDocument.objects.all().count()
-    print(f"Total: {total}")
-
-실행결과
-
-.. code-block:: text
-
-    Downloading https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl ...
-    Downloaded 44343331 bytes.
-    Creating 1000 documents...
-    INSERT INTO "chat_taxlawdocument" ("page_content", "metadata", "created_at", "updated_at", "embedding")
-    VALUES ('{"문서ID": "010000000000001684", "제목": "건물의 신축・분양 등을 신탁회사에 위탁한 경우 취득가액의 계산 등", "문서번호": "법인46012-2799", "법령분류": "법인세", "요지": "건물의 신축・분양・임대・유지관리를 위탁하법인이 신탁업법에 의한 신탁회사에 건물의 신축․분양․임대․유지관리를 위탁하고 지급하는 신탁수수료 중 건물신축에 따른 신탁수수료는 당해 건물의 취득원가에 산입하고, 분양 등의 수익을 위해서 지출한 신탁수수료는 당해 법인의 각 건물을 양도하는 경우 특별부가세과세표준을 계산함에 있어 당해 건물의 취득원가에 산입하는 신탁수수료와 제세공과금(취득세, 등록세 등)은 양도가액에서 공제할 수있는 것이고, 위의 신탁과 관련하여 신탁회사가 위탁자를 대리하여[.., '{"url": "https://taxlaw.nt
-
-    Execution time: 36.341453s [Database: default]
-    Saved.
-    SELECT COUNT(*) AS "__count"
-    FROM "chat_taxlawdocument"
-
-    Execution time: 0.009042s [Database: default]
-    Total: 1000
-
-데이터베이스에 접속하여 ``chat_taxlawdocument`` 테이블을 조회해보면, 1000건의 데이터가 저장된 것을 확인할 수 있습니다.
-
-.. figure:: ./assets/tax-raw-table.png
-
-    파이참을 통해 조회해본 ``chat_taxlawdocument`` 테이블 데이터
-
-
-
-질문과 유사한 세법해석례 문서 찾기
-=====================================
-
-세법해석례 RAG를 위한 데이터가 모두 준비되었습니다. 장고 쉘에서 ``TaxLawDocument`` 모델의 ``search`` 메서드를 호출하여
-질문과 유사한 세법해석례 문서를 찾아보겠습니다.
-
-.. code-block:: python
-
-    question = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
-    doc_list = await TaxLawDocument.objects.search(question)
-    for idx, doc in enumerate(doc_list, 1):
-        print(f"문서 #{idx} : 코사인 거리 {doc.distance:.3f}")
-        print(doc)
-        print()
-
-아래와 같이 실행되고, 총 4개의 문서가 검색되었습니다. ``search`` 메서드에서는 디폴트로 4개의 문서를 반환토록 구현되어 있습니다.
-검색된 문서 내용을 살펴보시면 문서 #1에서 "수출실적명세서" 문서가 검색됨을 확인하실 수 있습니다.
-
-.. code-block:: text
-
-    SELECT "chat_taxlawdocument"."id",
-        "chat_taxlawdocument"."page_content",
-        "chat_taxlawdocument"."metadata",
-        "chat_taxlawdocument"."created_at",
-        "chat_taxlawdocument"."updated_at",
-        "chat_taxlawdocument"."embedding", ("chat_taxlawdocument"."embedding" <=> '[0.012661192566156387,
-        0.00366991083137691,
-        -0.006133993621915579,
-
-    Execution time: 0.037542s [Database: default]
-
-    문서 #1 : 코사인 거리 0.425
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248'}, page_content='{"문서ID": "010000000000035248", "제목": "직수출 재화의 영세율 첨부서류", "문서번호": "서삼46015-12043", "법령분류": "부가가치세", "요지": "수출하는 재화의 영세율 첨부서류는 수출실적명세서로 하는 것이나 외화획득내역을 입증할 수 있는 증빙서류로 갈음할 수 있음", "회신": "부가가치세법 제11조 제1항 제1호 및 동법 시행령 제24조 제1항 제1호의 규정에 의한 부가가치세 영세율이 적용되는 수출하는 재화에 있어서 부가가치세 예정신고 또는 확정신고시에 제출하여야 하는 영세율 첨부서류는 동법 시행령 제64조 제3항 제1호의 규정에 의한 재정경제부령이 정하는 수출실적명세서(전자계산조직에 의하여 처리된 테이프 또는 디스켓을 포함하며, 소포우편에 의하여 수출한 경우에는 당해 우체국장이 발행하는 소포수령증)로 하는 것이나,        부득이한 사유로 인하여 당해 서류를 첨부할 수 없는 때에는 국세청장이 정하는 서류로써 갈음할 수 있는 것이며, 법령 또는 훈령에 정한 서류를 제출할 수 없는 경우에는 영세율 규정에 의한 외화획득명세서에 당해 외화획득내역을 입증할 수 있는 증빙서류를 첨부하여 제출하는 것입니다.", "파일내용": "1. 질의내용 요약 당사는 직수출시 수출실적명세서에 수출대금입금증명서를 첨부하고 내국신용장이니 구매확인서에 의하는 경우 관련 사본을 첨부하여 부가세 신고를 하여왔던 바, 타업체에 의하면 2002년 7월부터는 직수출의 경우에는 수출실적명세서만을 첨부하여 신고가능하다고 하는 바, 이의 타당여부? 2. 질의내용에 대한 자료 가. 관련 조세법령(법률,시행령,시행규칙) ○ 부가가치세법 제11조 【영세율 적용】 ① 다음 각호의 재화 또는 용역의 공급에 대하여는 영의 세율을 적용한다. 1. 수출하는 재화 ○ 부가가치세법 시행령 제24조 【수출의 범위】 ① 법 제11조 제1항 제1호의 규정에 의한 수출은 다음 각호의 것으로 한다.(2001. 12. 31 개정) 1. 내국물품(우리나라 선박에 의하여 채포된 수산물을 포함한다)을 외국으로 반출하는 것  2. 국내의 사업장에서 계약과 대가수령 등 거래가 이루어지는 것으로서 다음 각목의 1에 해당하는 것 (2001. 12. 31 개정) 가. 대외무역법에 ...", "공개여부": "공개", "문서분류": "질의", "생성일시": "2003-12-31 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-    문서 #2 : 코사인 거리 0.433
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000009322'}, page_content='{"문서ID": "010000000000009322", "제목": "국제기구에 납품하는 재화의 영세율 첨부서류", "문서번호": "부가1265.1-1676", "법령분류": "부가가치세", "요지": "국제기구 납품재화의 영세율 첨부서류는 수출대금입금증명서 또는 당해 외국정부기관 등이 발급한 납품사실을 증명할 수 있는 서류임", "회신": "영세율 첨부서류는 부가가치세법시행령 제64조 제3항 제6호에 규정한 수출대금입금증명서 또는 당해 외국정부기관 등이 발급한 납품사실을 증명할 수 있는 서류이나, 당해 서류를 부득이한 사유로 인하여 제출할 수 없는 경우에는 외화입금증명서 또는 외환매입증명서나 외국환매각증명서를 첨부한다. (영 제64조 제3항 제6호, ’82. 12. 31 개정)", "파일내용": "", "공개여부": "공개", "문서분류": "질의", "생성일시": "1982-06-24 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-    문서 #3 : 코사인 거리 0.509
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000008161'}, page_content='{"문서ID": "010000000000008161", "제목": "영세율 첨부서류의 미제출시 영세율 적용 여부", "문서번호": "간세1235-2578", "법령분류": "부가가치세", "요지": "영세율 적용대상 과세표준에 대한 신고 시 신고불이행, 신고누락, 첨부서류의 미제출에 관계없이 사실상 적용대상임이 확인되는 경우 영세율이 적용됨", "회신": "사업자가 영세율 적용대상 과세표준에 대하여 예정신고 또는 확정신고 시 신고불이행, 신고누락, 첨부서류의 미제출에 관계없이 사실상 영세율 적용대상임이 확인되는 경우에 한하여 영세율이 적용된다.", "파일내용": "", "공개여부": "공개", "문서분류": "질의", "생성일시": "1978-09-08 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-    문서 #4 : 코사인 거리 0.524
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000099002'}, page_content='{"문서ID": "010000000000099002", "제목": "수정세금계산서를 교부하여야 하는지 여부", "문서번호": "부가22601-1789", "법령분류": "부가가치세", "요지": "수출품생산업자가 수출신용장을 수출업자에게 양도하고 수출대행계약을 체결하여 재화를 수출하는 경우 세금계산서 교부의무가 면제되는 것이나, 수출품생산업자가 이를 착오로 세금계산서를 교부한 경우 수정세금계산서를 교부하여야 하는 것임", "회신": "1. 귀 질의1의 경우 수출품생산업자가 수출신용장을 수출업자에게 양도하고 수출대행계약을 체결하여 재화를 수출하는 경우에는 당해 수출품생산업자가 수출업자로부터 완제품내국신용장을 개설받았다하더라도 세금계산서 교부의무가 면제되는 것이나, 수출품생산업자가 이를 착오하여 세금계산서를 교부한 경우에는 부가가치세법 시행령 제59조의 규정에 의하여 수정세금계산서를 교부하여야 하는 것이며  2. 귀 질의2의 경우는 별첨 소득세 기본통칙 3-1-4...28을 참고.", "파일내용": "1. 질의내용 요약 ○ 수출업자(A)로써 대행 수출시 수출품생산업자(B)에게 수출대행계약서와 함께 완제품 내국신용장을 개설하여 주었습니다. 부가세법 16조 (통칙5-2-12)에는 이러한 경우에도 세금계산서 교부가 면제된다고 되어 있는데 실질적인 거래에서는 B가 A앞으로 세금계산서를 발행하여야 은행에서 NEGO가 되며 결재됩니다. 이럴때 세금계산서 처리 문제를 A입장에서 질의함. 가. 부가세 신고시 발행된 매입세금계산서 나. 소득세에서의 수입금액에의 포함여부. 2. 관련 조세 법령 (법률, 시행령, 시행규칙, 기본통칙) ○ 부가가치세법 시행령 제59조 ○ 소득세법 기본통칙 3-1-4...28 【수출대행의 경우 총수입금액】", "공개여부": "공개", "문서분류": "질의", "생성일시": "1987-08-31 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-
-세법해석례 RAG 챗봇 구현
-==========================
-
-이제 아래의 시스템 프롬프트를 적용하여 세법해석례 RAG를 구현해보겠습니다.
-먼저 시스템 프롬프트를 정의하고, 질문과 유사한 문서를 검색하구요.
-
-.. code-block:: python
-    :caption: 시스템 프롬프트 예시
-    :linenos:
-    :emphasize-lines: 1,29,32,34
-
-    system_prompt = """
-    대한민국 세무/회계 정보 챗봇으로서, 주어진 질답 지식에서 사실과 의견을 구별하여 사실 정보만을 정리하고,
-    각 답변에 해당 정보의 출처까지 함께 기입하여 답변하세요.
-
-    # Steps
-
-    1. 이해하기: 질문과 제공된 지식을 주의 깊게 읽고 정확히 이해합니다.
-    2. 정보 구분하기: 질답 지식에서 사실과 의견을 식별합니다.
-      - 사실: 검증 가능한 데이터, 법률, 규정 및 수치 등
-      - 의견: 개인의 견해, 해석, 추천 등
-    3. 사실 정리하기: 식별된 사실 정보를 논리적이고 명확하게 정리하며, 불필요한 부분은 제거합니다.
-    4. 답변 작성하기: 정리된 사실 정보를 바탕으로 명료하고 간결한 문장으로 구성된 단락 형태의 답변을 작성합니다. 반드시 해당 사실 정보의 출처를 함께 명시합니다.
-      - 가능한 경우 신뢰할 수 있는 출처(예: 정부 기관, 공식 문서, 학술자료 등)를 포함합니다.
-      - 출처가 확인되지 않거나 없는 경우, “출처를 찾을 수 없습니다”라고 명시합니다.
-      - 출처에 문서ID가 포함된 경우, 반드시 문서ID를 기입하고 아래 URL 형식을 참고하여 해당 URL도 함께 포함합니다.
-
-    # Output Format
-
-    - 명료하고 간결한 문장으로 구성된 단락 형태의 답변
-    - 답변 내에 사용한 정보의 출처를 반드시 포함하여 작성
-
-    # Notes
-
-    - 각 세무/회계 정보를 객관적으로 평가하여 답변을 작성합니다.
-    - 모호하거나 불확실한 정보는 제외합니다.
-    - 답변에 반드시 관련 사실 정보의 출처를 함께 기입하여 객관성과 신뢰성을 높입니다.
-    """
-
-    question = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
-
-    # 지식 검색
-    doc_list = await TaxLawDocument.objects.search(question)
-    print(f"{len(doc_list)}개의 문서가 검색되었습니다.")
-    for idx, doc in enumerate(doc_list, 1):
-        print(f"문서 #{idx} : 코사인 거리 {doc.distance:.3f}")
-        print(doc)
-        print()
-
-    context = str(doc_list)  # 지식 컨텍스트 문자열 생성
-
-
-.. admonition:: 검색된 지식
-    :class: dropdown
-
-    문서 #1 : 코사인 거리 0.425
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248'}, page_content='{"문서ID": "010000000000035248", "제목": "직수출 재화의 영세율 첨부서류", "문서번호": "서삼46015-12043", "법령분류": "부가가치세", "요지": "수출하는 재화의 영세율 첨부서류는 수출실적명세서로 하는 것이나 외화획득내역을 입증할 수 있는 증빙서류로 갈음할 수 있음", "회신": "부가가치세법 제11조 제1항 제1호 및 동법 시행령 제24조 제1항 제1호의 규정에 의한 부가가치세 영세율이 적용되는 수출하는 재화에 있어서 부가가치세 예정신고 또는 확정신고시에 제출하여야 하는 영세율 첨부서류는 동법 시행령 제64조 제3항 제1호의 규정에 의한 재정경제부령이 정하는 수출실적명세서(전자계산조직에 의하여 처리된 테이프 또는 디스켓을 포함하며, 소포우편에 의하여 수출한 경우에는 당해 우체국장이 발행하는 소포수령증)로 하는 것이나,        부득이한 사유로 인하여 당해 서류를 첨부할 수 없는 때에는 국세청장이 정하는 서류로써 갈음할 수 있는 것이며, 법령 또는 훈령에 정한 서류를 제출할 수 없는 경우에는 영세율 규정에 의한 외화획득명세서에 당해 외화획득내역을 입증할 수 있는 증빙서류를 첨부하여 제출하는 것입니다.", "파일내용": "1. 질의내용 요약 당사는 직수출시 수출실적명세서에 수출대금입금증명서를 첨부하고 내국신용장이니 구매확인서에 의하는 경우 관련 사본을 첨부하여 부가세 신고를 하여왔던 바, 타업체에 의하면 2002년 7월부터는 직수출의 경우에는 수출실적명세서만을 첨부하여 신고가능하다고 하는 바, 이의 타당여부? 2. 질의내용에 대한 자료 가. 관련 조세법령(법률,시행령,시행규칙) ○ 부가가치세법 제11조 【영세율 적용】 ① 다음 각호의 재화 또는 용역의 공급에 대하여는 영의 세율을 적용한다. 1. 수출하는 재화 ○ 부가가치세법 시행령 제24조 【수출의 범위】 ① 법 제11조 제1항 제1호의 규정에 의한 수출은 다음 각호의 것으로 한다.(2001. 12. 31 개정) 1. 내국물품(우리나라 선박에 의하여 채포된 수산물을 포함한다)을 외국으로 반출하는 것  2. 국내의 사업장에서 계약과 대가수령 등 거래가 이루어지는 것으로서 다음 각목의 1에 해당하는 것 (2001. 12. 31 개정) 가. 대외무역법에 ...", "공개여부": "공개", "문서분류": "질의", "생성일시": "2003-12-31 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-    문서 #2 : 코사인 거리 0.433
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000009322'}, page_content='{"문서ID": "010000000000009322", "제목": "국제기구에 납품하는 재화의 영세율 첨부서류", "문서번호": "부가1265.1-1676", "법령분류": "부가가치세", "요지": "국제기구 납품재화의 영세율 첨부서류는 수출대금입금증명서 또는 당해 외국정부기관 등이 발급한 납품사실을 증명할 수 있는 서류임", "회신": "영세율 첨부서류는 부가가치세법시행령 제64조 제3항 제6호에 규정한 수출대금입금증명서 또는 당해 외국정부기관 등이 발급한 납품사실을 증명할 수 있는 서류이나, 당해 서류를 부득이한 사유로 인하여 제출할 수 없는 경우에는 외화입금증명서 또는 외환매입증명서나 외국환매각증명서를 첨부한다. (영 제64조 제3항 제6호, ’82. 12. 31 개정)", "파일내용": "", "공개여부": "공개", "문서분류": "질의", "생성일시": "1982-06-24 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-    문서 #3 : 코사인 거리 0.509
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000008161'}, page_content='{"문서ID": "010000000000008161", "제목": "영세율 첨부서류의 미제출시 영세율 적용 여부", "문서번호": "간세1235-2578", "법령분류": "부가가치세", "요지": "영세율 적용대상 과세표준에 대한 신고 시 신고불이행, 신고누락, 첨부서류의 미제출에 관계없이 사실상 적용대상임이 확인되는 경우 영세율이 적용됨", "회신": "사업자가 영세율 적용대상 과세표준에 대하여 예정신고 또는 확정신고 시 신고불이행, 신고누락, 첨부서류의 미제출에 관계없이 사실상 영세율 적용대상임이 확인되는 경우에 한하여 영세율이 적용된다.", "파일내용": "", "공개여부": "공개", "문서분류": "질의", "생성일시": "1978-09-08 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-    문서 #4 : 코사인 거리 0.524
-    Document(metadata={'url': 'https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000099002'}, page_content='{"문서ID": "010000000000099002", "제목": "수정세금계산서를 교부하여야 하는지 여부", "문서번호": "부가22601-1789", "법령분류": "부가가치세", "요지": "수출품생산업자가 수출신용장을 수출업자에게 양도하고 수출대행계약을 체결하여 재화를 수출하는 경우 세금계산서 교부의무가 면제되는 것이나, 수출품생산업자가 이를 착오로 세금계산서를 교부한 경우 수정세금계산서를 교부하여야 하는 것임", "회신": "1. 귀 질의1의 경우 수출품생산업자가 수출신용장을 수출업자에게 양도하고 수출대행계약을 체결하여 재화를 수출하는 경우에는 당해 수출품생산업자가 수출업자로부터 완제품내국신용장을 개설받았다하더라도 세금계산서 교부의무가 면제되는 것이나, 수출품생산업자가 이를 착오하여 세금계산서를 교부한 경우에는 부가가치세법 시행령 제59조의 규정에 의하여 수정세금계산서를 교부하여야 하는 것이며  2. 귀 질의2의 경우는 별첨 소득세 기본통칙 3-1-4...28을 참고.", "파일내용": "1. 질의내용 요약 ○ 수출업자(A)로써 대행 수출시 수출품생산업자(B)에게 수출대행계약서와 함께 완제품 내국신용장을 개설하여 주었습니다. 부가세법 16조 (통칙5-2-12)에는 이러한 경우에도 세금계산서 교부가 면제된다고 되어 있는데 실질적인 거래에서는 B가 A앞으로 세금계산서를 발행하여야 은행에서 NEGO가 되며 결재됩니다. 이럴때 세금계산서 처리 문제를 A입장에서 질의함. 가. 부가세 신고시 발행된 매입세금계산서 나. 소득세에서의 수입금액에의 포함여부. 2. 관련 조세 법령 (법률, 시행령, 시행규칙, 기본통칙) ○ 부가가치세법 시행령 제59조 ○ 소득세법 기본통칙 3-1-4...28 【수출대행의 경우 총수입금액】", "공개여부": "공개", "문서분류": "질의", "생성일시": "1987-08-31 00:00:00", "수정일시": "2023-12-08 16:12:13"}')
-
-앞서 검색된 지식과 질문을 LLM 모델엔 제공하여, RAG 챗봇을 완성합니다.
-LLM 모델에 따라 답변 결과가 다르므로, 여러 모델을 활용하여 최적의 답변을 찾아봅니다.
-이중 Anthropic 모델이 가장 마음에 드네요.
-
-위에서 선언한 ``system_prompt``, ``context``, ``question`` 변수를 활용합니다.
+``TaxLawDocument`` 모델을 통해 SQLite 혹은 Postgres 데이터베이스에 데이터를 저장합니다.
 
 .. tab-set::
 
-    .. tab-item:: OpenAI
+    .. tab-item:: sqlite
 
         .. code-block:: python
-            :emphasize-lines: 4,9,10
+            :linenos:
+            :caption: ``python manage.py shell``
+            :emphasize-lines: 18
 
-            import os
-            import openai
+            import json
+            from urllib.request import urlopen
 
-            client = openai.AsyncClient(api_key=os.getenv("OPENAI_API_KEY"))
-            response = await client.chat.completions.create(
-                model="gpt-4o-mini",
-                # model="gpt-4o",
-                messages=[
-                    {"role": "system", "content": system_prompt + f"\n\n참고 문서: {context}"},
-                    {"role": "user", "content": question},
-                ],
-            )
-            print(response.usage, end="\n\n")
-            print("[AI]", response.choices[0].message.content)
+            from chat.models import TaxLawDocument
 
-        .. admonition:: ``gpt-4o-mini`` 실행 결과
+            jsonl_url = "https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl"
 
-            CompletionUsage(completion_tokens=180, prompt_tokens=2623, total_tokens=2803, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))
+            print(f"Downloading {jsonl_url} ...")
+            res_data: bytes = urlopen(jsonl_url).read()
+            print(f"Downloaded {len(res_data)} bytes.")
+            jsonl_data: str = res_data.decode("utf-8")
 
-            [AI] 재화 수출 시 영세율 적용을 위한 첨부 서류로 수출실적명세서를 제출할 수 없는 경우, 외화획득내역을 입증할 수 있는 증빙서류를 대신 첨부하여 제출할 수 있습니다. 이는 부가가치세법 시행령 제64조 및 관련 지침에 따른 것입니다. 따라서, 만약 수출실적명세서를 제출할 수 없는 상황이라면, 해당 외화획득내역을 입증할 수 있는証빙서류를 준비하여 제출하면 됩니다.
+            doc_list = []
+            for idx, line in enumerate(jsonl_data.splitlines()):
+                obj = json.loads(line)
+                doc_list.append(
+                    TaxLawDocument(
+                        id=idx,  # sqlite-vec 에서는 아직 자동 증가 필드를 지원하지 않습니다.
+                        page_content=obj["page_content"],
+                        metadata=obj["metadata"],
+                        embedding=obj["embedding"],
+                    )
+                )
 
-            출처: 부가가치세법 시행령 제64조, [문서ID: 010000000000035248](https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248)
+            print(f"Creating {len(doc_list)} documents...")
+            TaxLawDocument.objects.bulk_create(doc_list)
+            print("Saved.")
 
-        .. admonition:: ``gpt-4o`` 실행 결과
+            total = TaxLawDocument.objects.all().count()
+            print(f"Total: {total}")
 
-            CompletionUsage(completion_tokens=171, prompt_tokens=2623, total_tokens=2794, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=0, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=0), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cached_tokens=0))
+        .. figure:: ./assets/load-data-django-shell.png
 
-            [AI] 재화 수출 시 영세율 첨부서류로 수출실적명세서를 제공할 수 없는 경우, 국세청장이 정하는 다른 서류로 대체할 수 있습니다. 예를 들어, 외화 획득 내역을 입증할 수 있는 증빙서류를 첨부하여 영세율을 적용받을 수 있습니다. 이는 "부가가치세법 제11조 제1항 제1호" 및 동법 시행령 제24조 제1항 제1호의 규정에 명시되어 있습니다.
 
-            출처: [국세청 문서ID 010000000000035248](https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248)
+모델을 통해 코사인 거리 유사도 문서 검색하기
+=============================================
 
-    .. tab-item:: Anthropic ⭐️
+.. code-block:: python
 
-        `Anthropic API Keys <https://console.anthropic.com/settings/keys>`_ 페이지를 통해 API Key 발급받으시고,
-        ``ANTHROPIC_API_KEY`` 환경변수로서 로딩해주세요.
-        ``anthropic`` 라이브러리가 필요합니다.
-        지원 모델은 `Anthropic API 문서 <https://docs.anthropic.com/en/docs/about-claude/models>`_ 참고하세요.
+    doc_list = await TaxLawDocument.objects.search('재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법')
 
-        .. code-block:: python
-            :emphasize-lines: 4,12,14,16
+    for doc in doc_list:
+        print(doc.distance)
+        print(doc.page_content[:100], "...")
+        print()
 
-            import os
-            from anthropic import Anthropic
-
-            client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-            response = client.messages.create(
-                max_tokens=1024,
-                model="claude-3-5-sonnet-latest",
-                # model="claude-3-5-haiku-latest",
-                messages=[
-                    {
-                        "role": "user",
-                        "content": system_prompt
-                        + "\n"
-                        + context
-                        + "\n\nQuestion: "
-                        + question,
-                    },
-                ],
-            )
-            print(response.usage, end="\n\n")
-            print("[AI]", "\n".join(block.text for block in response.content))
-
-        .. admonition:: ``claude-3-5-sonnet-latest`` 실행 결과
-
-            Usage(cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=3730, output_tokens=555)
-
-            [AI] 부가가치세 영세율 관련 첨부서류에 대해 다음과 같이 답변 드립니다:
-
-            1. 기본적인 첨부서류
-            - 재화 수출 시 부가가치세 예정신고 또는 확정신고 시 제출해야 하는 기본 첨부서류는 수출실적명세서입니다.
-            - 전자계산조직에 의한 테이프나 디스켓도 포함되며, 소포우편 수출의 경우 우체국장이 발행하는 소포수령증으로 대체 가능합니다.
-
-            2. 수출실적명세서를 제출할 수 없는 경우의 대체 방안
-            - 부득이한 사유로 수출실적명세서를 첨부할 수 없는 경우, 국세청장이 정하는 서류로 대체할 수 있습니다.
-            - 법령이나 훈령에 정한 서류를 제출할 수 없는 경우, 외화획득명세서에 해당 외화획득내역을 입증할 수 있는 증빙서류를 첨부하여 제출할 수 있습니다.
-
-            출처: 국세청 세무사례, 문서ID: 010000000000035248
-            URL: https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248
-
-            참고사항: 영세율 적용대상임이 사실상 확인되는 경우에는 첨부서류 미제출에 관계없이 영세율이 적용됩니다.
-            출처: 국세청 세무사례, 문서ID: 010000000000008161
-            URL: https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000008161
-
-        .. admonition:: ``claude-3-5-haiku-latest`` 실행 결과
-
-            Usage(cache_creation_input_tokens=0, cache_read_input_tokens=0, input_tokens=3730, output_tokens=455)
-
-            [AI] 재화 수출 시 영세율 첨부 서류와 관련하여 다음과 같은 사실을 정리할 수 있습니다:
-
-            수출하는 재화의 영세율 첨부서류는 원칙적으로 수출실적명세서이나, 부득이한 사유로 해당 서류를 첨부할 수 없는 경우 대체 방법이 있습니다. 이 경우 국세청장이 정하는 서류로 대체할 수 있으며, 구체적으로는 외화획득명세서에 외화획득내역을 입증할 수 있는 증빙서류를 첨부하여 제출할 수 있습니다.
-
-            출처:
-            - 국세청 세무해석 문서 (문서ID: 010000000000035248)
-            - URL: https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248
-
-            추가로, 국세청은 사실상 영세율 적용대상임이 확인되는 경우 신고불이행, 신고누락, 첨부서류 미제출에도 불구하고 영세율을 적용할 수 있음을 명확히 하고 있습니다.
-
-            출처:
-            - 국세청 세무해석 문서 (문서ID: 010000000000008161)
-            - URL: https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000008161
-
-    .. tab-item:: Google
-
-        `Google AI Studio <https://aistudio.google.com/apikey>`_ 페이지를 통해 API Key 발급받으시고,
-        ``GEMINI_API_KEY`` 환경변수로서 로딩해주세요.
-        `google-genai <https://googleapis.github.io/python-genai/>`_ 라이브러리를 통해서 API를 호출합니다.
-
-        .. code-block:: python
-            :emphasize-lines: 5,10,12
-
-            import os
-            from google import genai
-            from google.genai import types
-
-            client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
-
-            response = client.models.generate_content(
-                model="gemini-2.0-flash",
-                config=types.GenerateContentConfig(
-                    system_instruction=system_prompt + f"\n\n참고 문서: {context}",
-                ),
-                contents=question,
-            )
-            print(response.usage_metadata, end="\n\n")
-            print("[AI]", response.text)
-
-        .. admonition:: 실행 결과
-
-            cached_content_token_count=None candidates_token_count=250 prompt_token_count=3025 total_token_count=3275
-
-            [AI] 수출하는 재화에 대한 부가가치세 영세율 적용 시, 원칙적으로는 수출실적명세서를 제출해야 합니다. 하지만 부득이한 사유로 수출실적명세서를 첨부할 수 없는 경우에는 국세청장이 정하는 서류로 대체할 수 있습니다. 이때, 영세율 적용을 위해 외화획득명세서에 해당 외화획득 내역을 입증할 수 있는 증빙서류를 첨부하여 제출해야 합니다. (출처: 국세법령정보시스템, 문서번호 서삼46015-12043, URL: [https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248](https://taxlaw.nts.go.kr/qt/USEQTA002P.do?ntstDcmId=010000000000035248))
-
-    .. tab-item:: DeepSeek
-
-        `DeepSeek 공식문서 <https://api-docs.deepseek.com/>`_ 참고하셔서 API Key 발급받으시고
-        ``DEEPSEEK_API_KEY`` 환경변수로서 로딩해주세요.
-        ``openai`` 라이브러리를 통해서 딥시크 API를 호출합니다.
-        ``api_key`` 항목에는 딥시크 API Key를 입력하시고
-        ``base_url`` 항목에는 ``https://api.deepseek.com``\을 입력해주세요.
-        나머진 OpenAI 라이브러리 사용법과 동일합니다.
-
-        .. code-block:: python
-            :emphasize-lines: 5-6,11-12
-
-            import os
-            import openai
-
-            client = openai.AsyncClient(
-                api_key=os.getenv("DEEPSEEK_API_KEY"),
-                base_url="https://api.deepseek.com",
-            )
-            response = await client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[
-                    {"role": "system", "content": system_prompt + f"\n\n참고 문서: {context}"},
-                    {"role": "user", "content": question},
-                ],
-            )
-            print(response.usage, end="\n\n")
-            print("[AI]", response.choices[0].message.content)
-        
-        .. admonition:: 계정 잔고를 확인해주세요.
-            :class: warning
-
-            `계정 잔고 <https://platform.deepseek.com/top_up>`_\가 없으면 아래 ``Insufficient Balance`` 오류가 발생합니다.
-
-            .. code-block:: text
-
-                APIStatusError: Error code: 402 - {'error': {'message': 'Insufficient Balance', 'type': 'unknown_error', 'param': None, 'code': 'invalid_request_error'}}
-        
-        .. tip::
-
-            ``deepseek-chat`` 모델은 ``DeepSeek-V3`` 모델을 통해 처리되며,
-            ``deekseek-reasoner`` 모델은 ``DeepSeek-R1`` 모델을 통해 처리됩니다.
-
-Claude Sonnet API가 가장 비싸지만 저는 가장 좋은 답변으로 와닿았습니다.
-OpenAI는 이과 감성, Claude API가 문과 감성이 있는 느낌입니다.
-
-.. admonition:: API 가격
-    :class: tip
-
-    각 모델의 답변과 API 가격을 참고해서, 비용 대비 최적의 모델을 상황에 맞춰 사용하세요.
-
-    .. list-table:: `OpenAI API 가격 <https://openai.com/api/pricing/>`_\, `Anthropic API 가격 <https://www.anthropic.com/pricing#anthropic-api>`_\, `Google API 가격 <https://ai.google.dev/pricing?hl=ko#2_0flash>`_\, `DeepSeek API 가격 <https://api-docs.deepseek.com/quick_start/pricing>`_
-        :header-rows: 1
-        :class: align-right
-
-        * - 모델
-          - Input 토큰 가격 (1백만 토큰)
-          - Output 토큰 가격 (1백만 토큰)
-        * - OpenAI gpt-4o-mini
-          - $0.15
-          - $0.60
-        * - OpenAI gpt-4o
-          - $2.50
-          - $10.00
-        * - Anthropic Claude 3.5 Haiku
-          - $0.80
-          - $4.00
-        * - Anthropic Claude 3.5 Sonnet
-          - $3.00
-          - $15.00
-        * - DeepSeek deepseek-chat
-          - $0.14
-          - $0.28
-        * - DeekSeek deepseek-reasoner
-          - $0.55
-          - $2.19
+.. figure:: ./assets/load-data-search.png

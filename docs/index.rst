@@ -23,15 +23,16 @@ LLM을 활용한 애플리케이션 개발에서 자주 언급되는 ``Streamlit
 RAG/에이전트와 함께 여러분의 파이썬/장고 페이스메이커가 되겠습니다. 🥳
 
 .. toctree::
-   :maxdepth: 1
-   :caption: 목차
-   :hidden:
+    :maxdepth: 1
+    :caption: 목차
+    :hidden:
 
-   rag-01/index
-   rag-02/index
-   quickstart/index
-   quickstart_02/index
-   consumers/index
-   django/index
-   setup/index
-   utils/index
+    rag-01/index
+    rag-02/index
+    quickstart/index
+    quickstart_02/index
+    consumers/index
+    django/index
+    setup/index
+    utils/index
+    hands-on-lab/index
