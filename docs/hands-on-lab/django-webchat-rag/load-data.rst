@@ -72,7 +72,7 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
         .. code-block:: python
             :linenos:
             :caption: ``python manage.py shell``
-            :emphasize-lines: 18
+            :emphasize-lines: 18-20
 
             import json
             from urllib.request import urlopen
@@ -91,7 +91,9 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
                 obj = json.loads(line)
                 doc_list.append(
                     TaxLawDocument(
-                        id=idx,  # sqlite-vec 에서는 아직 자동 증가 필드를 지원하지 않습니다.
+                        # sqlite-vec 에서는 아직 자동 증가 필드를 지원하지 않습니다.
+                        # postgres 에서는 id 값 (기본키) 지정을 하지 않으셔도 됩니다.
+                        id=idx,
                         page_content=obj["page_content"],
                         metadata=obj["metadata"],
                         embedding=obj["embedding"],
