@@ -40,7 +40,7 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
                 user_message
             )
             지식 = str(doc_list)
-            system_prompt = self.system_prompt + "\n\n" + "참고문서 : {지식}"
+            system_prompt = self.system_prompt + "\n\n" + f"참고문서 : {지식}"
 
             ai_message = make_ai_message(
                 system_prompt=system_prompt,  # 변경된 시스템 프롬프트를 반영
