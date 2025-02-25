@@ -20,6 +20,10 @@ LLM을 활용한 애플리케이션 개발에서 자주 언급되는 ``Streamlit
 
   - :doc:`./quickstart_02/index`
 
+* 핸즈온랩
+
+  - :doc:`/hands-on-lab/django-webchat-rag/index`
+
 RAG/에이전트와 함께 여러분의 파이썬/장고 페이스메이커가 되겠습니다. 🥳
 
 .. toctree::
