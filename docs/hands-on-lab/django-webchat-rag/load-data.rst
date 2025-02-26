@@ -34,6 +34,39 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
     이는 대용량 데이터를 다룰 때 유용한 포맷으로, 스트리밍 처리가 가능하고 메모리 효율적입니다.
 
 
+모델을 통해 저장하기
+=======================
+
+터미널에서 ``django-pyhub-rag`` 라이브러리의 ``load_jsonl`` 명령을 실행해주세요.
+1000건의 세법 해석례 jsonl 데이터를 자동으로 다운받고,
+``chat`` 앱의 ``TaxLawDocument`` 모델을 통해 ``settings.DATABASES['default']`` 에 지정된 데이터베이스에 저장합니다.
+
+.. tab-set::
+
+    .. tab-item:: 파워쉘
+
+        .. code-block:: shell
+
+            $URL = "https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl"
+            python manage.py load_jsonl chat.TaxLawDocument $URL
+
+    .. tab-item:: 명령프롬프트
+
+        .. code-block:: shell
+
+            set URL=https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl
+            python manage.py load_jsonl chat.TaxLawDocument %URL%
+
+    .. tab-item:: macOS 쉘
+
+        .. code-block:: shell
+
+            URL=https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl
+            python manage.py load_jsonl chat.TaxLawDocument $URL
+
+.. figure:: ./assets/load-data/django-shell.png
+
+
 장고 쉘 구동하기
 =======================
 
@@ -56,58 +89,6 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
     .. tab-item:: 기본 파이썬 쉘 상황
 
         .. figure:: ./assets/load-data/shell-python.png
-
-
-모델을 통해 저장하기
-=======================
-
-``ipython`` 쉘로 구동된 장고 쉘에서 아래 코드를 복&붙으로 실행해주세요.
-1000건의 세법 해석례 jsonl 데이터를 자동으로 다운받고,
-``TaxLawDocument`` 모델을 통해 SQLite 혹은 Postgres 데이터베이스에 데이터를 저장합니다.
-
-.. tab-set::
-
-    .. tab-item:: sqlite
-
-        .. code-block:: python
-            :linenos:
-            :caption: ``python manage.py shell``
-            :emphasize-lines: 18-20
-
-            import json
-            from urllib.request import urlopen
-
-            from chat.models import TaxLawDocument
-
-            jsonl_url = "https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl"
-
-            print(f"Downloading {jsonl_url} ...")
-            res_data: bytes = urlopen(jsonl_url).read()
-            print(f"Downloaded {len(res_data)} bytes.")
-            jsonl_data: str = res_data.decode("utf-8")
-
-            doc_list = []
-            for idx, line in enumerate(jsonl_data.splitlines()):
-                obj = json.loads(line)
-                doc_list.append(
-                    TaxLawDocument(
-                        # sqlite-vec 에서는 아직 자동 증가 필드를 지원하지 않습니다.
-                        # postgres 에서는 id 값 (기본키) 지정을 하지 않으셔도 됩니다.
-                        id=idx,
-                        page_content=obj["page_content"],
-                        metadata=obj["metadata"],
-                        embedding=obj["embedding"],
-                    )
-                )
-
-            print(f"Creating {len(doc_list)} documents...")
-            TaxLawDocument.objects.bulk_create(doc_list)
-            print("Saved.")
-
-            total = TaxLawDocument.objects.all().count()
-            print(f"Total: {total}")
-
-        .. figure:: ./assets/load-data/django-shell.png
 
 
 모델을 통해 코사인 거리 유사도 문서 검색하기
