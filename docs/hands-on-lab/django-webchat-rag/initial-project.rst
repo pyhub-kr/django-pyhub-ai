@@ -167,7 +167,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
 .. code-block:: shell
 
-    python -m pip install -r requirements.txt
+    python -m pip install --upgrade -r requirements.txt
 
 .. figure:: ./assets/initial-project/requirements-txt.png
 
