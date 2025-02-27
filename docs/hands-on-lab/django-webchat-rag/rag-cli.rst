@@ -366,3 +366,126 @@ OpenAI LLM을 비롯한 모든 LLM은 대화 기록을 저장하는 기능이 �
 
 파이썬 리스트가 아닌 장고 모델을 통해서 대화 기록을 저장/관리하실 수도 있습니다.
 이에 대해서는 다음 :doc:`./chat-room` 문서에서 이어 다루겠습니다.
+
+
+
+5. RAG 대화
+=====================
+
+LLM은 검색엔진이 아닙니다. 단지 알고 있는 지식에 기반해서 답변을 생성할 뿐입니다.
+따라서 LLM이 모르는 지식에 대해서는 환각 (Hallucination)이 발생할 수 밖에 없습니다.
+충분한 지식이 있는 상황에서는 환각이 발생할 확률이 낮아집니다.
+
+.. tip::
+
+    RAG 개념에 대해서는 :doc:`/rag-01/index` 튜토리얼과 :doc:`/rag-02/index` 튜토리얼을 참고하세요.
+
+.. figure:: /rag-01/assets/llm-rag.png
+   :name: llm-rag
+
+   관련 지식과 함께 질문하면, LLM이 모르는 지식(회사 정보 등)을 보충해서 정확한 답변을 할 수 있습니다.
+
+RAG는 LLM에게 답변을 요청하기 전에, 미리 **질문과 비슷한 내용의  지식**\을 검색하여 찾은 지식과 질문을 LLM에게 함께 제공하여,
+정확한 지식에 기반하여 LLM이 내용을 정리해주는 방식입니다.
+이러한 지식 데이터베이스를 Vector Store라고 부릅니다. 다양한 Vector Store 솔루션이 있지만,
+우리는 장고 모델을 통해 Vector Store를 구현했습니다.
+
+sqlite-vec/pgvector 기반으로 장고 모델을 통해 벡터 스토어를 구현하면, 다음과 같은 장점이 있습니다:
+
+1. 애플리케이션 통합성 - 별도 인프라 추가없이 빠르게 벡터 스토어를 구현할 수 있습니다. 물론 **문서만 별도 데이터베이스를 통해 관리할 수도** 있습니다.
+2. 확장성 - 상황에 따라 (로컬환경, 소규모, 대규모 운영환경) SQLite, PostgreSQL 등 데이터베이스 백엔드를 변경할 수 있습니다.
+3. 관리 용이성 - 장고 어드민을 통해 벡터 데이터를 쉽게 관리하고 모니터링할 수 있습니다.
+4. 일관된 데이터 접근 - 다른 모델과 동일한 방식으로 벡터 데이터에 접근할 수 있어 개발 일관성이 유지됩니다.
+5. 마이그레이션 지원 - 장고의 마이그레이션 시스템을 통해 벡터 스토어 스키마 변경을 관리할 수 있습니다.
+
+다음과 같이 간결하게 지식을 찾고 프롬프트에 적용하여 RAG 답변을 생성할 수 있습니다.
+
+.. code-block:: python
+
+    user_input = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
+
+    doc_list = await TaxLawDocument.objects.search(user_input)
+    지식 = str(doc_list)
+    user_input = f"""<context>{지식}</context>\n\n질문 : {user_input}"""
+
+
+.. tip::
+
+    ``await``\는 ``async`` 함수 내에서만 사용할 수 있습니다.
+    동기 함수 내에서 await 함수를 호출할려면 ``async_to_sync`` 함수를 통해 동기 함수로 변환한 뒤에 호출할 수 있습니다.
+
+
+.. admonition:: ``chat/management/commands/chat-rag-cli.py``
+    :class: dropdown
+
+    .. code-block:: python
+        :linenos:
+        :emphasize-lines: 1,4,7-31,39,55-61
+
+        from asgiref.sync import async_to_sync
+        from django.core.management.base import BaseCommand
+        from chat.llm import LLM
+        from chat.models import TaxLawDocument
+
+        system_prompt = """
+        대한민국 세무/회계 정보 챗봇으로서, 주어진 질답 지식에서 사실과 의견을 구별하여 사실 정보만을 정리하고,
+        각 답변에 해당 정보의 출처까지 함께 기입하여 답변하세요.
+
+        # Steps
+
+        1. 이해하기: 질문과 제공된 지식을 주의 깊게 읽고 정확히 이해합니다.
+        2. 정보 구분하기: 질답 지식에서 사실과 의견을 식별합니다.
+        - 사실: 검증 가능한 데이터, 법률, 규정 및 수치 등
+        - 의견: 개인의 견해, 해석, 추천 등
+        3. 사실 정리하기: 식별된 사실 정보를 논리적이고 명확하게 정리하며, 불필요한 부분은 제거합니다.
+        4. 답변 작성하기: 정리된 사실 정보를 바탕으로 명료하고 간결한 문장으로 구성된 단락 형태의 답변을 작성합니다. 반드시 해당 사실 정보의 출처를 함께 명시합니다.
+        - 가능한 경우 신뢰할 수 있는 출처(예: 정부 기관, 공식 문서, 학술자료 등)를 포함합니다.
+        - 출처가 확인되지 않거나 없는 경우, “출처를 찾을 수 없습니다”라고 명시합니다.
+        - 출처에 문서ID가 포함된 경우, 반드시 문서ID를 기입하고 아래 URL 형식을 참고하여 해당 URL도 함께 포함합니다.
+
+        # Output Format
+
+        - 명료하고 간결한 문장으로 구성된 단락 형태의 답변
+        - 답변 내에 사용한 정보의 출처를 반드시 포함하여 작성
+
+        # Notes
+
+        - 각 세무/회계 정보를 객관적으로 평가하여 답변을 작성합니다.
+        - 모호하거나 불확실한 정보는 제외합니다.
+        - 답변에 반드시 관련 사실 정보의 출처를 함께 기입하여 객관성과 신뢰성을 높입니다.
+        """
+
+
+        class Command(BaseCommand):
+            help = "OpenAI를 이용한 번역 채팅"
+
+            def handle(self, *args, **options):
+                self.stdout.write(self.style.SUCCESS('세무/회계 정보 챗봇을 시작합니다. 종료하려면 "quit" 또는 "exit"를 입력하세요.'))
+
+                llm = LLM(model="gpt-4o-mini", temperature=1, system_prompt=system_prompt)
+
+                while True:
+                    try:
+                        user_input = input("\n[Human] ").strip()
+                    except (KeyboardInterrupt, EOFError):
+                        self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))
+                        break
+
+                    if user_input.lower() in ["quit", "exit"]:
+                        self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))
+                        break
+
+                    if user_input:
+                        # 세법 해석례 문서 검색이 필요할 때
+                        if user_input.startswith("!"):
+                            user_input = user_input[1:].strip()
+                            # RAG를 원하는 모델을 사용하여 유사 문서 검색
+                            doc_list = async_to_sync(TaxLawDocument.objects.search)(user_input)
+                            지식 = str(doc_list)
+                            user_input = f"""<context>{지식}</context>\n\n질문 : {user_input}"""
+
+                        ai_message = llm.make_reply(user_input)
+                        self.stdout.write(self.style.SUCCESS(f"[AI] {ai_message}"))
+
+
+.. figure:: ./assets/rag-cli/rag.png
