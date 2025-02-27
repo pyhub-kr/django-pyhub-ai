@@ -9,6 +9,39 @@ Anthropic 응답이 좀 더 자연스럽습니다.
     같은 프롬프트의 claude-3-7-sonnet-20250219 모델 응답
 
 
+라이브러리 설치
+====================
+
+.. code-block:: text
+    :caption: ``requirements.txt`` 파일에 추가
+
+    anthropic
+
+
+API_KEY 발급 및 등록
+============================
+
+Anthropic API Key는 https://console.anthropic.com/settings/keys 페이지에서 발급받으실 수 있습니다.
+
+발급받으신 api key를 복사하여 ``.env`` 파일에 ``ANTHROPIC_API_KEY`` 환경변수로서 등록해주세요.
+
+.. code-block:: text
+    :caption: ``.env`` 파일
+
+    OPENAI_API_KEY=sk-...
+    ANTHROPIC_API_KEY=sk-ant-api03-...
+
+``settings``\에서도 환경변수 참조를 위해 ``ANTHROPIC_API_KEY`` 설정을 추가합니다.
+
+.. code-block:: python
+    :caption: ``mysite/settings.py`` 파일에 추가
+
+    # Anthropic API Key
+    # default 값을 지정하지 않았기에 지정 환경변수가 없더라도 예외가 발생하지 않습니다.
+    ANTHROPIC_API_KEY = env.str("ANTHROPIC_API_KEY", default=None)
+
+
+
 model 인자에 따른 API 호출 분기
 =====================================
 
@@ -19,7 +52,7 @@ model 인자에 따른 API 호출 분기
 
     .. code-block:: python
         :linenos:
-        :emphasize-lines: 1,11-13
+        :caption: ``chat/llm.py`` 파일
 
         from typing import Dict, List, Optional, Literal, Union, cast
 

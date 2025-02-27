@@ -80,11 +80,6 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     OpenAI API Key는 https://platform.openai.com/api-keys 페이지에서 발급받으실 수 있습니다.
   - 본인의 OpenAI API Key 생성이 어려우신 분은 핸즈온랩 시간 동안에만 사용하실 Key를 제공해드립니다.
 
-* ``ANTHROPIC_API_KEY`` : Anthropic API 키
-
-  - OpenAI API 외에도 다양한 LLM API Key를 등록해서 활용하실 수 있습니다. (Anthropic, Gemini, DeepSeek 등)
-  - Anthropic API Key는 https://console.anthropic.com/settings/keys 페이지에서 발급받으실 수 있습니다.
-
 
 .. figure:: ./assets/initial-project/dot-env.png
 
@@ -97,7 +92,6 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
         .. code-block:: text
 
             OPENAI_API_KEY=sk-...
-            # ANTHROPIC_API_KEY=sk-ant-api03-...
 
     .. tab-item:: pgvector를 사용할 경우
 
@@ -105,7 +99,6 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
             DATABASE_URL=postgresql://postgres.euvmdqdkpiseywirljvs:암호@aws-0-ap-northeast-2.pooler.supabase.com:5432/postgres
             OPENAI_API_KEY=sk-...
-            # ANTHROPIC_API_KEY=sk-ant-api03-...
 
 .. warning::
 
@@ -128,14 +121,13 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
         .. code-block:: text
             :caption: ``requirements.txt``
-            :emphasize-lines: 8-9
+            :emphasize-lines: 7-8
 
             django-pyhub-rag
             django-environ
             django-extensions
             django-lifecycle
             openai
-            anthropic
 
             sqlite-vec
             numpy
@@ -148,14 +140,13 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
         .. code-block:: text
             :caption: ``requirements.txt``
-            :emphasize-lines: 8-9
+            :emphasize-lines: 7-8
 
             django-pyhub-rag
             django-environ
             django-extensions
             django-lifecycle
             openai
-            anthropic
 
             psycopg2-binary
             pgvector
@@ -178,7 +169,6 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     * ``django-extensions`` : 다양한 장고 확장 편의 기능 제공
     * ``django-lifecycle`` : 장고 모델 레코드 생성/수정/삭제 시에 호출할 함수를 직관적으로 작성
     * ``openai`` : OpenAI API 라이브럴  
-    * ``anthropic`` : Anthropic API 호출
     * ``sqlite-vec`` : SQLite 벡터스토어 확장
     * ``numpy`` : 벡터 배열 데이터 변환에 활용
     * ``psycopg2-binary`` : PostgreSQL 데이터베이스 드라이버
@@ -293,20 +283,15 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     # 필수 설정이 누락되면 애플리케이션이 구동되지 않아야 합니다.
     OPENAI_API_KEY = env.str("OPENAI_API_KEY")
 
-    # Anthropic API Key
-    # default 값을 지정하지 않았기에 지정 환경변수가 없더라도 예외가 발생하지 않습니다.
-    ANTHROPIC_API_KEY = env.str("ANTHROPIC_API_KEY", default=None)
-
 
 다음 명령으로 장고 settings 내에서 환경변수 값을 ``settings`` 설정에 정확히 반영되었는 지 확인합니다.
 
 * ``print(settings.DATABASES)`` : 데이터베이스 연결 정보 확인
 * ``print(settings.OPENAI_API_KEY)`` : OpenAI API Key 확인
-* ``print(settings.ANTHROPIC_API_KEY)`` : Anthropic API Key 확인
 
 .. code-block:: shell
 
-    python manage.py shell -c "from django.conf import settings; print(settings.DATABASES); print(settings.OPENAI_API_KEY); print(settings.ANTHROPIC_API_KEY)"
+    python manage.py shell -c "from django.conf import settings; print(settings.DATABASES); print(settings.OPENAI_API_KEY);"
 
 .. warning::
 
