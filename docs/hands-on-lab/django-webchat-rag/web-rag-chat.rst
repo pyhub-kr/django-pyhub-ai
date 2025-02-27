@@ -12,10 +12,24 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
 
 .. code-block:: python
     :linenos:
-    :caption: ``chat/models.py`` 파일 수정
-    :emphasize-lines: 1,21-32,38
+    :caption: ``chat/models.py`` 파일 덮어쓰기
+    :emphasize-lines: 1,35-44,50
 
     from asgiref.sync import async_to_sync
+    from django.db import models
+    from django_lifecycle import AFTER_UPDATE, LifecycleModelMixin, hook
+    from pyhub.rag.fields.sqlite import SQLiteVectorField
+    from pyhub.rag.models.sqlite import SQLiteVectorDocument
+    from chat.llm import LLM
+
+
+    class TaxLawDocument(SQLiteVectorDocument):
+        embedding = SQLiteVectorField(
+            dimensions=3072,
+            editable=False,
+            embedding_model="text-embedding-3-large",
+        )
+
 
     class Room(LifecycleModelMixin, models.Model):
         name = models.CharField(max_length=255)
@@ -40,9 +54,7 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
             if user_message.startswith("!"):
                 user_message = user_message[1:]
                 # RAG를 원하는 모델을 사용하여 유사 문서 검색
-                doc_list = async_to_sync(TaxLawDocument.objects.search)(
-                    user_message
-                )
+                doc_list = async_to_sync(TaxLawDocument.objects.search)(user_message)
                 지식 = str(doc_list)
                 system_prompt = self.system_prompt + "\n\n" + f"참고문서 : {지식}"
             else:
@@ -65,6 +77,25 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
 
         class Meta:
             ordering = ["-pk"]
+
+
+    class Message(models.Model):
+        class Role(models.TextChoices):
+            USER = "user"
+            ASSISTANT = "assistant"
+
+        room = models.ForeignKey(Room, on_delete=models.CASCADE)
+        role = models.CharField(max_length=255, choices=Role.choices, default=Role.USER)
+        content = models.TextField()
+        created_at = models.DateTimeField(auto_now_add=True)
+        updated_at = models.DateTimeField(auto_now=True)
+
+        def __str__(self):
+            return self.content
+
+        class Meta:
+            ordering = ["pk"]
+
 
 
 .. note::
@@ -119,24 +150,3 @@ http://localhost:8000/chat/new/ 페이지에서 새로운 세무/회계 챗봇 �
 아래와 같이 십여초 후에 RAG 결과를 포함한 답변을 얻을 수 있습니다.
 
 .. figure:: ./assets/web-rag-chat/play.gif
-
-
-개선 포인트
-================
-
-#. 답변 퀄리티
-
-   - OpenAI 의 GPT-4o-mini 모델을 사용했기에 답변 퀄리티가 좋지 않습니다.
-     :doc:`/rag-02/index` 튜토리얼의 :doc:`/rag-02/taxlaw` 문서에서 OpenAI, Anthropic, Google 의 여러 모델에 대한 답변을 비교해보실 수 있습니다.
-     Claude 3.5 Sonnet 모델이 가장 좋은 답변을 생성했습니다.
-
-#. 응답 속도
-
-   - 현재 데이터베이스 인덱스가 걸려있지 않아서 유사 문서 검색 속도가 느립니다. ``django-pyhub-rag`` 라이브러리에서는 ``pgvector``\에 대해서는 인덱스를 지원하며, ``sqlite-vec``\에 대해서는 곧 인덱스를 지원할 예정입니다.
-
-#. UX 개선
-
-   - 응답이 오기까지 시간이 오래 걸려 화면에 변화가 전혀 없어 사용자 경험이 좋지 않습니다.
-   - 메시지 응답을 하는 동안 로딩 아이콘을 표시하여 사용자가 대기 중임을 알 수 있도록 할 수 있습니다. ``htmx``\와 함께 ``alpine.js``\를 사용하면 손쉽게 구현할 수 있습니다.
-   - 서버에서 진행 상황도 중간 중간 생성할 수 있다면, 서버에서 스트리밍 방식으로 응답을 한다면 유저에게 더 나은 경험을 제공할 수 있습니다.
-   - 웹소켓 방식으로 채팅 화면을 구현하면 더 나은 경험을 제공할 수 있습니다. 장고에서는 ``channels``\를 통해 장고 스타일의 웹소켓을 지원합니다.

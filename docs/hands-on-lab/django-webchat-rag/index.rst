@@ -59,3 +59,5 @@
     web-chat-using-htmx
     web-rag-chat
     closing
+    styles
+    anthropic

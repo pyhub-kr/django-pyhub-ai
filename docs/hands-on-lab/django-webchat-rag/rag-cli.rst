@@ -105,7 +105,11 @@ LLM 모델은 ``gpt-4o-mini`` 모델을 사용했으며, `다른 OpenAI API 모�
                 )
 
                 while True:
-                    user_input = input("\n[Human] ").strip()
+                    try:
+                        user_input = input("\n[Human] ").strip()
+                    except (KeyboardInterrupt, EOFError):
+                        self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))
+                        break
 
                     if user_input.lower() in ["quit", "exit"]:
                         self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))
@@ -177,7 +181,7 @@ LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이�
 
     .. code-block:: python
         :linenos:
-        :emphasize-lines: 2,36
+        :emphasize-lines: 2,40
 
         from django.core.management.base import BaseCommand
         from chat.llm import make_ai_message
@@ -207,7 +211,11 @@ LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이�
                 )
 
                 while True:
-                    user_input = input("\n[Human] ").strip()
+                    try:
+                        user_input = input("\n[Human] ").strip()
+                    except (KeyboardInterrupt, EOFError):
+                        self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))
+                        break
 
                     if user_input.lower() in ["quit", "exit"]:
                         self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))
@@ -304,7 +312,7 @@ OpenAI LLM을 비롯한 모든 LLM은 대화 기록을 저장하는 기능이 �
 
     .. code-block:: python
         :linenos:
-        :emphasize-lines: 2,29,39
+        :emphasize-lines: 2,29,43
 
         from django.core.management.base import BaseCommand
         from chat.llm import LLM
@@ -337,7 +345,11 @@ OpenAI LLM을 비롯한 모든 LLM은 대화 기록을 저장하는 기능이 �
                 llm = LLM(model="gpt-4o-mini", temperature=1, system_prompt=system_prompt)
 
                 while True:
-                    user_input = input("\n[Human] ").strip()
+                    try:
+                        user_input = input("\n[Human] ").strip()
+                    except (KeyboardInterrupt, EOFError):
+                        self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))
+                        break
 
                     if user_input.lower() in ["quit", "exit"]:
                         self.stdout.write(self.style.SUCCESS("프로그램을 종료합니다."))

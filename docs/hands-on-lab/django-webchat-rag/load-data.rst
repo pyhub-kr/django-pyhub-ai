@@ -127,6 +127,8 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 
 .. code-block:: python
 
+    from chat.models import TaxLawDocument
+
     query = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
     doc_list = await TaxLawDocument.objects.search(query)
 
