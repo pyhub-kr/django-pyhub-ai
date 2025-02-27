@@ -51,7 +51,7 @@ HTMX를 활용한 채팅 메시지 전송 및 응답 화면 렌더링
 
 .. code-block:: html+django
     :linenos:
-    :caption: ``chat/templates/chat/room_detail.html`` 파일 수정
+    :caption: ``chat/templates/chat/room_detail.html`` 파일 덮어쓰기
     :emphasize-lines: 12,16-19
 
     {% extends "chat/base.html" %}

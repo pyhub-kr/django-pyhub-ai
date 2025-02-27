@@ -42,15 +42,15 @@ LLM 모델은 ``gpt-4o-mini`` 모델을 사용했으며, `다른 OpenAI API 모�
         예시:
 
         <질문>안녕하세요.</질문>
-        <답변>반갑습니다. (영어: Hello.)</답변>
+        <답변>반갑습니다. 저는 Tom 입니다. (영어: Nice to meet you. I am Tom.)</답변>
 
         <질문>Hello.</질문>
-        <답변>안녕하세요. (영어: Hello.)</답변>
+        <답변>Nice to meet you. I am Tom. (한국어: 안녕하세요. 저는 Tom 입니다.)</답변>
             """
 
             try:
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",  # 또는 "gpt-4" 등 다른 모델 사용 가능
+                    model="gpt-4o-mini",  # 또는 "gpt-4o" 등 다른 모델 사용 가능
                     messages=[
                         {
                             "role": "system",
@@ -126,9 +126,10 @@ LLM 모델은 ``gpt-4o-mini`` 모델을 사용했으며, `다른 OpenAI API 모�
 3. 번역 채팅 CLI 구현
 =========================
 
-LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이기 위해 ``chat/utils.py`` 파일로 분리합니다.
+LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이기 위해 ``chat/llm.py`` 파일로 분리하고,
+``model``, ``temperature``, ``max_tokens`` 등 모델 설정 인자를 추가하여 더 유연하게 사용할 수 있도록 합니다.
 
-.. admonition:: ``chat/utils.py``
+.. admonition:: ``chat/llm.py``
     :class: dropdown
 
     .. code-block:: python
@@ -139,14 +140,21 @@ LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이�
 
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
-        def make_ai_message(system_prompt: str, human_message: str):
+
+        def make_ai_message(
+            system_prompt: str,
+            human_message: str,
+            model: str = "gpt-4o-mini",
+            temperature: float = 0.2,
+            max_tokens: int = 1000,
+        ):
             """
             OpenAI의 Chat Completion API를 사용하여 응답을 생성하는 함수
             """
 
             try:
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",  # 또는 "gpt-4" 등 다른 모델 사용 가능
+                    model=model,
                     messages=[
                         {
                             "role": "system",
@@ -154,12 +162,13 @@ LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이�
                         },
                         {"role": "user", "content": human_message},
                     ],
-                    temperature=0.2,
-                    max_tokens=1000,
+                    temperature=temperature,
+                    max_tokens=max_tokens,
                 )
                 return response.choices[0].message.content
             except Exception as e:
                 return f"API 호출에서 오류가 발생했습니다: {str(e)}"
+
 
 ``chat-rag-cli.py`` 파일에서는 글자수를 계산하는 ``len(user_input)`` 대신 ``ai_message = make_ai_message(system_prompt, user_input)`` 함수를 호출하여 LLM 응답을 생성하겠습니다.
 
@@ -168,9 +177,10 @@ LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이�
 
     .. code-block:: python
         :linenos:
+        :emphasize-lines: 2,36
 
         from django.core.management.base import BaseCommand
-        from chat.utils import make_ai_message
+        from chat.llm import make_ai_message
 
         system_prompt = """
         너는 번역가야.
@@ -180,10 +190,10 @@ LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이�
         예시:
 
         <질문>안녕하세요.</질문>
-        <답변>반갑습니다. (영어: Hello.)</답변>
+        <답변>반갑습니다. 저는 Tom 입니다. (영어: Nice to meet you. I am Tom.)</답변>
 
         <질문>Hello.</질문>
-        <답변>안녕하세요. (영어: Hello.)</답변>
+        <답변>Nice to meet you. I am Tom. (한국어: 안녕하세요. 저는 Tom 입니다.)</답변>
         """
 
         class Command(BaseCommand):
@@ -221,56 +231,83 @@ LLM 응답을 생성하는 ``make_ai_message`` 함수는 재사용성을 높이�
 OpenAI LLM을 비롯한 모든 LLM은 대화 기록을 저장하는 기능이 없습니다.
 따라서 애플리케이션에서 대화 기록을 저장하고, 매 대화마다 대화 기록을 전달하여 LLM 응답을 생성해야 합니다.
 
-``make_ai_message`` 함수 인자로 대화 기록인 ``messages`` 리스트를 전달하여 LLM 응답을 생성토록 수정합니다.
+``make_ai_message`` 함수를 확장하여 ``LLM`` 클래스를 정의하고, 대화 기록을 저장하는 기능을 추가합니다.
+``make_ai_message`` 함수 이름은 보다 명확하게 ``make_reply``\로 변경했습니다.
 
-.. admonition:: ``chat/utils.py``
+.. admonition:: ``chat/llm.py``
     :class: dropdown
 
     .. code-block:: python
         :linenos:
-        :emphasize-lines: 8,21
+        :emphasize-lines: 8,23
 
-        from typing import List
-
+        from typing import Optional, List, Dict
         from django.conf import settings
         from openai import OpenAI
 
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
-        def make_ai_message(system_prompt: str, messages: List[str]) -> str:
-            """
-            OpenAI의 Chat Completion API를 사용하여 응답을 생성하는 함수
-            """
 
-            try:
-                response = client.chat.completions.create(
-                    model="gpt-4o-mini",  # 또는 "gpt-4" 등 다른 모델 사용 가능
-                    messages=[
-                        {
-                            "role": "system",
-                            "content": system_prompt,
-                        },
-                        *messages,
-                    ],
-                    temperature=0.2,
-                    max_tokens=1000,
-                )
-                return response.choices[0].message.content
-            except Exception as e:
-                return f"API 호출에서 오류가 발생했습니다: {str(e)}"
+        class LLM:
+            def __init__(
+                self,
+                model: str = "gpt-4o-mini",
+                temperature: float = 0.2,
+                max_tokens: int = 1000,
+                system_prompt: str = "",
+                initial_messages: Optional[List[Dict]] = None,
+            ):
+                self.model = model
+                self.temperature = temperature
+                self.max_tokens = max_tokens
+                self.system_prompt = system_prompt
+                self.history = initial_messages or []
 
-``chat-rag-cli`` 명령에서도 대화 기록을 ``conversation_history`` 리스트를 통해 사용자 입력 및 AI 응답을 대화 기록에 추가하여 직접 관리합니다.
-``make_ai_message`` 함수 호출 시에는 사용자 입력이 추가된 대화 기록을 인자로 전달하여 LLM 응답을 생성합니다.
+            def make_reply(self, human_message: Optional[str] = None):
+                current_messages = [
+                    *self.history,
+                ]
+
+                if human_message is not None:
+                    current_messages.append({"role": "user", "content": human_message})
+
+                try:
+                    response = client.chat.completions.create(
+                        model=self.model,
+                        messages=[
+                            {
+                                "role": "system",
+                                "content": self.system_prompt,
+                            },
+                        ]
+                        + current_messages,
+                        temperature=self.temperature,
+                        max_tokens=self.max_tokens,
+                    )
+                    ai_message = response.choices[0].message.content
+                except Exception as e:
+                    return f"API 호출에서 오류가 발생했습니다: {str(e)}"
+                else:
+                    self.history.extend(
+                        [
+                            {"role": "user", "content": human_message},
+                            {"role": "assistant", "content": ai_message},
+                        ]
+                    )
+                    return ai_message
+
+
+``chat-rag-cli`` 명령에서는 ``LLM`` 클래스를 통해 대화 기록을 관리하고, ``make_reply`` 함수를 호출하여 LLM 응답을 생성합니다.
 
 .. admonition:: ``chat/management/commands/chat-rag-cli.py``
     :class: dropdown
 
     .. code-block:: python
         :linenos:
-        :emphasize-lines: 28-29,39-40,42-43,45-48
+        :emphasize-lines: 2,29,39
 
         from django.core.management.base import BaseCommand
-        from chat.utils import make_ai_message
+        from chat.llm import LLM
 
         system_prompt = """
         너는 번역가야.
@@ -280,11 +317,12 @@ OpenAI LLM을 비롯한 모든 LLM은 대화 기록을 저장하는 기능이 �
         예시:
 
         <질문>안녕하세요.</질문>
-        <답변>반갑습니다. (영어: Hello.)</답변>
+        <답변>반갑습니다. 저는 Tom 입니다. (영어: Nice to meet you. I am Tom.)</답변>
 
         <질문>Hello.</질문>
-        <답변>안녕하세요. (영어: Hello.)</답변>
+        <답변>Nice to meet you. I am Tom. (한국어: 안녕하세요. 저는 Tom 입니다.)</답변>
         """
+
 
         class Command(BaseCommand):
             help = "OpenAI를 이용한 번역 채팅"
@@ -296,8 +334,7 @@ OpenAI LLM을 비롯한 모든 LLM은 대화 기록을 저장하는 기능이 �
                     )
                 )
 
-                # 대화 기록을 저장할 리스트
-                conversation_history = []
+                llm = LLM(model="gpt-4o-mini", temperature=1, system_prompt=system_prompt)
 
                 while True:
                     user_input = input("\n[Human] ").strip()
@@ -307,18 +344,9 @@ OpenAI LLM을 비롯한 모든 LLM은 대화 기록을 저장하는 기능이 �
                         break
 
                     if user_input:
-                        # 사용자 입력을 대화 기록에 추가
-                        conversation_history.append({"role": "user", "content": user_input})
-
-                        # 전체 대화 기록을 전달하여 응답 생성
-                        ai_message = make_ai_message(system_prompt, conversation_history)
-
-                        # AI 응답을 대화 기록에 추가
-                        conversation_history.append(
-                            {"role": "assistant", "content": ai_message}
-                        )
-
+                        ai_message = llm.make_reply(user_input)
                         self.stdout.write(self.style.SUCCESS(f"[AI] {ai_message}"))
+
 
 실행해보시면, 대화 기록을 LLM이 알고 있기에 이름을 물어보는 대화가 이어짐을 확인하실 수 있습니다.
 

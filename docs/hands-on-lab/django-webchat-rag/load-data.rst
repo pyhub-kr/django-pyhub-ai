@@ -50,6 +50,8 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
             $URL = "https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl"
             python manage.py load_jsonl chat.TaxLawDocument $URL
 
+        .. figure:: ./assets/load-data/django-shell-using-powershell.png
+
     .. tab-item:: 명령프롬프트
 
         .. code-block:: shell
@@ -63,8 +65,6 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 
             URL=https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl
             python manage.py load_jsonl chat.TaxLawDocument $URL
-
-.. figure:: ./assets/load-data/django-shell.png
 
 
 장고 쉘 구동하기
@@ -86,9 +86,13 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 
         .. figure:: ./assets/load-data/shell-ipython.png
 
+            쉘에서 빠져나올 때에는 ``exit()`` 함수를 호출해주세요.
+
     .. tab-item:: 기본 파이썬 쉘 상황
 
         .. figure:: ./assets/load-data/shell-python.png
+
+            쉘에서 빠져나올 때에는 ``exit()`` 함수를 호출해주세요.
 
 
 모델을 통해 코사인 거리 유사도 문서 검색하기

@@ -8,7 +8,7 @@
 
 새로운 채팅 메시지를 전송받을 View를 전통적인 장고 Form 패턴으로 구현합니다.
 
-* 생성 요청은 항상 ``POST`` 요청으로 받습니다.
+* HTML 폼 요청에서는 ``GET`` 요청과 ``POST`` 요청 2가지만 존재합니다. ``GET`` 요청은 조회 목적으로만 사용하며, 생성/수정/삭제 요청은 항상 ``POST`` 요청으로 받습니다.
 * 요청의 파일 데이터는 ``request.FILES`` 속성을 통해 참조할 수 있으며, 그 외 POST 데이터는 ``request.POST`` 속성을 통해 참조할 수 있습니다.
 * 요청 데이터에 대한 유효성 검사는 장고 Form 인스턴스를 생성하고, ``.is_valid()`` 메서드를 호출하여 수행합니다. 단 하나의 유효성 검사라도 실패하면 ``False``\를 반환합니다.
 
@@ -83,7 +83,7 @@
 
 .. code-block:: html+django
     :linenos:
-    :caption: ``chat/templates/chat/room_detail.html`` 파일 수정
+    :caption: ``chat/templates/chat/room_detail.html`` 파일 덮어쓰기
     :emphasize-lines: 18
 
     {% extends "chat/base.html" %}

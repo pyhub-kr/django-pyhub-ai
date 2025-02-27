@@ -49,13 +49,13 @@
         .. code-block:: python
             :linenos:
             :caption: ``chat/models.py`` 덮어쓰기
-            :emphasize-lines: 1,2,5,15-46,48-63
+            :emphasize-lines: 1,2,5,16-50,53-68
 
             from django.db import models
             from django_lifecycle import AFTER_UPDATE, LifecycleModelMixin, hook
             from pyhub.rag.fields.sqlite import SQLiteVectorField
             from pyhub.rag.models.sqlite import SQLiteVectorDocument
-            from chat.utils import make_ai_message
+            from chat.llm import LLM
 
 
             class TaxLawDocument(SQLiteVectorDocument):
@@ -65,6 +65,7 @@
                     embedding_model="text-embedding-3-large",
                 )
 
+
             class Room(LifecycleModelMixin, models.Model):
                 name = models.CharField(max_length=255)
                 system_prompt = models.TextField(blank=True)
@@ -84,10 +85,13 @@
                     messages = [{"role": msg.role, "content": msg.content} for msg in message_qs]
 
                     # AI 응답 생성
-                    ai_message = make_ai_message(
+                    llm = LLM(
+                        model="gpt-4o-mini",
+                        temperature=1,
                         system_prompt=self.system_prompt,
-                        messages=messages,
+                        initial_messages=messages,
                     )
+                    ai_message = llm.make_reply()
 
                     # AI 응답을 새 메시지로 저장
                     return self.message_set.create(
@@ -97,6 +101,7 @@
 
                 class Meta:
                     ordering = ["-pk"]
+
 
             class Message(models.Model):
                 class Role(models.TextChoices):
@@ -115,18 +120,19 @@
                 class Meta:
                     ordering = ["pk"]
 
+
     .. tab-item:: postgres
 
         .. code-block:: python
             :linenos:
             :caption: ``chat/models.py`` 덮어쓰기
-            :emphasize-lines: 1,2,5,15-46,48-63
+            :emphasize-lines: 1,2,5,16-50,53-68
 
             from django.db import models
             from django_lifecycle import AFTER_UPDATE, LifecycleModelMixin, hook
             from pyhub.rag.fields.postgres import PGVectorField
             from pyhub.rag.models.postgres import PGVectorDocument
-            from chat.utils import make_ai_message
+            from chat.llm import LLM
 
 
             class TaxLawDocument(PGVectorDocument):
@@ -136,6 +142,7 @@
                     embedding_model="text-embedding-3-large",
                 )
 
+
             class Room(LifecycleModelMixin, models.Model):
                 name = models.CharField(max_length=255)
                 system_prompt = models.TextField(blank=True)
@@ -155,10 +162,13 @@
                     messages = [{"role": msg.role, "content": msg.content} for msg in message_qs]
 
                     # AI 응답 생성
-                    ai_message = make_ai_message(
+                    llm = LLM(
+                        model="gpt-4o-mini",
+                        temperature=1,
                         system_prompt=self.system_prompt,
-                        messages=messages,
+                        initial_messages=messages,
                     )
+                    ai_message = llm.make_reply()
 
                     # AI 응답을 새 메시지로 저장
                     return self.message_set.create(
@@ -168,6 +178,7 @@
 
                 class Meta:
                     ordering = ["-pk"]
+
 
             class Message(models.Model):
                 class Role(models.TextChoices):
@@ -185,6 +196,7 @@
 
                 class Meta:
                     ordering = ["pk"]
+
 
 새로운 모델을 정의했으니, 마이그레이션 파일을 생성하고 (작업 지시서 생성), 마이그레이션을 통해 수행될 SQL 내역을 확인하고 (작업 지시서 확인), 마이그레이션을 수행합니다 (작업 지시서 실행).
 
@@ -207,15 +219,21 @@
     from django import forms
     from .models import Message, Room
 
+
+    # 새 채팅방 생성 및 수정 페이지에서
+    # 입력 HTML 폼 생성 및 유효성 검사를 담당
     class RoomForm(forms.ModelForm):
         class Meta:
             model = Room
             fields = ["name", "system_prompt"]
 
+
+    # 채팅 메시지 입력/수정 폼을 생성하고 유효성 검사를 담당
     class MessageForm(forms.ModelForm):
         class Meta:
             model = Message
             fields = ["content"]
+
 
 뷰
 ===========
@@ -247,16 +265,24 @@
     from .forms import RoomForm
     from .models import Room
 
+
+    # 채팅방 목록 페이지 (클래스 기반 뷰)
     room_list = ListView.as_view(model=Room)
 
+
+    # 새 채팅방 생성 페이지 (클래스 기반 뷰)
     room_new = CreateView.as_view(
         model=Room,
         form_class=RoomForm,
         success_url=reverse_lazy("chat:room_list"),
     )
 
+
+    # 채팅방 채팅 페이지 (함수 기반 뷰)
     def room_detail(request, pk):
+        # 지정 채팅방 조회하고, 데이터베이스에 없으면 404 오류 발생
         room = get_object_or_404(Room, pk=pk)
+        # 지정 채팅방의 모든 대화 목록
         message_list = room.message_set.all()
         return render(
             request,
@@ -266,6 +292,7 @@
                 "message_list": message_list,
             },
         )
+
 
 각 뷰에 대해 URL 패턴도 정의해줍니다.
 
@@ -483,6 +510,23 @@
 http://localhost:8000/chat/new/ 주소에서는 새로운 채팅방을 생성할 수 있는 폼이 제공됩니다.
 "채팅방 이름"과 채팅방에서 사용할 "시스템 프롬프트"를 입력하고 "생성하기" 버튼을 클릭하면 채팅방이 생성됩니다.
 
+.. admonition:: 번역, 시스템 프롬프트
+    :class: dropdown
+
+    .. code-block::
+
+        너는 번역가야.
+        한국어로 물어보면 한국어로 대답하며 영어 번역을 함께 제공해주고,
+        영어로 물어보면 영어로 대답하여 한글 번역을 함께 제공해줘.
+
+        예시:
+
+        <질문>안녕하세요.</질문>
+        <답변>반갑습니다. 저는 Tom 입니다. (영어: Nice to meet you. I am Tom.)</답변>
+
+        <질문>Hello.</질문>
+        <답변>Nice to meet you. I am Tom. (한국어: 안녕하세요. 저는 Tom 입니다.)</답변>
+
 .. figure:: ./assets/chat-room/room_new.png
 
 .. note::
@@ -497,7 +541,7 @@ http://localhost:8000/chat/new/ 주소에서는 새로운 채팅방을 생성할
 .. figure:: ./assets/chat-room/room_list2.png
 
 http://localhost:8000/chat/1/ 주소에서는 채팅방 채팅 페이지가 제공됩니다.
-채팅방에 따라 ``/chat/1/`` 주소가 달라집니다.
+채팅방에 따라 ``/chat/1/``, ``/chat/2/``, ``/chat/3/`` 등 주소가 달라집니다.
 아직 채팅 메시지 전송 및 응답 기능이 구현되지 않았습니다.
 
 .. figure:: ./assets/chat-room/room_detail.png

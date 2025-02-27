@@ -13,7 +13,7 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
 .. code-block:: python
     :linenos:
     :caption: ``chat/models.py`` 파일 수정
-    :emphasize-lines: 1,20-26,29
+    :emphasize-lines: 1,21-32,38
 
     from asgiref.sync import async_to_sync
 
@@ -31,22 +31,33 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
             self.message_set.all().delete()
 
         def create_ai_message(self):
+            # 현재 방의 이전 메시지들을 수집
             message_qs = self.message_set.all()
             messages = [{"role": msg.role, "content": msg.content} for msg in message_qs]
 
             # 세법 해석례 문서 검색이 필요할 때
-            user_message = messages[-1]["content"]
-            doc_list = async_to_sync(TaxLawDocument.objects.search)(
-                user_message
-            )
-            지식 = str(doc_list)
-            system_prompt = self.system_prompt + "\n\n" + f"참고문서 : {지식}"
+            user_message = messages[-1]["content"].strip()
+            if user_message.startswith("!"):
+                user_message = user_message[1:]
+                # RAG를 원하는 모델을 사용하여 유사 문서 검색
+                doc_list = async_to_sync(TaxLawDocument.objects.search)(
+                    user_message
+                )
+                지식 = str(doc_list)
+                system_prompt = self.system_prompt + "\n\n" + f"참고문서 : {지식}"
+            else:
+                system_prompt = self.system_prompt
 
-            ai_message = make_ai_message(
-                system_prompt=system_prompt,  # 변경된 시스템 프롬프트를 반영
-                messages=messages,
+            # AI 응답 생성
+            llm = LLM(
+                model="gpt-4o-mini",
+                temperature=1,
+                system_prompt=system_prompt,
+                initial_messages=messages,
             )
+            ai_message = llm.make_reply()
 
+            # AI 응답을 새 메시지로 저장
             return self.message_set.create(
                 role=Message.Role.ASSISTANT,
                 content=ai_message,
@@ -100,7 +111,11 @@ http://localhost:8000/chat/new/ 페이지에서 새로운 세무/회계 챗봇 �
 
 .. figure:: ./assets/web-rag-chat/form.png
 
-채팅방 생성 후에, 세무/회계 챗봇에게 ``재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법`` 메시지를 보내면,
+채팅방이 생성되었구요.
+
+.. figure:: ./assets/web-rag-chat/room-list.png
+
+세무/회계 챗봇에게 느낌표로 시작하는 ``! 재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법`` 메시지를 보내면,
 아래와 같이 십여초 후에 RAG 결과를 포함한 답변을 얻을 수 있습니다.
 
 .. figure:: ./assets/web-rag-chat/play.gif
