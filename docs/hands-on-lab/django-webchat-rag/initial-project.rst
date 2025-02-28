@@ -131,10 +131,11 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
         .. code-block:: text
             :caption: ``requirements.txt``
-            :emphasize-lines: 7-8
+            :emphasize-lines: 8-9
 
             django-pyhub-rag
             django-environ
+            django-debug-toolbar
             django-extensions
             django-lifecycle
             openai
@@ -150,10 +151,11 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
         .. code-block:: text
             :caption: ``requirements.txt``
-            :emphasize-lines: 7-8
+            :emphasize-lines: 8-9
 
             django-pyhub-rag
             django-environ
+            django-debug-toolbar
             django-extensions
             django-lifecycle
             openai
@@ -176,6 +178,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
     * ``django-pyhub-rag`` : pgvector/sqlite-vec 벡터스토어를 동일한 모델 코드로 지원
     * ``django-environ`` : ``.env`` 파일 로딩 및 환경변수 값 파싱
+    * ``django-debug-toolbar`` : 장고 디버그 툴바 라이브러리
     * ``django-extensions`` : 다양한 장고 확장 편의 기능 제공
     * ``django-lifecycle`` : 장고 모델 레코드 생성/수정/삭제 시에 호출할 함수를 직관적으로 작성
     * ``openai`` : OpenAI API 라이브럴  
@@ -204,6 +207,9 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 
 6. mysite/settings.py 파일 수정
 ====================================
+
+``django-environ`` 라이브러리 설정
+---------------------------------------
 
 ``.env`` 파일 로딩을 위해 ``django-environ`` 라이브러리를 사용합니다.
 프로젝트 루트에 ``.env`` 파일이 있다면 환경변수로서 로딩합니다.
@@ -237,6 +243,10 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
         "pyhub.rag",
     ]
 
+
+``DATABASE_URL`` 환경변수 설정
+------------------------------------
+
 ``DATABASE_URL`` 환경변수 값을 읽어 ``default`` 데이터베이스 연결 정보를 설정합니다.
 ``DATABASE_URL`` 환경변수가 없다면 프로젝트 루트의 ``db.sqlite3`` 경로를 사용합니다.
 
@@ -251,6 +261,10 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     }
     if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
         DATABASES["default"]["ENGINE"] = "pyhub.db.backends.sqlite3"
+
+
+로깅 설정
+--------------
 
 ``pyhub.rag`` 앱의 로깅 설정을 추가하여, 디버그 모드에서만 로깅이 활성화되도록 합니다.
 ``pyhub.rag`` 앱 내에서는 ``sqlite-vec extension loaded``\와 같은 디버그 메시지를 출력합니다.
@@ -280,6 +294,44 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
         },
     }
 
+
+``django-debug-toolbar`` 앱 설정
+------------------------------------
+
+``django-debug-toolbar`` 앱은 개발모드(``DEBUG=True``)에서만 활성화되도록 합니다.
+
+.. code-block:: python
+    :caption: ``mysite/settings.py``
+
+    # https://django-debug-toolbar.readthedocs.io
+    if DEBUG:
+        INSTALLED_APPS += [
+            "debug_toolbar",
+        ]
+
+        # 미들웨어 처음에 위치해야만, 다른 미들웨어/View 단에서 수행된 내역을 수집할 수 있습니다.
+        MIDDLEWARE = [
+            "debug_toolbar.middleware.DebugToolbarMiddleware",
+        ] + MIDDLEWARE
+
+        # 장고 디버그 툴바를 보여줄 주소를 지정
+        # 혹은 직접 함수를 지정하여 특정 조건에서만 활성화 여부를 결정할 수도 있습니다.
+        INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])
+
+.. code-block:: python
+    :caption: ``mysite/urls.py``
+
+    from django.apps import apps
+
+    if apps.is_installed("debug_toolbar"):
+        urlpatterns = [
+            path("__debug__/", include("debug_toolbar.urls")),
+        ] + urlpatterns
+
+
+OpenAI API Key 환경변수 설정
+------------------------------------
+
 장고 프로젝트 내에서 OpenAI API Key 참조를 위해 ``OPENAI_API_KEY`` 환경변수 값을 읽어 ``OPENAI_API_KEY`` 설정을 추가합니다.
 환경변수 파싱은 ``settings.py`` 내에서만 수행하고, 장고 프로젝트 내에서는 환경변수 참조없이 ``settings`` 값 참조를 추천드립니다.
 
@@ -293,6 +345,9 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     # 필수 설정이 누락되면 애플리케이션이 구동되지 않아야 합니다.
     OPENAI_API_KEY = env.str("OPENAI_API_KEY")
 
+
+settings 환경변수 적용 현황 확인
+------------------------------------
 
 다음 명령으로 장고 settings 내에서 환경변수 값을 ``settings`` 설정에 정확히 반영되었는 지 확인합니다.
 
