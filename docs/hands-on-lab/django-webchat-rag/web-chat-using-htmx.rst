@@ -3,6 +3,23 @@
 ============================================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/adc5364220f5981ccfa83a649a53fcaa68994a59>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+
+   .. code-block:: bash
+
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/adc5364220f5981ccfa83a649a53fcaa68994a59
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/adc5364220f5981ccfa83a649a53fcaa68994a59
+
+
 채팅 메시지 렌더링 템플릿
 ===============================
 
@@ -91,7 +108,7 @@ HTMX를 활용한 채팅 메시지 전송 및 응답 화면 렌더링
 채팅/AI 메시지 저장 후에 페이지 이동없이 HTML 응답
 ===================================================
 
-HTMX에서는 처리 결과에 대한 HTML 응답을 요구하므로, 채팅/AI 메시지 저장 후에
+**HTMX에서는 처리 결과에 대한 HTML 응답을 요구**\하므로, 채팅/AI 메시지 저장 후에
 방금 저장한 채팅/AI 메시지에 대한 HTML 응답을 ``chat/_message_list.html`` 템플릿을 통해 생성하여 응답합니다.
 그럼 페이지 전환없이 HTMX에 의해 ``#chat-messages`` 요소 끝에 방금 저장한 채팅/AI 메시지가 추가됩니다.
 
@@ -130,6 +147,19 @@ HTMX에서는 처리 결과에 대한 HTML 응답을 요구하므로, 채팅/AI 
 동작 화면
 ================
 
-위 내용을 모두 적용하고 채팅방에서 채팅 메시지를 입력하면 **페이지 전환없이** 대화 메시지가 전송되고 AI 응답까지 표시됨을 확인하실 수 있습니다.
+채팅 메시지를 입력해보세요. 이전과는 다른 점이 느껴지시나요?
 
 .. figure:: ./assets/web-chat-using-htmx/play.gif
+
+이번에는 페이지 전환이 발생하지 않았습니다.
+
+새로운 채팅 메시지를 ``/chat/1/messages/new/`` 주소로 ``POST`` 방식으로 보냈구요.
+서버에서 AI 응답 생성 후에 유저/AI 메시지 목록을 포함한 HTML 응답을 상태코드 200으로 응답했습니다.
+
+이에 HTMX 라이브러리는 서버 응답을 받아 ``#chat-messages`` 요소 끝에 추가했습니다.
+
+서버 로그를 보시면 아래와 같이 1개의 요청으로만 동작함을 확인하실 수 있습니다.
+
+.. code-block:: text
+
+    [28/Feb/2025 06:19:03] "POST /chat/1/messages/new/ HTTP/1.1" 200 349

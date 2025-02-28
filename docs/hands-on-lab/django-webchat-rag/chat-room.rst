@@ -3,6 +3,23 @@
 ============================================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/038a30bdc0f24ea3864d144ed5fdf394f81afe2c>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+
+   .. code-block:: bash
+
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/038a30bdc0f24ea3864d144ed5fdf394f81afe2c
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/038a30bdc0f24ea3864d144ed5fdf394f81afe2c
+
+
 모델
 ===========
 
@@ -49,12 +66,16 @@
         .. code-block:: python
             :linenos:
             :caption: ``chat/models.py`` 덮어쓰기
-            :emphasize-lines: 1,2,5,16-50,53-68
+            :emphasize-lines: 3,5,9,24-58,61-76
+
+            import json
 
             from django.db import models
-            from django_lifecycle import AFTER_UPDATE, LifecycleModelMixin, hook
+            from django.utils.functional import cached_property
+            from django_lifecycle import LifecycleModelMixin, hook, AFTER_UPDATE
             from pyhub.rag.fields.sqlite import SQLiteVectorField
             from pyhub.rag.models.sqlite import SQLiteVectorDocument
+
             from chat.llm import LLM
 
 
@@ -65,6 +86,10 @@
                     embedding_model="text-embedding-3-large",
                 )
 
+                @cached_property
+                def page_content_obj(self):
+                    return json.loads(self.page_content)
+
 
             class Room(LifecycleModelMixin, models.Model):
                 name = models.CharField(max_length=255)
@@ -120,18 +145,21 @@
                 class Meta:
                     ordering = ["pk"]
 
-
     .. tab-item:: postgres
 
         .. code-block:: python
             :linenos:
             :caption: ``chat/models.py`` 덮어쓰기
-            :emphasize-lines: 1,2,5,16-50,53-68
+            :emphasize-lines: 3,5,9,24-58,61-76
+
+            import json
 
             from django.db import models
-            from django_lifecycle import AFTER_UPDATE, LifecycleModelMixin, hook
+            from django.utils.functional import cached_property
+            from django_lifecycle import LifecycleModelMixin, hook, AFTER_UPDATE
             from pyhub.rag.fields.postgres import PGVectorField
             from pyhub.rag.models.postgres import PGVectorDocument
+
             from chat.llm import LLM
 
 
@@ -142,6 +170,10 @@
                     embedding_model="text-embedding-3-large",
                 )
 
+                @cached_property
+                def page_content_obj(self):
+                    return json.loads(self.page_content)
+
 
             class Room(LifecycleModelMixin, models.Model):
                 name = models.CharField(max_length=255)
@@ -196,6 +228,8 @@
 
                 class Meta:
                     ordering = ["pk"]
+
+
 
 
 새로운 모델을 정의했으니, 마이그레이션 파일을 생성하고 (작업 지시서 생성), 마이그레이션을 통해 수행될 SQL 내역을 확인하고 (작업 지시서 확인), 마이그레이션을 수행합니다 (작업 지시서 실행).
@@ -256,14 +290,15 @@
 
 .. code-block:: python
     :linenos:
-    :caption: ``chat/views.py`` 파일 수정
+    :caption: ``chat/views.py`` 파일 덮어쓰기
+    :emphasize-lines: 1-3,5-6,9-10,13-18,21-34
 
     from django.shortcuts import get_object_or_404, render
     from django.urls import reverse_lazy
-    from django.views.generic import CreateView, ListView
+    from django.views.generic import ListView, CreateView
 
     from .forms import RoomForm
-    from .models import Room
+    from .models import Room, TaxLawDocument
 
 
     # 채팅방 목록 페이지 (클래스 기반 뷰)
@@ -292,6 +327,27 @@
                 "message_list": message_list,
             },
         )
+
+
+    # 문서 검색 페이지
+    class TaxLawDocumentListView(ListView):
+        model = TaxLawDocument
+        # sqlite의 similarity_search 메서드가 쿼리셋이 아닌 리스트를 반환하기 때문에
+        # ListView에서 템플릿 이름을 찾지 못하기에 직접 지정해줍니다.
+        template_name = "chat/taxlawdocument_list.html"
+
+        def get_queryset(self):
+            qs = super().get_queryset()
+
+            query = self.request.GET.get("query", "").strip()
+            if query:
+                qs = qs.similarity_search(query)  # noqa: list 타입
+            else:
+                # 검색어가 없다면 빈 쿼리셋을 반환합니다.
+                qs = qs.none()
+
+            return qs
+
 
 
 각 뷰에 대해 URL 패턴도 앞서 :doc:`./search` 문서에서 작성했었습니다.

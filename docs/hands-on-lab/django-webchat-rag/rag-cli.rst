@@ -2,6 +2,24 @@
 📚 명령행 RAG 채팅 구현
 =========================
 
+
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/06e24f8260ea3d13dea4ed6d5363783bc8846341>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+
+   .. code-block:: bash
+
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/06e24f8260ea3d13dea4ed6d5363783bc8846341
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/06e24f8260ea3d13dea4ed6d5363783bc8846341
+
+
 1. 싱글턴 LLM 대화
 ======================
 
@@ -28,6 +46,7 @@ LLM 모델은 ``gpt-4o-mini`` 모델을 사용했으며, `다른 OpenAI API 모�
         from django.conf import settings
 
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
+
 
         def make_ai_message(human_message: str) -> str:
             """
@@ -66,12 +85,16 @@ LLM 모델은 ``gpt-4o-mini`` 모델을 사용했으며, `다른 OpenAI API 모�
                 return f"API 호출에서 오류가 발생했습니다: {str(e)}"
 
 
-        if __name__ == "__main__":
-
+        def main():
             human_message = input("[Human] ").strip()
 
             ai_message = make_ai_message(human_message)
             print(f"[AI] {ai_message}")
+
+
+        if __name__ == "__main__":
+            main()
+
 
 프로젝트 루트 ``chat-cli.py`` 경로에 위 코드를 저장하시고 실행해주세요.
 ``[Human]`` 프롬프트를 통해 메시지를 입력하시면, OpenAI LLM을 통해 응답이 생성되고 영어/한글로 번역된 메시지도 같이 확인하실 수 있습니다.
@@ -383,7 +406,7 @@ LLM은 검색엔진이 아닙니다. 단지 알고 있는 지식에 기반해서
 .. figure:: /rag-01/assets/llm-rag.png
    :name: llm-rag
 
-   관련 지식과 함께 질문하면, LLM이 모르는 지식(회사 정보 등)을 보충해서 정확한 답변을 할 수 있습니다.
+   관련 지식과 함께 질문하면, LLM이 모르는 지식(법령, 회사 정보 등)을 보충해서 정확한 답변을 할 수 있습니다.
 
 RAG는 LLM에게 답변을 요청하기 전에, 미리 **질문과 비슷한 내용의  지식**\을 검색하여 찾은 지식과 질문을 LLM에게 함께 제공하여,
 정확한 지식에 기반하여 LLM이 내용을 정리해주는 방식입니다.
@@ -404,7 +427,7 @@ sqlite-vec/pgvector 기반으로 장고 모델을 통해 벡터 스토어를 구
 
     user_input = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
 
-    doc_list = axLawDocument.objects.similarity_search(user_input)
+    doc_list = TaxLawDocument.objects.similarity_search(user_input)
     지식 = str(doc_list)
     user_input = f"""<context>{지식}</context>\n\n질문 : {user_input}"""
 

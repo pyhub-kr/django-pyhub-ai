@@ -3,6 +3,23 @@
 ============================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d5c8846ad45f86983b6364d9993dcbd6f18092fe>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+
+   .. code-block:: bash
+
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d5c8846ad45f86983b6364d9993dcbd6f18092fe
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d5c8846ad45f86983b6364d9993dcbd6f18092fe
+
+
 AI 메시지 생성 시에 유사 문서를 지식으로 활용하기
 =================================================
 
@@ -13,12 +30,16 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
 .. code-block:: python
     :linenos:
     :caption: ``chat/models.py`` 파일 덮어쓰기
-    :emphasize-lines: 34-43,49
+    :emphasize-lines: 42-51,57
+
+    import json
 
     from django.db import models
-    from django_lifecycle import AFTER_UPDATE, LifecycleModelMixin, hook
+    from django.utils.functional import cached_property
+    from django_lifecycle import LifecycleModelMixin, hook, AFTER_UPDATE
     from pyhub.rag.fields.sqlite import SQLiteVectorField
     from pyhub.rag.models.sqlite import SQLiteVectorDocument
+
     from chat.llm import LLM
 
 
@@ -28,6 +49,10 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
             editable=False,
             embedding_model="text-embedding-3-large",
         )
+
+        @cached_property
+        def page_content_obj(self):
+            return json.loads(self.page_content)
 
 
     class Room(LifecycleModelMixin, models.Model):

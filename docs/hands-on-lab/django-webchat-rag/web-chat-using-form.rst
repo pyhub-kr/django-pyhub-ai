@@ -3,6 +3,23 @@
 ================================================================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/b1ce7331675b2fe22dc9ec986c919e1545798610>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+
+   .. code-block:: bash
+
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/b1ce7331675b2fe22dc9ec986c919e1545798610
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/b1ce7331675b2fe22dc9ec986c919e1545798610
+
+
 채팅 메시지 전송 뷰
 ======================
 
@@ -23,12 +40,67 @@
 
 .. code-block:: python
     :linenos:
-    :caption: ``chat/views.py`` 파일에 추가
+    :caption: ``chat/views.py`` 파일 덮어쓰기
+    :emphasize-lines: 1,3,4,6,58-80
 
-    from django.shortcuts import redirect, render, get_object_or_404
+    from django.shortcuts import get_object_or_404, render, redirect
+    from django.urls import reverse_lazy
     from django.views.decorators.http import require_POST
-    from .forms import MessageForm
+    from django.views.generic import ListView, CreateView
 
+    from .forms import RoomForm, MessageForm
+    from .models import Room, TaxLawDocument
+
+
+    # 채팅방 목록 페이지 (클래스 기반 뷰)
+    room_list = ListView.as_view(model=Room)
+
+
+    # 새 채팅방 생성 페이지 (클래스 기반 뷰)
+    room_new = CreateView.as_view(
+        model=Room,
+        form_class=RoomForm,
+        success_url=reverse_lazy("chat:room_list"),
+    )
+
+
+    # 채팅방 채팅 페이지 (함수 기반 뷰)
+    def room_detail(request, pk):
+        # 지정 채팅방 조회하고, 데이터베이스에 없으면 404 오류 발생
+        room = get_object_or_404(Room, pk=pk)
+        # 지정 채팅방의 모든 대화 목록
+        message_list = room.message_set.all()
+        return render(
+            request,
+            "chat/room_detail.html",
+            {
+                "room": room,
+                "message_list": message_list,
+            },
+        )
+
+
+    # 문서 검색 페이지
+    class TaxLawDocumentListView(ListView):
+        model = TaxLawDocument
+        # sqlite의 similarity_search 메서드가 쿼리셋이 아닌 리스트를 반환하기 때문에
+        # ListView에서 템플릿 이름을 찾지 못하기에 직접 지정해줍니다.
+        template_name = "chat/taxlawdocument_list.html"
+
+        def get_queryset(self):
+            qs = super().get_queryset()
+
+            query = self.request.GET.get("query", "").strip()
+            if query:
+                qs = qs.similarity_search(query)  # noqa: list 타입
+            else:
+                # 검색어가 없다면 빈 쿼리셋을 반환합니다.
+                qs = qs.none()
+
+            return qs
+
+
+    # POST 요청 만을 허용합니다.
     @require_POST
     def message_new(request, room_pk):
         room = get_object_or_404(Room, pk=room_pk)
@@ -45,18 +117,19 @@
 
         return render(
             request,
-            "chat/message_form.html",
+            "chat/message_form.html",  # 생성하지 않은 템플릿.
             {
                 "room": room,
                 "form": form,
             },
         )
 
+
 방금 구현한 ``message_new`` 뷰를 호출하는 URL 패턴을 추가합니다.
 
 .. code-block:: python
     :linenos:
-    :caption: ``chat/urls.py`` 파일에 추가
+    :caption: ``chat/urls.py`` 파일 덮어쓰기
     :emphasize-lines: 10
 
     from django.urls import path
@@ -69,6 +142,7 @@
         path("new/", views.room_new, name="room_new"),
         path("<int:pk>/", views.room_detail, name="room_detail"),
         path("<int:room_pk>/messages/new/", views.message_new, name="message_new"),
+        path("docs/law/tax/", views.TaxLawDocumentListView.as_view()),
     ]
 
 
@@ -129,6 +203,18 @@
 동작 화면
 ================
 
-위 내용을 모두 적용하고 채팅방에서 채팅 메시지를 입력하면 페이지 전환이 발생하며, 대화 메시지가 전송되고 AI 응답까지 표시됨을 확인하실 수 있습니다.
+위 내용을 모두 적용하고 채팅방에서 채팅 메시지를 입력하고 잠시 기다려보시면 이어서 채팅 응답을 받으시게 됩니다.
 
 .. figure:: ./assets/web-chat-using-form/play.gif
+
+페이지 전환이 발생했는 데 느끼셨나요? 워낙 빠르게 페이지가 전환되어 느끼기 어려울 수 있습니다.
+``python manage.py runserver`` 명령어를 실행한 콘솔 출력 로그를 보시면 페이지 전환이 발생했음을 확인하실 수 있습니다.
+
+.. code-block:: text
+
+    [28/Feb/2025 06:11:32] "POST /chat/1/messages/new/ HTTP/1.1" 302 0
+    [28/Feb/2025 06:11:32] "GET /chat/1/ HTTP/1.1" 200 16719
+
+새로운 채팅 메시지를 ``/chat/1/messages/new/`` 주소로 ``POST`` 방식으로 보내며 페이지 전환이 발생했고,
+서버에서 AI 응답 생성 후에 ``/chat/1/`` 주소로 이동하라는 ``302`` 응답을 보냈구요.
+이에 브라우저는 ``/chat/1/`` 주소로 다시 이동을 한 상황입니다.

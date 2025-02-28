@@ -3,14 +3,21 @@
 =============================================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/4b13ac63853b5fc1f47fcfe41206f384bc8af60a>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/68bb962c13b721acfab747dbfd27be6484684d2a>`_
    :class: dropdown
 
-   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/4b13ac63853b5fc1f47fcfe41206f384bc8af60a
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/68bb962c13b721acfab747dbfd27be6484684d2a
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/68bb962c13b721acfab747dbfd27be6484684d2a
 
 
 1. 프로젝트 디렉토리 생성
@@ -89,7 +96,27 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     쉬는 시간에 따로 질문주시면 정확히 해결해드리겠습니다.
 
 
-4. .env 파일 생성
+4. ``.gitignore`` 파일 생성
+============================
+
+프로젝트 루트에 ``.gitignore`` 파일을 생성해주세요.
+
+.. code-block:: text
+    :caption: ``.gitignore``
+
+    .env
+    __pycache__
+    *.sqlite3
+    .vscode
+    .idea
+    .DS_Store
+    /staticfiles
+    /mediafiles
+    /venv
+    /.venv
+
+
+5. .env 파일 생성
 ====================
 
 소스코드 편집기를 통해 프로젝트 루트에 다음 내용으로 ``.env`` 파일을 생성해주세요.
@@ -132,7 +159,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
       공백이 있으면 해당 설정은 무시되니 주의해주세요.
 
 
-5. 라이브러리 설치
+6. 라이브러리 설치
 =======================
 
 프로젝트 루트 경로에 ``requirements.txt`` 파일을 아래 내용으로 작성해주세요.
@@ -202,7 +229,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     * ``pgvector`` : PostgreSQL 벡터스토어 확장
     * ``ipython`` : 향상된 파이썬 쉘
 
-6. 프로젝트 생성
+7. 프로젝트 생성
 =======================
 
 장고에서는 ``django-admin startproject`` 명령으로 프로젝트를 생성하며, ``python -m django startproject`` 명령으로도 동일하게 프로젝트를 생성할 수 있습니다.
@@ -219,7 +246,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 .. figure:: ./assets/initial-project/startproject.png
 
 
-7. mysite/settings.py 파일 수정
+8. mysite/settings.py 파일 수정
 ====================================
 
 ``django-environ`` 라이브러리 설정
@@ -286,6 +313,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 .. code-block:: python
     :caption: ``mysite/settings.py``
 
+    # https://docs.djangoproject.com/en/5.1/topics/logging/
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -333,9 +361,17 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
         INTERNAL_IPS = env.list("INTERNAL_IPS", default=["127.0.0.1"])
 
 .. code-block:: python
-    :caption: ``mysite/urls.py``
+    :caption: ``mysite/urls.py`` 덮어쓰기
+    :emphasize-lines: 1,3,9-12
+    :linenos:
 
     from django.apps import apps
+    from django.contrib import admin
+    from django.urls import include, path
+
+    urlpatterns = [
+        path("admin/", admin.site.urls),
+    ]
 
     if apps.is_installed("debug_toolbar"):
         urlpatterns = [
@@ -405,7 +441,7 @@ settings 환경변수 적용 현황 확인
         .. figure:: ./assets/initial-project-showmigrations-empty-postgres.png
 
 
-8. 기본 테이블 생성
+9. 기본 테이블 생성
 =======================
 
 현재 프로젝트에 등록된 장고 앱에 대한 마이그레이션을 수행하여, 데이터베이스 테이블을 생성해주세요.

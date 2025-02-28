@@ -3,6 +3,23 @@
 =========================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/86a3570e017d916b894d8d0fd1c4cbfaa1492e37>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+
+   .. code-block:: bash
+
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/86a3570e017d916b894d8d0fd1c4cbfaa1492e37
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/86a3570e017d916b894d8d0fd1c4cbfaa1492e37
+
+
 세법 해석례 질답 내용을 데이터베이스에 저장했으니 유사 문서 검색을 지원하는 페이지를 구현해봅시다.
 장고 모델 기반으로 문서가 저장되어있어 손쉽게 유사 문서 검색을 지원할 수 있습니다.
 
@@ -18,23 +35,55 @@
 각 Key 정보에 접근하기 위해서는 JSON 역직렬화가 필요하구요. 매 Key에 접근할 때마다 역직렬화를 하면 성능이 떨어지므로,
 ``page_content_obj`` 캐시 속성을 추가하여 각 인스턴스마다 1회만 역직렬화를 수행하고, 캐싱된 객체를 활용토록 합니다.
 
-.. code-block:: python
-    :caption: ``chat/models.py``
-    :emphasize-lines: 1,10-12
-    :linenos:
+.. tab-set::
 
-    from django.utils.functional import cached_property
+    .. tab-item:: sqlite
 
-    class TaxLawDocument(SQLiteVectorDocument):
-        embedding = SQLiteVectorField(
-            dimensions=3072,
-            editable=False,
-            embedding_model="text-embedding-3-large",
-        )
+        .. code-block:: python
+            :caption: ``chat/models.py`` 파일에 덮어쓰기
+            :emphasize-lines: 1,3,14-16
+            :linenos:
 
-        @cached_property
-        def page_content_obj(self):
-            return json.loads(self.page_content)
+            import json
+
+            from django.utils.functional import cached_property
+            from pyhub.rag.fields.sqlite import SQLiteVectorField
+            from pyhub.rag.models.sqlite import SQLiteVectorDocument
+
+            class TaxLawDocument(SQLiteVectorDocument):
+                embedding = SQLiteVectorField(
+                    dimensions=3072,
+                    editable=False,
+                    embedding_model="text-embedding-3-large",
+                )
+
+                @cached_property
+                def page_content_obj(self):
+                    return json.loads(self.page_content)
+
+    .. tab-item:: postgres
+
+        .. code-block:: python
+            :caption: ``chat/models.py`` 파일에 덮어쓰기
+            :emphasize-lines: 1,3,14-16
+            :linenos:
+
+            import json
+
+            from django.utils.functional import cached_property
+            from pyhub.rag.fields.postgres import PGVectorField
+            from pyhub.rag.models.postgres import PGVectorDocument
+
+            class TaxLawDocument(PGVectorDocument):
+                embedding = PGVectorField(
+                    dimensions=3072,
+                    editable=False,
+                    embedding_model="text-embedding-3-large",
+                )
+
+                @cached_property
+                def page_content_obj(self):
+                    return json.loads(self.page_content)
 
 이제 파이썬 코드 단에서는 ``doc.page_content_obj["제목"]`` 처럼 접근할 수 있으며,
 템플릿 단에서는 ``{{ doc.page_content_obj.제목 }}`` 처럼 접근할 수 있습니다.
@@ -62,7 +111,7 @@
     :emphasize-lines: 1-2,9-26
 
     from django.views.generic import ListView
-    from .models import Room, TaxLawDocument
+    from .models import TaxLawDocument
 
     # 템플릿에서의 URL Reverse 참조를 위해 빈 View 함수 정의
     def room_list(request): pass
@@ -91,7 +140,7 @@
 URL 매핑도 추가해주시구요.
 
 .. code-block:: python
-    :caption: ``chat/urls.py``
+    :caption: ``chat/urls.py`` 파일에 덮어쓰기
     :emphasize-lines: 10
 
     from django.urls import path
@@ -264,7 +313,8 @@ URL 매핑도 추가해주시구요.
         {% endblock %}
 
 
-그럼 아래와 같이 유사 문서 검색 페이지가 완성됩니다. 아래는 "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법" 검색 결과입니다.
+웹브라우저를 열고 http://localhost:8000/chat/docs/law/tax/ 페이지에 접속해주세요.
+아래와 같이 유사 문서 검색 페이지를 확인하실 수 있습니다.. 아래는 "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법" 검색 결과입니다.
 
 .. figure:: ./assets/search/page2.png
 

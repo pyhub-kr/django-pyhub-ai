@@ -2,6 +2,24 @@
 🪜 장고 문서 모델 생성 및 마이그레이션
 ========================================
 
+
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/af069ef93498c5597eee29cbab50cc1ac1a2088f>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+
+   .. code-block:: bash
+
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/af069ef93498c5597eee29cbab50cc1ac1a2088f
+
+   ``uv``\를 사용하실 경우 
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/af069ef93498c5597eee29cbab50cc1ac1a2088f
+
+
 장고 앱 생성 및 등록
 =======================
 
@@ -19,25 +37,33 @@
     from django.urls import path
     from . import views
 
-    urlpatterns = [
-    ]
+    urlpatterns = []
 
 ``mysite/urls.py`` 파일에 ``chat/urls.py`` 패턴을 포함시키고,
 루트 URL 요청은 ``chat/`` 주소로 이동시키겠습니다.
 
 .. code-block:: python
-    :caption: ``mysite/urls.py``
-    :emphasize-lines: 2-3,7-8
+    :caption: ``mysite/urls.py`` 덮어쓰기
+    :emphasize-lines: 4,8-9
+    :linenos:
 
+    from django.apps import apps
     from django.contrib import admin
-    from django.urls import path, include
+    from django.urls import include, path
     from django.views.generic import RedirectView
 
     urlpatterns = [
-        path('admin/', admin.site.urls),
-        path('chat/', include('chat.urls')),
-        path('', RedirectView.as_view(url='/chat/')),
+        path("admin/", admin.site.urls),
+        path("chat/", include("chat.urls")),
+        path("", RedirectView.as_view(url="/chat/")),
     ]
+
+
+    if apps.is_installed("debug_toolbar"):
+        urlpatterns = [
+            path("__debug__/", include("debug_toolbar.urls")),
+        ] + urlpatterns
+
 
 ``chat`` 앱을 프로젝트에 등록하여 활성화합니다.
 
