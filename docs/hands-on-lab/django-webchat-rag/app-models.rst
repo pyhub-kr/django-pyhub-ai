@@ -94,6 +94,7 @@
 
         .. code-block:: python
             :caption: ``chat/models.py``
+            :linenos:
 
             from pyhub.rag.models.sqlite import SQLiteVectorDocument
 
@@ -104,15 +105,29 @@
 
         .. code-block:: python
             :caption: ``chat/models.py``
+            :linenos:
 
             from pyhub.rag.models.postgres import PGVectorDocument
 
             class TaxLawDocument(PGVectorDocument):
-                pass
+                class Meta:
+                    indexes = [
+                        PGVectorDocument.make_hnsw_index(
+                            "chat_taxlawdoc_idx",  # 데이터베이스 내에서 유일한 이름으로 지정하셔야 합니다.
+                            # "vector",            # field type
+                            # "cosine",            # distance metric
+                        ),
+                    ]
 
-``pgvector`` 확장에서는 인덱스를 지원하므로, 모델에 인덱스 설정을 지원하고 마이그레이션을 하면 인덱스를 통해 유사 문서 검색 속도를 향상시킬 수 있습니다.
-``sqlite-vec`` 확장에서는 인덱스를 지원하지만, 아직 ``django-pyhub-rag`` 라이브러리에서는 인덱스를 지원하지 않습니다.
-``pgvector`` 확장과 동일한 인터페이스로 지원 예정입니다.
+인덱스를 지정하면 유사 문서 검색 속도를 향상시킬 수 있습니다.
+
+* ``sqlite-vec`` 확장에서는 별도 인덱스 설정은 없고 테이블 생성 시에 ``distance_metric=cosine`` 옵션을 지정합니다.
+* ``pgvector`` 확장에서는 인덱스를 지원하므로, Cosine Distance 등 거리 검색에 사용하실 인덱스를 지정해주세요.
+
+.. admonition:: ``pgvector``\에서 지원하는 인덱스 타입
+    :class: tip
+
+    :doc:`/rag-02/index` 튜토리얼의 :doc:`/rag-02/pgvector-model` 문서를 참고하세요.
 
 만약 2000 차원을 초과한 임베딩이 필요한 경우 ``embedding`` 필드를 재정의하고, ``text-embedding-3-large`` 임베딩 모델을 사용합니다.
 
@@ -120,9 +135,12 @@
 
     .. tab-item:: sqlite
 
+        ``sqlite-vec``
+
         .. code-block:: python
             :caption: ``chat/models.py``
             :emphasize-lines: 1,5-9
+            :linenos:
 
             from pyhub.rag.fields.sqlite import SQLiteVectorField
             from pyhub.rag.models.sqlite import SQLiteVectorDocument
@@ -136,9 +154,13 @@
 
     .. tab-item:: postgres
 
+        ``PGVectorField`` 내부에서는 2000차원 이하에서는 ``vector`` 타입으로 생성되고, 2000차원을 초과할 경우 ``halfvec`` 타입으로 생성됩니다.
+        인덱스 타입도 필드 타입에 맞게 지정해셔야만 합니다.
+
         .. code-block:: python
             :caption: ``chat/models.py``
-            :emphasize-lines: 1,5-9
+            :emphasize-lines: 1,5-9,15
+            :linenos:
 
             from pyhub.rag.fields.postgres import PGVectorField
             from pyhub.rag.models.postgres import PGVectorDocument
@@ -150,7 +172,21 @@
                     embedding_model="text-embedding-3-large",
                 )
 
-준비한 세법 해석례 데이터는 3072 차원 임베딩을 가지고 있으므로, 위 코드처럼 임베딩 필드를 재정의하여 3072 차원 임베딩을 생성합니다.
+                class Meta:
+                    indexes = [
+                        PGVectorDocument.make_hnsw_index(
+                            "chat_taxlawdoc_idx",
+                            "halfvec",  # 2000차원 초과 시에는 halfvec 타입
+                            "cosine",   # 거리 검색에 사용하실 인덱스 타입
+                        ),
+                    ]
+
+준비한 세법 해석례 데이터는 3072 차원 임베딩을 가지고 있으므로, 위 코드처럼 ``embedding`` 필드를 재정의하여 3072 차원 임베딩을 생성합니다.
+
+.. warning::
+
+    ``SQLiteVectorDocument`` 모델과 ``PGVectorDocument`` 모델은 거의 동일한 코드이지만,
+    마이그레이션 내역이 다르기 때문에 데이터베이스를 변경할 경우 마이그레이션 파일을 다시 생성하셔야 합니다.
 
 
 마이그레이션
