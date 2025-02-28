@@ -65,6 +65,8 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 
             URL=https://github.com/pyhub-kr/dump-data/raw/refs/heads/main/rag/sample-taxlaw-1000.jsonl
             python manage.py load_jsonl chat.TaxLawDocument $URL
+        
+        .. figure:: ./assets/load-data/django-shell-using-shell.png
 
 
 장고 쉘 구동하기
@@ -99,12 +101,7 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 =============================================
 
 ``TaxLawDocument`` 모델을 통해 1000건의 문서가 임베딩 데이터와 함께 저장되어있습니다.
-``django-pyhub-rag`` 라이브러리의 추상화 문서 모델에서는 모델 매니저의 ``search`` 비동기 메서드를 통해 유사도 검색을 지원합니다.
-
-.. note::
-
-    LLM API를 지원하는 서버에서는 성능 향상을 위해 비동기 View를 사용합니다.
-    그래서 ``search`` 메서드도 비동기로 구현했습니다.
+``django-pyhub-rag`` 라이브러리의 추상화 문서 모델에서는 모델 매니저의 ``search`` 동기 메서드와 ``asearch`` 비동기 메서드를 통해 유사도 검색을 지원합니다.
 
 * ``SQLiteVectorDocument`` 추상화 모델
 
@@ -130,12 +127,19 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
     from chat.models import TaxLawDocument
 
     query = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
-    doc_list = await TaxLawDocument.objects.search(query)
+    doc_list = TaxLawDocument.objects.search(query)
 
     for doc in doc_list:
         print(doc.distance)
         print(doc.page_content[:100], "...")
         print()
+
+.. warning::
+
+    만약 아래와 같은 에러가 발생하신다면 API Key 정보를 잘못 기입하셨거나, API Key가 만료되었을 수 있습니다.
+    ``.env`` 파일 및 ``settings.py`` 파일에 지정된 ``OPENAI_API_KEY`` 관련 로직을 확인하시고, 소스코드 저장도 확인해주세요.
+
+    .. figure:: ./assets/load-data/invalid-api-key.png
 
 .. tab-set::
 

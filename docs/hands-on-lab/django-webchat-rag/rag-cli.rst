@@ -404,15 +404,9 @@ sqlite-vec/pgvector 기반으로 장고 모델을 통해 벡터 스토어를 구
 
     user_input = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
 
-    doc_list = await TaxLawDocument.objects.search(user_input)
+    doc_list = axLawDocument.objects.search(user_input)
     지식 = str(doc_list)
     user_input = f"""<context>{지식}</context>\n\n질문 : {user_input}"""
-
-
-.. tip::
-
-    ``await``\는 ``async`` 함수 내에서만 사용할 수 있습니다.
-    동기 함수 내에서 await 함수를 호출할려면 ``async_to_sync`` 함수를 통해 동기 함수로 변환한 뒤에 호출할 수 있습니다.
 
 
 .. admonition:: ``chat/management/commands/chat-rag-cli.py``
@@ -420,9 +414,8 @@ sqlite-vec/pgvector 기반으로 장고 모델을 통해 벡터 스토어를 구
 
     .. code-block:: python
         :linenos:
-        :emphasize-lines: 1,4,7-31,39,55-61
+        :emphasize-lines: 3,6-30,38,54-60
 
-        from asgiref.sync import async_to_sync
         from django.core.management.base import BaseCommand
         from chat.llm import LLM
         from chat.models import TaxLawDocument
@@ -480,7 +473,7 @@ sqlite-vec/pgvector 기반으로 장고 모델을 통해 벡터 스토어를 구
                         if user_input.startswith("!"):
                             user_input = user_input[1:].strip()
                             # RAG를 원하는 모델을 사용하여 유사 문서 검색
-                            doc_list = async_to_sync(TaxLawDocument.objects.search)(user_input)
+                            doc_list = TaxLawDocument.objects.search(user_input)
                             지식 = str(doc_list)
                             user_input = f"""<context>{지식}</context>\n\n질문 : {user_input}"""
 

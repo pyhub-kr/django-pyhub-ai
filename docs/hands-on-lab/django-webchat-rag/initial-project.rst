@@ -3,6 +3,16 @@
 =============================================================
 
 
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/4b13ac63853b5fc1f47fcfe41206f384bc8af60a>`_
+   :class: dropdown
+
+   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행
+
+   .. code-block:: bash
+
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/4b13ac63853b5fc1f47fcfe41206f384bc8af60a
+
+
 1. 프로젝트 디렉토리 생성
 ==========================
 
