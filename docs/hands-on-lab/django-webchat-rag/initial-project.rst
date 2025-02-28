@@ -42,6 +42,20 @@
         
 프로젝트 폴더를 편하신 에디터/IDE로 열어주시고, 에디터/IDE에 가상환경도 지정해주세요.
 
+
+3. 에디터로 열기
+======================
+
+VSCode에서는 템플릿 편집 시에 ``prettier`` 포맷터로 인해 템플릿 문법이 망가지곤 합니다.
+가장 우선해야하는 확장/설정은 ``Glavin001.unibeautify-vscode`` 확장입니다.
+:doc:`장고를 위한 VSCode 설정 </setup/vscode>` 문서를 참고하여 확장을 설치하시고,
+``django-html`` 타입에 대해 디폴트 포맷터로 ``Glavin001.unibeautify-vscode``\를 지정해주세요.
+
+.. tip::
+
+    윈도우에서는 기본 명령프롬프트/파워쉘을 쓰시기보다, 마이크로소프트의 파워쉘 코어 7을 쓰시면, 사용성이 더욱 좋습니다.
+    윈도우 기본 파워쉘은 버전 5입니다. (참고: :doc:`/setup/terminals/windows`)
+
 VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으로 현재 프로젝트에서 사용할 가상환경을 선택해주세요.
 그 후에 ``Terminal: Create New Terminal`` 명령으로 새로운 터미널을 여시면 자동으로 지정 가상환경이 활성화됩니다.
 
@@ -75,7 +89,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     쉬는 시간에 따로 질문주시면 정확히 해결해드리겠습니다.
 
 
-3. .env 파일 생성
+4. .env 파일 생성
 ====================
 
 소스코드 편집기를 통해 프로젝트 루트에 다음 내용으로 ``.env`` 파일을 생성해주세요.
@@ -118,7 +132,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
       공백이 있으면 해당 설정은 무시되니 주의해주세요.
 
 
-4. 라이브러리 설치
+5. 라이브러리 설치
 =======================
 
 프로젝트 루트 경로에 ``requirements.txt`` 파일을 아래 내용으로 작성해주세요.
@@ -188,7 +202,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     * ``pgvector`` : PostgreSQL 벡터스토어 확장
     * ``ipython`` : 향상된 파이썬 쉘
 
-5. 프로젝트 생성
+6. 프로젝트 생성
 =======================
 
 장고에서는 ``django-admin startproject`` 명령으로 프로젝트를 생성하며, ``python -m django startproject`` 명령으로도 동일하게 프로젝트를 생성할 수 있습니다.
@@ -205,7 +219,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 .. figure:: ./assets/initial-project/startproject.png
 
 
-6. mysite/settings.py 파일 수정
+7. mysite/settings.py 파일 수정
 ====================================
 
 ``django-environ`` 라이브러리 설정
@@ -391,7 +405,7 @@ settings 환경변수 적용 현황 확인
         .. figure:: ./assets/initial-project-showmigrations-empty-postgres.png
 
 
-7. 기본 테이블 생성
+8. 기본 테이블 생성
 =======================
 
 현재 프로젝트에 등록된 장고 앱에 대한 마이그레이션을 수행하여, 데이터베이스 테이블을 생성해주세요.

@@ -404,7 +404,7 @@ sqlite-vec/pgvector 기반으로 장고 모델을 통해 벡터 스토어를 구
 
     user_input = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
 
-    doc_list = axLawDocument.objects.search(user_input)
+    doc_list = axLawDocument.objects.similarity_search(user_input)
     지식 = str(doc_list)
     user_input = f"""<context>{지식}</context>\n\n질문 : {user_input}"""
 
@@ -473,7 +473,7 @@ sqlite-vec/pgvector 기반으로 장고 모델을 통해 벡터 스토어를 구
                         if user_input.startswith("!"):
                             user_input = user_input[1:].strip()
                             # RAG를 원하는 모델을 사용하여 유사 문서 검색
-                            doc_list = TaxLawDocument.objects.search(user_input)
+                            doc_list = TaxLawDocument.objects.similarity_search(user_input)
                             지식 = str(doc_list)
                             user_input = f"""<context>{지식}</context>\n\n질문 : {user_input}"""
 

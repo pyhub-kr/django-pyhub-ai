@@ -35,6 +35,7 @@ tailwind css 계열 CSS 라이브러리 중에 daisyui의 `chat bubble 컴포넌
             <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.24/dist/full.min.css" rel="stylesheet" type="text/css" />
             <script src="https://cdn.tailwindcss.com"></script>
             <script src="https://unpkg.com/htmx.org"></script>
+            <script src="https://unpkg.com/alpinejs"></script>
         </head>
         <body class="bg-gray-100">
             <div class="container mx-auto px-4 py-8">
@@ -125,7 +126,7 @@ markdown to html 변환은 서버 단에서 해도 되고, 클라이언트 단�
             <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.24/dist/full.min.css" rel="stylesheet" type="text/css" />
             <script src="https://cdn.tailwindcss.com"></script>
             <script src="https://unpkg.com/htmx.org"></script>
-            <script src="{% static 'rag/alpinejs/3.14.8/cdn.min.js' %}" defer></script>
+            <script src="https://unpkg.com/alpinejs"></script>
             <script src="{% static 'rag/showdown/2.1.0/showdown.js' %}"></script>
             <script src="{% static 'rag/markdown.js' %}"></script>
         </head>

@@ -101,7 +101,7 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 =============================================
 
 ``TaxLawDocument`` 모델을 통해 1000건의 문서가 임베딩 데이터와 함께 저장되어있습니다.
-``django-pyhub-rag`` 라이브러리의 추상화 문서 모델에서는 모델 매니저의 ``search`` 동기 메서드와 ``asearch`` 비동기 메서드를 통해 유사도 검색을 지원합니다.
+``django-pyhub-rag`` 라이브러리의 추상화 문서 모델에서는 모델 매니저의 ``similarity_search`` 동기 메서드와 ``asimilarity_search`` 비동기 메서드를 통해 유사도 검색을 지원합니다.
 
 * ``SQLiteVectorDocument`` 추상화 모델
 
@@ -110,7 +110,7 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
 
 * ``PGVectorDocument`` 추상화 모델
 
-  - ``pgvector`` 확장에서는 코사인 거리, L2 거리, L1 거리, 해밍 거리 등 다양한 거리 계산 방법을 지원하며, 인덱스에 지정한 거리 계산 방법이 ``search`` 메서드 호출 시에 사용으로 적용됩니다.
+  - ``pgvector`` 확장에서는 코사인 거리, L2 거리, L1 거리, 해밍 거리 등 다양한 거리 계산 방법을 지원하며, 인덱스에 지정한 거리 계산 방법이 ``similarity_search`` 메서드 호출 시에 사용으로 적용됩니다.
   - ``pgvector`` 확장에서 지원하는 인덱스 종류는 :doc:`/rag-02/index` 튜토리얼의 :doc:`/rag-02/pgvector-model` 문서를 참고하세요.
 
 장고 쉘을 종료했다가, 아래의 명령으로 장고 쉘을 다시 구동해주세요.
@@ -127,7 +127,7 @@ RAG를 위해서는 먼저 텍스트 데이터로서 세법해석례 질답 데�
     from chat.models import TaxLawDocument
 
     query = "재화 수출하는 경우 영세율 첨부 서류로 수출실적명세서가 없는 경우 해결 방법"
-    doc_list = TaxLawDocument.objects.search(query)
+    doc_list = TaxLawDocument.objects.similarity_search(query)
 
     for doc in doc_list:
         print(doc.distance)

@@ -256,7 +256,7 @@
 
 .. code-block:: python
     :linenos:
-    :caption: ``chat/views.py`` 파일 생성
+    :caption: ``chat/views.py`` 파일 수정
 
     from django.shortcuts import get_object_or_404, render
     from django.urls import reverse_lazy
@@ -294,75 +294,11 @@
         )
 
 
-각 뷰에 대해 URL 패턴도 정의해줍니다.
+각 뷰에 대해 URL 패턴도 앞서 :doc:`./search` 문서에서 작성했었습니다.
 
-.. code-block:: python
-    :linenos:
-    :caption: ``chat/urls.py`` 파일에 추가
-
-    from django.urls import path
-    from . import views
-
-    app_name = "chat"
-
-    urlpatterns = [
-        path("", views.room_list, name="room_list"),
-        path("new/", views.room_new, name="room_new"),
-        path("<int:pk>/", views.room_detail, name="room_detail"),
-    ]
 
 템플릿
 ===========
-
-.. code-block:: html+django
-    :linenos:
-    :caption: ``chat/templates/chat/base.html`` 파일 생성
-
-    <!doctype html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Django Chat{% endblock %}</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script src="https://unpkg.com/htmx.org"></script>
-    </head>
-    <body class="bg-gray-100">
-        <div class="container mx-auto px-4 py-8">
-            <header class="mb-8">
-                <nav class="bg-white shadow-lg rounded-lg">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="flex justify-between h-16">
-                            <div class="flex">
-                                <div class="flex-shrink-0 flex items-center">
-                                    <a href="{% url 'chat:room_list' %}" class="text-xl font-bold text-gray-800">
-                                        Django Chat
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="flex items-center">
-                                <a href="{% url 'chat:room_new' %}" 
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                                    새 채팅방
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-
-            <main class="bg-white shadow-lg rounded-lg p-6">
-                {% block content %}
-                {% endblock %}
-            </main>
-
-            <footer class="mt-8 text-center text-gray-600 text-sm">
-                <p>&copy; 2025 파이썬사랑방. All rights reserved.</p>
-            </footer>
-        </div>
-    </body>
-    </html>
-
 
 .. code-block:: html+django
     :linenos:

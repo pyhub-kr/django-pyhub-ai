@@ -35,12 +35,18 @@
 * :doc:`./initial-project`
 * :doc:`./app-models`
 * :doc:`./load-data`
+* :doc:`./search`
 * :doc:`./rag-cli`
 * :doc:`./chat-room`
 * :doc:`./web-chat-using-form`
 * :doc:`./web-chat-using-htmx`
 * :doc:`./web-rag-chat`
 * :doc:`./closing`
+
+* 부록
+
+  - :doc:`./styles`
+  - :doc:`./anthropic`
 
 ----
 
@@ -53,6 +59,7 @@
     initial-project
     app-models
     load-data
+    search
     rag-cli
     chat-room
     web-chat-using-form

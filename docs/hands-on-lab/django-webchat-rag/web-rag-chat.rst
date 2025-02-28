@@ -53,7 +53,7 @@ AI 메시지 생성 시에 프롬프트에 유사 문서를 지식으로 활용�
             if user_message.startswith("!"):
                 user_message = user_message[1:]
                 # RAG를 원하는 모델을 사용하여 유사 문서 검색
-                doc_list = TaxLawDocument.objects.search(user_message)
+                doc_list = TaxLawDocument.objects.similarity_search(user_message)
                 지식 = str(doc_list)
                 system_prompt = self.system_prompt + "\n\n" + f"참고문서 : {지식}"
             else:
