@@ -3,7 +3,7 @@
 ================================================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/b1ce7331675b2fe22dc9ec986c919e1545798610>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/5f2095926ad34426876cb56e4f5364d6cde83d47>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -11,13 +11,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/b1ce7331675b2fe22dc9ec986c919e1545798610
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/5f2095926ad34426876cb56e4f5364d6cde83d47
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/b1ce7331675b2fe22dc9ec986c919e1545798610
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/5f2095926ad34426876cb56e4f5364d6cde83d47
 
 
 채팅 메시지 전송 뷰

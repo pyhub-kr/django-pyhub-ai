@@ -2,7 +2,7 @@
 부록 #3. 응답 대기 중 표시
 ============================================
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/4f91ca7fdfe197106a0aab2c895770ff729f5727>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/355aa3f0221992bd76501daffdf7ce7502c128a4>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -10,20 +10,20 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/4f91ca7fdfe197106a0aab2c895770ff729f5727
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/355aa3f0221992bd76501daffdf7ce7502c128a4
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/4f91ca7fdfe197106a0aab2c895770ff729f5727
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/355aa3f0221992bd76501daffdf7ce7502c128a4
 
 .. figure:: ./assets/styles/loading-indicator.gif
 
 .. admonition:: ``chat/templates/chat/room_detail.html`` 파일 덮어쓰기
     :class: dropdown
 
-    .. code-block:: html+django
+    .. code-block::
         :linenos:
         :emphasize-lines: 5,13-21,24-26,32-35
 

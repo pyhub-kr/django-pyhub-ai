@@ -3,21 +3,21 @@
 =============================================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/68bb962c13b721acfab747dbfd27be6484684d2a>`_
-   :class: dropdown
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d6e9c7567263a1eafcb10a454772e676cf573bb1>`_
+    :class: dropdown
 
-   * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
-     지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
+    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
+      지정 커밋의 모든 파일을 다운받아 현재 경로에 덮어쓰기합니다.
 
-   .. code-block:: bash
+    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/68bb962c13b721acfab747dbfd27be6484684d2a
+        python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d6e9c7567263a1eafcb10a454772e676cf573bb1
 
-   ``uv``\를 사용하실 경우 
+    ``uv``\를 사용하실 경우
 
-   .. code-block:: bash
+    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/68bb962c13b721acfab747dbfd27be6484684d2a
+        uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d6e9c7567263a1eafcb10a454772e676cf573bb1
 
 
 1. 프로젝트 디렉토리 생성
@@ -50,7 +50,54 @@
 프로젝트 폴더를 편하신 에디터/IDE로 열어주시고, 에디터/IDE에 가상환경도 지정해주세요.
 
 
-3. 에디터로 열기
+3. 아래 내역의 파일들을 한 번에 생성하기
+=============================================
+
+현재 페이지의 최종 코드는 https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d6e9c7567263a1eafcb10a454772e676cf573bb1 주소의 커밋에 있습니다.
+
+``pyhub-git-commit-apply`` 명령에서 해당 커밋 주소를 지정하시면, 해당 커밋에서 변경된 파일들만 현재 경로로 덮어쓰기 합니다.
+``--all`` 옵션을 적용하시면 해당 커밋을 기준으로 저장소의 모든 파일들을 현재 경로로 덮어쓰기 합니다.
+
+가상환경이 활성화된 상태에서 먼저 ``pyhub-git-commit-apply`` 라이브러리를 설치해주시구요.
+
+.. code-block:: shell
+
+    pip install --upgrade pyhub-git-commit-apply
+
+아래 명령으로 지정 커밋의 모든 파일들을 현재 경로로 다운로드합니다.
+
+.. tab-set::
+
+    .. tab-item:: ``python -m`` 명령
+
+        .. code-block:: shell
+
+            python -m pyhub_git_commit_apply --all https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d6e9c7567263a1eafcb10a454772e676cf573bb1
+
+    .. tab-item:: ``uv`` 활용
+
+        .. code-block:: shell
+
+            uv run pyhub-git-commit-apply --all https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d6e9c7567263a1eafcb10a454772e676cf573bb1
+
+수행하면 아래와 같이 ``requirements.txt`` 파일을 비롯해 ``manage.py``, ``mysite``, ``.env.sample`` 파일들이 생성됩니다.
+
+.. figure:: ./assets/initial-project/pyhub-git-commit-apply.png
+
+아래 내용 참고해서, 다음 5가지를 순서대로 수행합니다.
+
+#. ``pip install --upgrade -r requirements.txt`` 명령으로 라이브러리 설치 (이미 설치하셨다면 PASS)
+#. ``.env.sample`` 파일을 복사해서 ``.env`` 파일 생성하기
+
+   - ``OPENAI_API_KEY`` 환경변수 설정하기
+   - ``postgres``\를 사용할 경우 ``DATABASE_URL`` 환경변수 설정하기
+
+#. ``python manage.py shell -c "from django.conf import settings; print(settings.DATABASES); print(settings.OPENAI_API_KEY);"`` 명령으로 환경변수 값이 정확히 적용되었는 지 확인
+#. ``python manage.py showmigrations`` 명령으로 빈 데이터베이스인지 여부 확인
+#. ``python manage.py migrate`` 명령으로 데이터베이스 테이블 생성
+
+
+4. 에디터로 열기
 ======================
 
 VSCode에서는 템플릿 편집 시에 ``prettier`` 포맷터로 인해 템플릿 문법이 망가지곤 합니다.
@@ -96,7 +143,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     쉬는 시간에 따로 질문주시면 정확히 해결해드리겠습니다.
 
 
-4. ``.gitignore`` 파일 생성
+5. ``.gitignore`` 파일 생성
 ============================
 
 프로젝트 루트에 ``.gitignore`` 파일을 생성해주세요.
@@ -116,7 +163,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     /.venv
 
 
-5. .env 파일 생성
+6. .env 파일 생성
 ====================
 
 소스코드 편집기를 통해 프로젝트 루트에 다음 내용으로 ``.env`` 파일을 생성해주세요.
@@ -159,7 +206,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
       공백이 있으면 해당 설정은 무시되니 주의해주세요.
 
 
-6. 라이브러리 설치
+7. 라이브러리 설치
 =======================
 
 프로젝트 루트 경로에 ``requirements.txt`` 파일을 아래 내용으로 작성해주세요.
@@ -229,7 +276,8 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
     * ``pgvector`` : PostgreSQL 벡터스토어 확장
     * ``ipython`` : 향상된 파이썬 쉘
 
-7. 프로젝트 생성
+
+8. 프로젝트 생성
 =======================
 
 장고에서는 ``django-admin startproject`` 명령으로 프로젝트를 생성하며, ``python -m django startproject`` 명령으로도 동일하게 프로젝트를 생성할 수 있습니다.
@@ -246,7 +294,7 @@ VSCode에서는 명령 팔레트에서  ``Python: Select Interpreter`` 명령으
 .. figure:: ./assets/initial-project/startproject.png
 
 
-8. mysite/settings.py 파일 수정
+9. mysite/settings.py 파일 수정
 ====================================
 
 ``django-environ`` 라이브러리 설정
@@ -441,7 +489,7 @@ settings 환경변수 적용 현황 확인
         .. figure:: ./assets/initial-project-showmigrations-empty-postgres.png
 
 
-9. 기본 테이블 생성
+10. 기본 테이블 생성
 =======================
 
 현재 프로젝트에 등록된 장고 앱에 대한 마이그레이션을 수행하여, 데이터베이스 테이블을 생성해주세요.

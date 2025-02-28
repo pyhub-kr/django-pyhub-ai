@@ -2,7 +2,7 @@
 부록 #1. 대화 풍선 스타일 개선
 =====================================
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/945baf7bbf981f0761c6c88d019a0488a20dc1ab>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/3e4c211f2d5a39a6030a3b6a122e6d02c4e2c3ba>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -10,13 +10,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/945baf7bbf981f0761c6c88d019a0488a20dc1ab
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/3e4c211f2d5a39a6030a3b6a122e6d02c4e2c3ba
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/945baf7bbf981f0761c6c88d019a0488a20dc1ab
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/3e4c211f2d5a39a6030a3b6a122e6d02c4e2c3ba
 
 대화내역 스타일이 너무 밋밋하죠? :-)
 현재 사이트는 tailwind css이 너무 적용되어있습니다. 그래서 tailwind css 기반으로 직접 대화 메시지 스타일을 꾸미실 수도 있구요.

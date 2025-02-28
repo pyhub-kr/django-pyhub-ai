@@ -3,7 +3,7 @@
 ============================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d5c8846ad45f86983b6364d9993dcbd6f18092fe>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/960a43669b860a24a5b05607c880aa6553ac3532>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -11,13 +11,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d5c8846ad45f86983b6364d9993dcbd6f18092fe
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/960a43669b860a24a5b05607c880aa6553ac3532
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/d5c8846ad45f86983b6364d9993dcbd6f18092fe
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/960a43669b860a24a5b05607c880aa6553ac3532
 
 
 AI 메시지 생성 시에 유사 문서를 지식으로 활용하기

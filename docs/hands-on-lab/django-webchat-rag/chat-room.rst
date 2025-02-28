@@ -3,7 +3,7 @@
 ============================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/038a30bdc0f24ea3864d144ed5fdf394f81afe2c>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/190e9a11fd8fff79fb0b47475f81094f72b90729>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -11,13 +11,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/038a30bdc0f24ea3864d144ed5fdf394f81afe2c
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/190e9a11fd8fff79fb0b47475f81094f72b90729
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/038a30bdc0f24ea3864d144ed5fdf394f81afe2c
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/190e9a11fd8fff79fb0b47475f81094f72b90729
 
 
 모델
@@ -150,7 +150,7 @@
         .. code-block:: python
             :linenos:
             :caption: ``chat/models.py`` 덮어쓰기
-            :emphasize-lines: 3,5,9,24-58,61-76
+            :emphasize-lines: 3,5,9,33-67,70-85
 
             import json
 
@@ -173,6 +173,15 @@
                 @cached_property
                 def page_content_obj(self):
                     return json.loads(self.page_content)
+
+                class Meta:
+                    indexes = [
+                        PGVectorDocument.make_hnsw_index(
+                            "chat_taxlawdoc_idx",
+                            "halfvec",
+                            "cosine",
+                        ),
+                    ]
 
 
             class Room(LifecycleModelMixin, models.Model):

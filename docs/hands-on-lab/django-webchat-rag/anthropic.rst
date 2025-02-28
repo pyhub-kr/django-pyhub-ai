@@ -3,7 +3,7 @@
 ====================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/2831bf937ee47aa5b398fb2902a8c2af293bd232>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/3927187ffec09c8c6976ad21aae36e835d3263fc>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -11,13 +11,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/2831bf937ee47aa5b398fb2902a8c2af293bd232
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/3927187ffec09c8c6976ad21aae36e835d3263fc
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/2831bf937ee47aa5b398fb2902a8c2af293bd232
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/3927187ffec09c8c6976ad21aae36e835d3263fc
 
 
 다양한 LLM API들이 있으며, 서비스의 목적에 맞는 LLM API들을 사용해야할 것입니다. 이에 Anthropic API를 추가로 지원해보겠습니다.

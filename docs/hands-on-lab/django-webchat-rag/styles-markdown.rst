@@ -2,7 +2,7 @@
 부록 #2. AI 응답 markdown 포맷 변환
 ====================================
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/9c58881adf937d87c513e8ae0b50cfb0b6ba36fc>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/34e8d36b6aa5e94ead0223c8b9181d933ce9291c>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -10,13 +10,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/9c58881adf937d87c513e8ae0b50cfb0b6ba36fc
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/34e8d36b6aa5e94ead0223c8b9181d933ce9291c
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/9c58881adf937d87c513e8ae0b50cfb0b6ba36fc
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/34e8d36b6aa5e94ead0223c8b9181d933ce9291c
 
 markdown to html 변환은 서버 단에서 해도 되고, 클라이언트 단에서 해도 됩니다.
 서버 단에서 수행하면 보다 풍부한 포맷 변환이 가능하지만, markdown 변환은 클라이언트 단에서 수행해도 충분할 듯 보입니다.

@@ -3,7 +3,7 @@
 ========================================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/af069ef93498c5597eee29cbab50cc1ac1a2088f>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/73f88f1c792f1d49a136046e228707ce404dc105>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -11,13 +11,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/af069ef93498c5597eee29cbab50cc1ac1a2088f
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/73f88f1c792f1d49a136046e228707ce404dc105
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/af069ef93498c5597eee29cbab50cc1ac1a2088f
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/73f88f1c792f1d49a136046e228707ce404dc105
 
 
 장고 앱 생성 및 등록
@@ -135,7 +135,7 @@
 
     .. tab-item:: sqlite
 
-        ``sqlite-vec``
+        ``sqlite-vec``\에서는 인덱스 지정이 없고, 테이블 생성 시에 ``distance_metric=cosine`` 옵션을 지정합니다.
 
         .. code-block:: python
             :caption: ``chat/models.py``

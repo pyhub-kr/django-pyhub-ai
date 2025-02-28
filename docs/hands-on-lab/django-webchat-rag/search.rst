@@ -3,7 +3,7 @@
 =========================
 
 
-.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/86a3570e017d916b894d8d0fd1c4cbfaa1492e37>`_
+.. admonition:: `관련 커밋 <https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/bc945b63147a319e92e04b26e58a6b468c4c4640>`_
    :class: dropdown
 
    * 변경 파일을 한 번에 덮어쓰기 하실려면, :doc:`/utils/pyhub-git-commit-apply` 설치하신 후에, 프로젝트 루트에서 아래 명령 실행하시면
@@ -11,13 +11,13 @@
 
    .. code-block:: bash
 
-      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/86a3570e017d916b894d8d0fd1c4cbfaa1492e37
+      python -m pyhub_git_commit_apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/bc945b63147a319e92e04b26e58a6b468c4c4640
 
    ``uv``\를 사용하실 경우 
 
    .. code-block:: bash
 
-      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/86a3570e017d916b894d8d0fd1c4cbfaa1492e37
+      uv run pyhub-git-commit-apply https://github.com/pyhub-kr/django-webchat-rag-langcon2025/commit/bc945b63147a319e92e04b26e58a6b468c4c4640
 
 
 세법 해석례 질답 내용을 데이터베이스에 저장했으니 유사 문서 검색을 지원하는 페이지를 구현해봅시다.
@@ -84,6 +84,16 @@
                 @cached_property
                 def page_content_obj(self):
                     return json.loads(self.page_content)
+
+                class Meta:
+                    indexes = [
+                        PGVectorDocument.make_hnsw_index(
+                            "chat_taxlawdoc_idx",
+                            "halfvec",
+                            "cosine",
+                        ),
+                    ]
+
 
 이제 파이썬 코드 단에서는 ``doc.page_content_obj["제목"]`` 처럼 접근할 수 있으며,
 템플릿 단에서는 ``{{ doc.page_content_obj.제목 }}`` 처럼 접근할 수 있습니다.
