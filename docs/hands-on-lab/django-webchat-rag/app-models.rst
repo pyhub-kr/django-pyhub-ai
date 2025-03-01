@@ -156,26 +156,28 @@ SQLite는 단순히 테스트 데이터베이스용 데이터베이스에 그치
         DATABASES = {
             "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
         }
-        if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
-            DATABASES["default"]["ENGINE"] = "pyhub.db.backends.sqlite3"
+        # 모든 SQLite 데이터베이스에 대해 엔진 변경 및 최적화 옵션 적용
+        for db_name in DATABASES:
+            if DATABASES[db_name]["ENGINE"] == "django.db.backends.sqlite3":
+                DATABASES[db_name]["ENGINE"] = "pyhub.db.backends.sqlite3"
 
-            DATABASES["default"].setdefault("OPTIONS", {})
+                DATABASES[db_name].setdefault("OPTIONS", {})
 
-            # https://gcollazo.com/optimal-sqlite-settings-for-django/
-            DATABASES["default"]["OPTIONS"].update({
-                "init_command": (
-                    "PRAGMA foreign_keys=ON;"
-                    "PRAGMA journal_mode = WAL;"
-                    "PRAGMA synchronous = NORMAL;"
-                    "PRAGMA busy_timeout = 5000;"
-                    "PRAGMA temp_store = MEMORY;"
-                    "PRAGMA mmap_size = 134217728;"
-                    "PRAGMA journal_size_limit = 67108864;"
-                    "PRAGMA cache_size = 2000;"
-                ),
-                "transaction_mode": "IMMEDIATE",
-                # "transaction_mode": "EXCLUSIVE",
-            })
+                # https://gcollazo.com/optimal-sqlite-settings-for-django/
+                DATABASES[db_name]["OPTIONS"].update({
+                    "init_command": (
+                        "PRAGMA foreign_keys=ON;"
+                        "PRAGMA journal_mode = WAL;"
+                        "PRAGMA synchronous = NORMAL;"
+                        "PRAGMA busy_timeout = 5000;"
+                        "PRAGMA temp_store = MEMORY;"
+                        "PRAGMA mmap_size = 134217728;"
+                        "PRAGMA journal_size_limit = 67108864;"
+                        "PRAGMA cache_size = 2000;"
+                    ),
+                    "transaction_mode": "IMMEDIATE",
+                    # "transaction_mode": "EXCLUSIVE",
+                })
 
 
 세법 해석례 문서 모델 생성
