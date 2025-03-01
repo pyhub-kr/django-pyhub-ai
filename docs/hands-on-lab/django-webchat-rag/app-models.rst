@@ -120,8 +120,6 @@ SQLite는 단순히 테스트 데이터베이스용 데이터베이스에 그치
 
     - `(Rails World 2024) Stephen Margheim - SQLite on Rails: Supercharging the One-Person Framework <https://youtu.be/wFUy120Fts8?t=926>`_
 
-    * `장고 5.1 이상에서 SQLite 최적화 설정 <https://gcollazo.com/optimal-sqlite-settings-for-django/>`_
-
 웹서비스에서의 메인 데이터베이스가 아니더라도,
 작은 애플리케이션의 메인 데이터베이스로 활용할 수도 있고,
 **RAG용 문서를 저장하기 위한 보조 DB로의 활용은 어떠신가요**?
@@ -132,6 +130,52 @@ SQLite는 단순히 테스트 데이터베이스용 데이터베이스에 그치
   - 법례와 같은 데이터들이 **자주 변경되지 않는 데이터**\들에 특히 효과적
   - 문서/임베딩이 업데이트되면, 다시 업데이트된 DB 파일만 복사하면 OK.
   - 트래픽이 중앙에 집중되지 않고, 분산되는 효과.
+
+
+.. admonition:: 참고: `장고 5.1 이상에서 SQLite 최적화 설정 <https://gcollazo.com/optimal-sqlite-settings-for-django/>`_
+    :class: dropdown
+
+    SQLite는 기본적으로 데이터베이스 파일에 대한 쓰기 작업 시 전체 데이터베이스에 락(lock)을 걸기 때문에, 동시성이 필요한 웹 애플리케이션에서는 성능 병목이 발생할 수 있습니다. 이러한 문제를 해결하기 위해 WAL(Write-Ahead Logging) 모드를 사용하는 것이 중요합니다.
+
+    WAL 모드는 데이터베이스 변경사항을 별도의 로그 파일에 먼저 기록한 후 나중에 메인 데이터베이스 파일에 적용하는 방식으로, 읽기 작업과 쓰기 작업이 서로 차단되지 않도록 합니다. 이를 통해 동시성이 크게 향상되며, 특히 읽기 작업이 많은 RAG 시스템에서 효과적입니다.
+
+    아래 설정에서 ``PRAGMA journal_mode = WAL;`` 부분이 바로 이 WAL 모드를 활성화하는 설정입니다. 이 설정이 없으면 여러 사용자가 동시에 접근할 때 "database is locked" 오류가 발생할 가능성이 높아집니다.
+
+    또한 ``PRAGMA synchronous = NORMAL;`` 설정은 데이터 안전성과 성능 사이의 균형을 맞추는 설정으로, 트랜잭션 커밋 시 디스크 동기화 빈도를 조절합니다. 기본값인 ``FULL``보다 성능이 향상되면서도 적절한 안전성을 유지합니다.
+
+    아래는 장고 5.1부터 지원하는 ``init_command`` 옵션을 사용한 것이며, 5.1 미만에서도 다른 방법으로 적용 가능합니다.
+
+    .. code-block:: python
+        :caption: ``mysite/settings.py``
+        :linenos:
+        :emphasize-lines: 10-26
+
+        # Database
+        # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+        DATABASES = {
+            "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"),
+        }
+        if DATABASES["default"]["ENGINE"] == "django.db.backends.sqlite3":
+            DATABASES["default"]["ENGINE"] = "pyhub.db.backends.sqlite3"
+
+            DATABASES["default"].setdefault("OPTIONS", {})
+
+            # https://gcollazo.com/optimal-sqlite-settings-for-django/
+            DATABASES["default"]["OPTIONS"].update({
+                "init_command": (
+                    "PRAGMA foreign_keys=ON;"
+                    "PRAGMA journal_mode = WAL;"
+                    "PRAGMA synchronous = NORMAL;"
+                    "PRAGMA busy_timeout = 5000;"
+                    "PRAGMA temp_store = MEMORY;"
+                    "PRAGMA mmap_size = 134217728;"
+                    "PRAGMA journal_size_limit = 67108864;"
+                    "PRAGMA cache_size = 2000;"
+                ),
+                "transaction_mode": "IMMEDIATE",
+                # "transaction_mode": "EXCLUSIVE",
+            })
 
 
 세법 해석례 문서 모델 생성
