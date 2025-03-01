@@ -9,6 +9,11 @@
     장고의 강력한 ORM과 웹 프레임워크 기능을 활용하여 데이터 관리의 생산성을 높이고,
     LLM의 잠재력을 최대한 활용한 웹 채팅 서비스를 함께 만들어봅시다! 😉
 
+.. admonition:: 튜토리얼 목적
+    :class: note
+
+    파이썬/장고 기반으로 손쉬운 문서/임베딩 관리 + 쉽고 간결한 애플리케이션 구현
+
 :doc:`/rag-02/index` 튜토리얼에서 다뤘던 내용을 보완해서, "파이썬 문법이 익숙한 웹/LLM 초보 개발자" 대상으로 재구성했습니다.
 ``django-pyhub-rag`` 라이브러리를 개발/활용하여 파이썬/장고 중심으로 생산성 높은 RAG 웹 채팅 서비스를 구현합니다.
 
@@ -22,12 +27,21 @@
 * LLM 채팅에 RAG 붙이기
 
 
+.. admonition:: 최종 결과 화면 미리보기
+    :class: dropdown
+
+    .. figure:: ./assets/anthropic/anthropic-response.png
+
+
 (랭콘 2025) 장고로 만드는 RAG 웹 채팅 서비스
 ====================================================
 
 * 랭콘 2025 행사 링크 : https://event-us.kr/langcon/event/99194
 * 시간 : 2025년 3월 1일, 오후 3시 50분 ~ 5시 20분
 * 진행자 : 이진석 (`파이썬사랑방 커뮤니티 <https://facebook.com/groups/askdjango>`_ 운영자, `인프런 지식공유자 <https://www.inflearn.com/users/25058/@pyhub>`_\)
+
+  - 2008년 장고 1.0부터 써온 장고 고인물
+
 * 소스코드 저장소 : https://github.com/pyhub-kr/django-webchat-rag-langcon2025
 
 오시기 전에
