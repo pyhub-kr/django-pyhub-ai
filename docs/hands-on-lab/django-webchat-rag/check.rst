@@ -92,13 +92,13 @@ https://supabase.com 서비스를 이용하시거나, 로컬에 ``pgvector`` 확
 
         .. code-block:: text
 
-            python -m pip install --upgrade sqlite-vec numpy pyhub-git-commit-apply django-pyhub-rag django-environ django-debug-toolbar django-extensions django-lifecycle openai ipython
+            python -m pip install --upgrade sqlite-vec numpy pyhub-git-commit-apply django-pyhub-rag django-environ django-debug-toolbar django-extensions django-lifecycle openai anthropic google-genai ipython
 
     .. tab-item:: postgres로 진행하실 경우
 
         .. code-block:: text
 
-            python -m pip install --upgrade psycopg2-binary pgvector pyhub-git-commit-apply django-pyhub-rag django-environ django-debug-toolbar django-extensions django-lifecycle openai ipython
+            python -m pip install --upgrade psycopg2-binary pgvector pyhub-git-commit-apply django-pyhub-rag django-environ django-debug-toolbar django-extensions django-lifecycle openai anthropic google-genai ipython
 
 ``python -m pip list`` 명령으로 설치된 라이브러리 목록을 확인하실 수 있습니다.
 
