@@ -37,21 +37,13 @@
     .. figure:: ./assets/anthropic/anthropic-response.png
 
 
-(랭콘 2025) 장고로 만드는 RAG 웹 채팅 서비스
-====================================================
-
-* 랭콘 2025 행사 링크 : https://event-us.kr/langcon/event/99194
-* 시간 : 2025년 3월 1일, 오후 3시 50분 ~ 5시 20분
-* 진행자 : 이진석 (`파이썬사랑방 커뮤니티 <https://facebook.com/groups/askdjango>`_ 운영자, `인프런 지식공유자 <https://www.inflearn.com/users/25058/@pyhub>`_\)
-
-  - 2008년 장고 1.0부터 써온 장고 고인물
-
-* 소스코드 저장소 : https://github.com/pyhub-kr/django-webchat-rag-langcon2025
-
 오시기 전에
 -------------------------------
 
+* 소스코드 저장소 : https://github.com/pyhub-kr/django-webchat-rag-langcon2025
+
 * :doc:`./preparation`
+
 
 핸즈온랩
 -----------------
